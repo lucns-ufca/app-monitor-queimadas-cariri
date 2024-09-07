@@ -1,0 +1,126 @@
+import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
+import 'package:app_monitor_queimadas/models/user.model.dart';
+import 'package:app_monitor_queimadas/pages/content/reports/FireReportPages.page.dart';
+import 'package:app_monitor_queimadas/pages/content/tabs/TabHome.page.dart';
+import 'package:app_monitor_queimadas/pages/content/tabs/TabMap.page.dart';
+import 'package:app_monitor_queimadas/pages/content/tabs/TabNature.page.dart';
+import 'package:app_monitor_queimadas/pages/content/tabs/TabStatistics.page.dart';
+import 'package:app_monitor_queimadas/pages/start/First.page.dart';
+import 'package:app_monitor_queimadas/utils/AppColors.dart';
+import 'package:app_monitor_queimadas/utils/PermissionData.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:get_it/get_it.dart';
+import 'package:permission_handler/permission_handler.dart';
+
+class MainScreenPage extends StatelessWidget {
+  final user = GetIt.I.get<User>();
+  final List<PermissionData> permissions = [PermissionData(name: "Camera", permission: Permission.camera), PermissionData(name: "Localização", permission: Permission.locationWhenInUse)];
+  final PageController pageController = PageController();
+
+  MainScreenPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return PopScope(
+        canPop: false,
+        onPopInvoked: (didPop) async {
+          if (user.hasAccess()) {
+            SystemNavigator.pop();
+          } else {
+            await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const FirstPage()));
+          }
+        },
+        child: AnnotatedRegion<SystemUiOverlayStyle>(
+            value: const SystemUiOverlayStyle(statusBarColor: Colors.transparent, systemNavigationBarColor: AppColors.fragmentBackground),
+            child: Scaffold(
+                extendBody: true,
+                backgroundColor: AppColors.appBackground,
+                body: PageView(physics: const NeverScrollableScrollPhysics(), controller: pageController, children: const [TabHomePage(), TabStatisticsPage(), TabMapPage(), TabNaturePage()]),
+                floatingActionButton: SizedBox(
+                    width: 56,
+                    height: 56,
+                    child: ElevatedButton(
+                        style: ButtonStyle(
+                            //foregroundColor: colorsStateText,
+                            padding: WidgetStateProperty.all<EdgeInsetsGeometry>(EdgeInsetsDirectional.zero),
+                            elevation: WidgetStateProperty.all<double>(4),
+                            overlayColor: WidgetStateProperty.resolveWith((states) => Colors.white.withOpacity(0.5)),
+                            backgroundColor: WidgetStateProperty.all<Color>(AppColors.accent),
+                            shape: WidgetStateProperty.all<OvalBorder>(const OvalBorder())),
+                        onPressed: () async {
+                          await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => FireReportPages(permissions: permissions)));
+                        },
+                        child: const Icon(Icons.local_fire_department))),
+                floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+                bottomNavigationBar: NavigationBar(
+                  onTabSelected: (index) {
+                    pageController.animateToPage(index, duration: const Duration(milliseconds: 300), curve: Curves.ease);
+                  },
+                ))));
+  }
+}
+
+class NavigationBar extends StatefulWidget {
+  final Function(int) onTabSelected;
+
+  const NavigationBar({required this.onTabSelected, super.key});
+
+  @override
+  State<StatefulWidget> createState() => NavigationBarState();
+}
+
+class NavigationBarState extends State<NavigationBar> {
+  int tabIndex = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBottomNavigationBar.builder(
+      splashColor: Colors.transparent,
+      itemCount: 4,
+      tabBuilder: (int index, bool isActive) {
+        IconData icon = Icons.home_outlined;
+        switch (index) {
+          case 1:
+            icon = Icons.auto_graph_outlined;
+            break;
+          case 2:
+            icon = Icons.place_outlined;
+            break;
+          case 3:
+            icon = Icons.grass_sharp;
+            break;
+          case 4:
+            icon = Icons.emoji_nature_outlined;
+            break;
+        }
+        return IconButton(
+          onPressed: () {
+            setState(() => tabIndex = index);
+            widget.onTabSelected(index);
+          },
+          icon: Icon(icon, color: tabIndex == index ? AppColors.accent : Colors.white),
+          padding: EdgeInsets.zero,
+          style: IconButton.styleFrom(
+              shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero, side: BorderSide(color: Colors.transparent)),
+              foregroundColor: Colors.white,
+              highlightColor: tabIndex == index ? Colors.white : AppColors.accent,
+              backgroundColor: Colors.transparent),
+          //backgroundColor: _bottomNavIndex == index ? AppColors.accent : Colors.transparent),
+        );
+      },
+      backgroundColor: AppColors.fragmentBackground,
+      activeIndex: tabIndex,
+      gapLocation: GapLocation.center,
+      leftCornerRadius: 32,
+      rightCornerRadius: 32,
+      onTap: (index) {},
+      shadow: const BoxShadow(
+        offset: Offset(0, 1),
+        blurRadius: 12,
+        spreadRadius: 0.5,
+        color: AppColors.black,
+      ),
+    );
+  }
+}

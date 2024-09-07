@@ -33,10 +33,10 @@ class PopupMenu extends PopupWindow {
         height: 56,
         child: TextButton(
             style: ButtonStyle(
-                padding: MaterialStateProperty.all(const EdgeInsets.symmetric(horizontal: 24)),
-                overlayColor: MaterialStateProperty.all(AppColors.accent),
-                backgroundColor: MaterialStateProperty.all(Colors.transparent),
-                shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: const BorderSide(color: Colors.transparent)))),
+                padding: WidgetStateProperty.all(const EdgeInsets.symmetric(horizontal: 24)),
+                overlayColor: WidgetStateProperty.all(AppColors.accent),
+                backgroundColor: WidgetStateProperty.all(Colors.transparent),
+                shape: WidgetStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: const BorderSide(color: Colors.transparent)))),
             onPressed: item.isEnabled
                 ? () {
                     onClickListener();

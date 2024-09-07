@@ -142,9 +142,15 @@ class Utils {
         });
   }
 
+  static int getRemainderDays() {
+    DateTime dateTime = DateTime.now().toLocal();
+    DateTime nextYear = DateTime(dateTime.year + 1);
+    return nextYear.difference(dateTime).inDays;
+  }
+
   static String getMonthName() {
     DateTime now = DateTime.now().toLocal();
-    switch (now.month + 1) {
+    switch (now.month) {
       case 1:
         return "Janeiro";
       case 2:

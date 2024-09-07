@@ -26,9 +26,9 @@ class _MyButtonTransparentState extends State<MyButtonTransparent> {
         height: 48,
         child: TextButton(
             style: ButtonStyle(
-                overlayColor: MaterialStateProperty.all(widget.color),
-                backgroundColor: MaterialStateProperty.all(Colors.transparent),
-                shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.circular(56), side: const BorderSide(color: Colors.transparent)))),
+                overlayColor: WidgetStateProperty.all(widget.color),
+                backgroundColor: WidgetStateProperty.all(Colors.transparent),
+                shape: WidgetStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.circular(56), side: const BorderSide(color: Colors.transparent)))),
             onPressed: widget.isEnabled ? widget.onClick : null,
             child: Text(widget.text, style: widget.style ?? TextStyle(fontSize: 16, color: widget.isEnabled ? AppColors.textNormal : AppColors.textDisabled))));
   }

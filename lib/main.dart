@@ -3,8 +3,8 @@
 import 'dart:io';
 
 import 'package:app_monitor_queimadas/models/user.model.dart';
+import 'package:app_monitor_queimadas/pages/content/MainScreen.page.dart';
 import 'package:app_monitor_queimadas/pages/start/First.page.dart';
-import 'package:app_monitor_queimadas/pages/content/Dashboard.page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:app_monitor_queimadas/utils/AppColors.dart';
@@ -46,7 +46,8 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(primary: Colors.white, seedColor: AppColors.accent),
           useMaterial3: true,
         ),
-        home: user.hasAccess() ? const DashboardPage() : const FirstPage()
+        //home: user.hasAccess() ? const DashboardPage() : const FirstPage()
+        home: user.hasAccess() ? MainScreenPage() : const FirstPage()
         /*
               if (preferences.getBool("second_execution") ?? false) {
                 return const MainScreen();

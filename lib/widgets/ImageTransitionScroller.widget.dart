@@ -9,17 +9,15 @@ import 'package:flutter/widgets.dart';
 class ImageTransitionScroller extends StatefulWidget {
   final String assets;
   final double height;
+  final double? width;
 
-  ImageTransitionScroller(
-      {Key? key, required this.assets, required this.height})
-      : super(key: key);
+  const ImageTransitionScroller({super.key, required this.assets, this.width, required this.height});
 
   @override
   State<ImageTransitionScroller> createState() => _ImageTransitionScroller();
 }
 
-class _ImageTransitionScroller extends State<ImageTransitionScroller>
-    with TickerProviderStateMixin {
+class _ImageTransitionScroller extends State<ImageTransitionScroller> with TickerProviderStateMixin {
   Size? imageSize;
   double? imageWidth;
   Timer? timer;
@@ -35,6 +33,7 @@ class _ImageTransitionScroller extends State<ImageTransitionScroller>
   @override
   void initState() {
     super.initState();
+    if (widget.width != null) imageSize = Size(widget.width!, widget.height);
     SchedulerBinding.instance.addPostFrameCallback((_) async {
       await Future.delayed(const Duration(milliseconds: 500));
       runAnimation();
@@ -51,13 +50,9 @@ class _ImageTransitionScroller extends State<ImageTransitionScroller>
 
   void runAnimation() {
     if (_scrollController.offset == 0) {
-      _scrollController.animateTo(
-          imageWidth! - MediaQuery.of(context).size.width,
-          duration: Duration(seconds: duration),
-          curve: Curves.easeInOut);
+      _scrollController.animateTo(imageWidth! - MediaQuery.of(context).size.width, duration: Duration(seconds: duration), curve: Curves.easeInOut);
     } else {
-      _scrollController.animateTo(0,
-          duration: Duration(seconds: duration), curve: Curves.easeInOut);
+      _scrollController.animateTo(0, duration: Duration(seconds: duration), curve: Curves.easeInOut);
     }
     if (timer != null) {
       timer!.cancel();
@@ -72,20 +67,19 @@ class _ImageTransitionScroller extends State<ImageTransitionScroller>
     if (imageSize == null) {
       Image image = Image.asset(widget.assets);
       Completer<ui.Image> completer = Completer<ui.Image>();
-      image.image.resolve(const ImageConfiguration()).addListener(
-          ImageStreamListener((ImageInfo info, bool synchronousCall) {
+      image.image.resolve(const ImageConfiguration()).addListener(ImageStreamListener((ImageInfo info, bool synchronousCall) {
         completer.complete(info.image);
         setState(() {
-          imageSize =
-              Size(info.image.width.toDouble(), info.image.height.toDouble());
+          imageSize = Size(info.image.width.toDouble(), info.image.height.toDouble());
         });
       }));
       return const SizedBox();
     }
 
-    double imageHeight = MediaQuery.of(context).size.height - widget.height;
+    //double imageHeight = MediaQuery.of(context).size.height - widget.height;
+    double imageHeight = widget.height;
     double scale = imageHeight / imageSize!.height;
-    imageWidth = imageSize!.width / scale;
+    imageWidth = imageSize!.width * scale;
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,

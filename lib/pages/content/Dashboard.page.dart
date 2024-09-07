@@ -233,7 +233,7 @@ class DashboardPageState extends State<DashboardPage> {
                                             Text("${prediction!.occurredTotal}/${prediction!.predictionTotal}", style: const TextStyle(color: AppColors.textNormal, fontWeight: FontWeight.w300, fontSize: 24)),
                                             const Text("Previsto anual", style: TextStyle(fontWeight: FontWeight.w300, color: AppColors.textNormal)),
                                             const SizedBox(height: 2),
-                                            const Text("Restando 123 dias", style: TextStyle(fontWeight: FontWeight.w300, color: AppColors.accentLight)),
+                                            Text("Restando ${Utils.getRemainderDays()} dias", style: const TextStyle(fontWeight: FontWeight.w300, color: AppColors.accentLight)),
                                           ]))
                               ])),
                           const SizedBox(width: 24),

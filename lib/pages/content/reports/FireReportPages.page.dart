@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:app_monitor_queimadas/pages/content/Dashboard.page.dart';
+import 'package:app_monitor_queimadas/pages/content/MainScreen.page.dart';
 import 'package:app_monitor_queimadas/pages/content/reports/FireReportCamera.page.dart';
 import 'package:app_monitor_queimadas/pages/content/reports/FireReportIntroduction.page.dart';
 import 'package:app_monitor_queimadas/pages/content/reports/FireReportSender.page.dart';
@@ -71,7 +71,7 @@ class FireReportPagesState extends State<FireReportPages> {
     return PopScope(
         canPop: false,
         onPopInvoked: (didPop) async {
-          await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const DashboardPage()));
+          await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainScreenPage()));
         },
         child: Scaffold(
             resizeToAvoidBottomInset: true,

@@ -21,14 +21,16 @@ class AppColors {
   static const accentLight = Color.fromARGB(255, 72, 133, 255);
   static const accent = Color.fromARGB(255, 35, 109, 255);
   static const graphRed = Color.fromARGB(255, 199, 28, 71);
+  static const yellowSky = Color.fromARGB(255, 230, 162, 36);
   static const ripple = Color.fromARGB(188, 255, 255, 255);
   static const shadow = Color.fromARGB(75, 0, 0, 0);
   static const dialogBackground = Color.fromARGB(208, 74, 208, 208);
 
   static const appBackground = Color.fromARGB(255, 21, 24, 29);
+  static const mainAreaBackground = Color.fromARGB(255, 45, 112, 212);
   static const appBackgroundInDialog = Color.fromARGB(255, 83, 64, 21);
   static const fragmentBackgroundInDialog = Color.fromARGB(255, 21, 21, 21);
-  static const fragmentBackground = Color.fromARGB(255, 32, 33, 43);
+  static const fragmentBackground = Color.fromARGB(255, 33, 34, 63);
   static const fragmentBackgroundError = Color.fromARGB(208, 109, 32, 38);
   static const menuBackground = Color.fromARGB(255, 49, 50, 68);
   static const cardBackground = gray_7;

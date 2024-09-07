@@ -48,11 +48,11 @@ class MyToolbarState extends State<MyToolbar> {
             onPressed: onClick,
             style: ButtonStyle(
                 //foregroundColor: colorsStateText,
-                padding: MaterialStateProperty.all<EdgeInsetsGeometry>(EdgeInsetsDirectional.zero),
-                elevation: MaterialStateProperty.all<double>(0.0),
-                overlayColor: MaterialStateProperty.resolveWith((states) => AppColors.ripple),
-                backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent),
-                shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.circular(56)))),
+                padding: WidgetStateProperty.all<EdgeInsetsGeometry>(EdgeInsetsDirectional.zero),
+                elevation: WidgetStateProperty.all<double>(0.0),
+                overlayColor: WidgetStateProperty.resolveWith((states) => AppColors.ripple),
+                backgroundColor: WidgetStateProperty.all<Color>(Colors.transparent),
+                shape: WidgetStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.circular(56)))),
             child: Center(child: Icon(icon, size: 24, color: Colors.white))));
   }
 }
