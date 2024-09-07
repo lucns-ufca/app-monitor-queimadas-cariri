@@ -56,7 +56,52 @@ class TabHomePageState extends State<TabHomePage> {
                     child: const Icon(Icons.person_outline),
                   ))
             ])),
-        Expanded(child: Container()),
+        Expanded(
+            child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Column(children: [
+                  const SizedBox(height: 110),
+                  Container(
+                      width: double.maxFinite,
+                      height: 220,
+                      padding: const EdgeInsets.all(16),
+                      //decoration: const BoxDecoration(color: Colors.transparent, shape: BoxShape.rectangle, borderRadius: BorderRadius.all(Radius.circular(36))),
+                      child: Center(
+                          child: Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(color: Colors.black.withOpacity(0.25), shape: BoxShape.rectangle, borderRadius: BorderRadius.all(Radius.circular(36))),
+                              child: const Row(mainAxisSize: MainAxisSize.min, children: [
+                                SizedBox(
+                                    width: 16,
+                                    height: 16,
+                                    child: CircularProgressIndicator(
+                                      color: AppColors.accent,
+                                      strokeWidth: 3,
+                                    )),
+                                SizedBox(width: 16),
+                                Text("Carregando notícias...", style: TextStyle(color: Colors.white))
+                              ])))),
+                  const SizedBox(height: 16),
+                  Expanded(
+                      child: Container(
+                          width: double.maxFinite,
+                          padding: const EdgeInsets.all(16),
+                          child: Center(
+                              child: Container(
+                                  padding: const EdgeInsets.all(16),
+                                  decoration: BoxDecoration(color: Colors.black.withOpacity(0.25), shape: BoxShape.rectangle, borderRadius: BorderRadius.all(Radius.circular(36))),
+                                  child: const Row(mainAxisSize: MainAxisSize.min, children: [
+                                    SizedBox(
+                                        width: 16,
+                                        height: 16,
+                                        child: CircularProgressIndicator(
+                                          color: AppColors.accent,
+                                          strokeWidth: 3,
+                                        )),
+                                    SizedBox(width: 8),
+                                    Text("Carregando cidades...", style: TextStyle(color: Colors.white))
+                                  ])))))
+                ]))),
         const SizedBox(height: 72)
       ])
     ]);
