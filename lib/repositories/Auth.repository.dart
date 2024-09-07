@@ -5,13 +5,13 @@ import 'package:app_monitor_queimadas/models/user.model.dart';
 import 'package:dio/dio.dart';
 
 class AuthRepository {
-  final api = Api(Dio());
+  final ControllerApi api = ControllerApi();
 
   AuthRepository();
 
   Future<ApiResponse> login(User user) async {
     try {
-      Response response = await api.dio.post('auth/login', data: {"email": user.email, "password": user.password});
+      Response response = await api.post('auth/login', {"email": user.email, "password": user.password});
       if (response.data["access_token"] == null) {
         return ApiResponse(message: "Não foi possivel realizar o login nesse momento.");
       }
@@ -38,7 +38,7 @@ class AuthRepository {
 
   Future<ApiResponse> createAccount(User user) async {
     try {
-      await api.dio.post('admins', data: {"username": user.username, "email": user.email, "password": user.password});
+      await api.post('admins', {"username": user.username, "email": user.email, "password": user.password});
       return ApiResponse(code: ApiResponseCodes.OK);
     } on DioException catch (e) {
       if (e.response == null) {
@@ -58,7 +58,7 @@ class AuthRepository {
 
   Future<bool> logout() async {
     try {
-      Response response = await api.dio.get('logout');
+      Response response = await api.get('logout');
       int code = response.statusCode ?? 0;
       return code > 199 && code < 300;
     } on DioException catch (e) {

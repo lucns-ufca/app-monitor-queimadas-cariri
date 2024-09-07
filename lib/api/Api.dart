@@ -7,8 +7,8 @@ class Api {
   Api(this.dio) {
     //dio.options.baseUrl = 'https://mmonitorqueimadasbackend.onrender.com/';
     dio.options.baseUrl = 'https://lucns.io/apps/monitor_queimadas_cariri/';
-    dio.options.connectTimeout = const Duration(seconds: 300);
-    dio.options.receiveTimeout = const Duration(seconds: 300);
+    dio.options.connectTimeout = const Duration(seconds: 60);
+    dio.options.receiveTimeout = const Duration(seconds: 30);
     dio.interceptors.add(InterceptorsWrapper(
       onRequest: (RequestOptions options, RequestInterceptorHandler requestInterceptorHandler) async {
         if (await Connectivity().checkConnectivity() == ConnectivityResult.none) {
@@ -62,4 +62,90 @@ class ApiResponseCodes {
   static const int UNAUTHORIZED = 401;
   static const int NOT_FOUND = 404;
   static const int CONFLIT = 409;
+}
+
+class ControllerApi {
+  final api = Api(Dio());
+  bool recursible = false;
+
+  Future<Response> get(String urlPath, {Map<String, dynamic>? parameters}) async {
+    try {
+      if (recursible) {
+        return _getRecursible(urlPath, parameters: parameters);
+      } else {
+        return _get(urlPath, parameters: parameters);
+      }
+    } on DioException {
+      rethrow;
+    }
+  }
+
+  Future<Response> _getRecursible(String urlPath, {Map<String, dynamic>? parameters}) async {
+    if (recursible) {
+      for (int i = 0; i < 10; i++) {
+        try {
+          Response response = await _get(urlPath, parameters: parameters);
+          if (i == 9 || (response.statusCode! > 199 && response.statusCode! < 300)) return response;
+        } on DioException catch (e) {
+          print(e);
+          if (!await hasInternetConnection() || i == 9) rethrow;
+        }
+        await Future.delayed(const Duration(seconds: 1));
+      }
+      return Response(requestOptions: RequestOptions());
+    } else {
+      return _get(urlPath, parameters: parameters);
+    }
+  }
+
+  Future<Response> _get(String urlPath, {Map<String, dynamic>? parameters}) async {
+    try {
+      return await api.dio.get(urlPath, queryParameters: parameters);
+    } on DioException {
+      rethrow;
+    }
+  }
+
+  Future<Response> post(String urlPath, Object data) async {
+    try {
+      if (recursible) {
+        return _postRecursible(urlPath, data);
+      } else {
+        return _post(urlPath, data);
+      }
+    } on DioException {
+      rethrow;
+    }
+  }
+
+  Future<Response> _postRecursible(String urlPath, Object data) async {
+    if (recursible) {
+      for (int i = 0; i < 10; i++) {
+        try {
+          Response response = await _post(urlPath, data);
+          if (i == 9 || (response.statusCode! > 199 && response.statusCode! < 300)) return response;
+        } on DioException catch (e) {
+          print(e);
+          if (!await hasInternetConnection() || i == 9) rethrow;
+        }
+        await Future.delayed(const Duration(seconds: 1));
+      }
+      return Response(requestOptions: RequestOptions());
+    } else {
+      return _post(urlPath, data);
+    }
+  }
+
+  Future<Response> _post(String urlPath, Object data) async {
+    try {
+      return await api.dio.post(urlPath, data: data);
+    } on DioException {
+      rethrow;
+    }
+  }
+
+  Future<bool> hasInternetConnection() async {
+    List<ConnectivityResult> connectivityResult = await Connectivity().checkConnectivity();
+    return connectivityResult.any((item) => item == ConnectivityResult.mobile) || connectivityResult.any((item) => item == ConnectivityResult.wifi);
+  }
 }
