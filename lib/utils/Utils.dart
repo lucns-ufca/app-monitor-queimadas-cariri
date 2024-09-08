@@ -1,6 +1,7 @@
 // @developes by @lucns
 
 import 'package:app_monitor_queimadas/widgets/TransparentButton.widget.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:vibration/vibration.dart';
@@ -176,5 +177,10 @@ class Utils {
       default:
         return "Dezembro";
     }
+  }
+
+  static Future<bool> hasInternetConnection() async {
+    List<ConnectivityResult> connectivityResult = await Connectivity().checkConnectivity();
+    return connectivityResult.any((item) => item == ConnectivityResult.mobile) || connectivityResult.any((item) => item == ConnectivityResult.wifi);
   }
 }
