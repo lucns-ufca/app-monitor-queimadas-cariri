@@ -1,14 +1,15 @@
 // Developed by @lucns
 
+import 'package:app_monitor_queimadas/pages/content/MainScreen.page.dart';
 import 'package:app_monitor_queimadas/pages/start/Login.page.dart';
-import 'package:app_monitor_queimadas/pages/content/Dashboard.page.dart';
+import 'package:app_monitor_queimadas/utils/AppColors.dart';
 import 'package:app_monitor_queimadas/utils/Constants.dart';
 import 'package:app_monitor_queimadas/widgets/DynamicWidgetOpacity.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class FirstPage extends StatefulWidget {
-  const FirstPage({Key? key}) : super(key: key);
+  const FirstPage({super.key});
 
   @override
   FirstPageState createState() => FirstPageState();
@@ -59,19 +60,17 @@ class FirstPageState extends State<FirstPage> with SingleTickerProviderStateMixi
                         width: 56,
                         height: 56,
                         child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            elevation: 8,
-                            padding: EdgeInsets.zero,
-                            backgroundColor: Colors.transparent,
-                            shadowColor: Colors.black,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(48)),
-                          ),
-                          child: const Center(
-                              //child: SvgPicture.asset("assets/icons/user.svg"),
-                              child: Icon(Icons.person)),
                           onPressed: () async {
                             await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage()));
                           },
+                          style: ButtonStyle(
+                              //foregroundColor: colorsStateText,
+                              padding: WidgetStateProperty.all<EdgeInsetsGeometry>(EdgeInsetsDirectional.zero),
+                              elevation: WidgetStateProperty.all<double>(0.0),
+                              overlayColor: WidgetStateProperty.resolveWith((states) => AppColors.accent),
+                              backgroundColor: WidgetStateProperty.all<Color>(Colors.white.withOpacity(0.5)),
+                              shape: WidgetStateProperty.all<OvalBorder>(const OvalBorder())),
+                          child: const Icon(Icons.person_outline),
                         )))),
             Expanded(
                 child: AnimatedBuilder(
@@ -142,7 +141,7 @@ class FirstPageState extends State<FirstPage> with SingleTickerProviderStateMixi
                                               ],
                                             ),
                                             onPressed: () async {
-                                              await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const DashboardPage()));
+                                              await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainScreenPage()));
                                             }))));
                           }),
                       const SizedBox(

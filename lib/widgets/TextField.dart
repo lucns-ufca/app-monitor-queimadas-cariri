@@ -1,5 +1,6 @@
 // @developed by @lucns
 
+import 'package:app_monitor_queimadas/utils/Constants.dart';
 import 'package:app_monitor_queimadas/utils/Utils.dart';
 import 'package:flutter/material.dart';
 import 'package:app_monitor_queimadas/utils/AppColors.dart';
@@ -12,12 +13,28 @@ class MyFieldText extends StatefulWidget {
   final String hintText;
   final TextInputAction action;
   final TextInputType inputType;
+  final TextAlignVertical? textAlignVertical;
   final List<TextInputFormatter>? inputFormatters;
   final TextCapitalization? textCapitalization;
   final bool isEnabled;
+  final Color textColor;
   final Function(String value)? onInput;
 
-  const MyFieldText({super.key, this.width, this.height, this.maximumLines, this.text, required this.hintText, required this.action, required this.inputType, this.isEnabled = true, this.textCapitalization, this.inputFormatters, this.onInput});
+  const MyFieldText(
+      {super.key,
+      this.width,
+      this.height,
+      this.textColor = Colors.white,
+      this.textAlignVertical,
+      this.maximumLines,
+      this.text,
+      required this.hintText,
+      required this.action,
+      required this.inputType,
+      this.isEnabled = true,
+      this.textCapitalization,
+      this.inputFormatters,
+      this.onInput});
 
   @override
   State<MyFieldText> createState() => _MyTextFieldState();
@@ -43,30 +60,30 @@ class _MyTextFieldState extends State<MyFieldText> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.text != null) {
+    if (widget.text != null && widget.text!.isNotEmpty) {
       myController.text = widget.text!;
     }
     const double fontSize = 18;
-    const double height = 36;
-    return Focus(
-        debugLabel: 'MyFieldText',
-        child: Builder(builder: (BuildContext context) {
-          final FocusNode focusNode = Focus.of(context);
-          final bool hasFocus = focusNode.hasFocus;
-          return SizedBox(
-              height: widget.height ?? height,
-              width: widget.width ?? double.maxFinite,
-              child: TextField(
+    const double height = Constants.DEFAULT_WIDGET_HEIGHT;
+    return SizedBox(
+        height: widget.height ?? height,
+        width: widget.width ?? double.maxFinite,
+        child: Focus(
+            debugLabel: 'MyFieldText',
+            child: Builder(builder: (BuildContext context) {
+              final FocusNode focusNode = Focus.of(context);
+              final bool hasFocus = focusNode.hasFocus;
+              return TextField(
                   onChanged: (text) {
                     if (widget.inputType == TextInputType.visiblePassword) {
                       setState(() {});
                     }
                     widget.onInput!(text);
                   },
-                  maxLines: widget.maximumLines,
-                  expands: true,
+                  maxLines: widget.maximumLines ?? 1,
+                  expands: widget.maximumLines != null && widget.maximumLines! > 1,
                   textAlign: TextAlign.start,
-                  textAlignVertical: TextAlignVertical.top,
+                  textAlignVertical: widget.textAlignVertical ?? TextAlignVertical.center,
                   enabled: widget.isEnabled,
                   inputFormatters: widget.inputFormatters,
                   controller: myController,
@@ -75,12 +92,12 @@ class _MyTextFieldState extends State<MyFieldText> {
                   keyboardType: widget.inputType,
                   obscureText: widget.inputType == TextInputType.visiblePassword && !showPassword,
                   cursorColor: AppColors.fieldTextCursor,
-                  style: TextStyle(color: widget.isEnabled ? AppColors.fieldTextText : AppColors.textDisabled, fontSize: fontSize),
+                  style: TextStyle(color: widget.isEnabled ? widget.textColor : widget.textColor.withOpacity(0.5), fontSize: fontSize),
                   decoration: InputDecoration(
                       suffixIcon: widget.inputType == TextInputType.visiblePassword
                           ? Container(
-                              width: 36,
-                              height: 36,
+                              width: height,
+                              height: height,
                               padding: const EdgeInsets.only(right: 8),
                               child: myController.text.isEmpty
                                   ? const SizedBox()
@@ -122,8 +139,8 @@ class _MyTextFieldState extends State<MyFieldText> {
                       filled: true,
                       hintStyle: TextStyle(color: widget.isEnabled ? AppColors.fieldTextHint : AppColors.textDisabled, fontSize: fontSize, fontWeight: FontWeight.w400),
                       hintText: widget.hintText,
-                      contentPadding: const EdgeInsets.all(16))));
-        }));
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16)));
+            })));
   }
 }
 

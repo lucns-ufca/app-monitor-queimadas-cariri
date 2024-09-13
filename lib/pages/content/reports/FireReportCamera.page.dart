@@ -95,7 +95,7 @@ class _CameraExampleHomeState extends State<FireReportCameraPage> with WidgetsBi
                       width: double.maxFinite,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.only(topLeft: Radius.circular(roundBorder), topRight: Radius.circular(roundBorder)),
-                        color: AppColors.appBackground,
+                        color: AppColors.fragmentBackground,
                         boxShadow: [
                           BoxShadow(color: Colors.black.withOpacity(0.3), spreadRadius: 4, blurRadius: 8),
                         ],

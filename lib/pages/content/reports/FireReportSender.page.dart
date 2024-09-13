@@ -195,7 +195,7 @@ class FireReportSenderPageState extends State<FireReportSenderPage> {
         child: Container(
           width: MediaQuery.of(context).size.width,
           height: double.maxFinite,
-          color: AppColors.appBackground,
+          color: AppColors.fragmentBackground,
           child: Column(
             mainAxisSize: MainAxisSize.max,
             children: [
@@ -234,6 +234,7 @@ class FireReportSenderPageState extends State<FireReportSenderPage> {
                         ),
                         const SizedBox(height: 20),
                         MyFieldText(
+                          textAlignVertical: TextAlignVertical.top,
                           isEnabled: !buttonsChanged,
                           height: 150,
                           hintText: "Escreva um relato aqui...",
@@ -270,7 +271,7 @@ class FireReportSenderPageState extends State<FireReportSenderPage> {
                               children: [
                                 Expanded(
                                     child: MyButton(
-                                  isNegative: true,
+                                  colorBackground: AppColors.accent,
                                   textButton: "Voltar",
                                   onClick: () => widget.callbackController.onPreviousStep(),
                                 )),

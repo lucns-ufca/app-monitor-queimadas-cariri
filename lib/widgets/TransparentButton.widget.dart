@@ -1,11 +1,12 @@
 import 'package:app_monitor_queimadas/utils/AppColors.dart';
+import 'package:app_monitor_queimadas/utils/Constants.dart';
 import 'package:flutter/material.dart';
 
 class TransparentButton extends StatelessWidget {
   final Function() onTap;
   final bool disabled;
   final String text;
-  final double height = 36;
+  final double height = Constants.DEFAULT_WIDGET_HEIGHT;
 
   const TransparentButton({super.key, required this.onTap, required this.text, this.disabled = false});
 

@@ -112,7 +112,6 @@ class Dialogs {
                   const SizedBox(height: 24),
                   Center(
                       child: MyButton(
-                          isNegative: true,
                           textButton: "OK",
                           onClick: () async {
                             await Future.delayed(const Duration(milliseconds: 150));

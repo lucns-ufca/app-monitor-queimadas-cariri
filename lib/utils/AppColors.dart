@@ -41,7 +41,7 @@ class AppColors {
   static const textDisabledSecondary = gray_4;
   static const buttonPositive = accent;
   static const buttonNegative = Color.fromARGB(41, 255, 255, 255);
-  static const buttonDisabled = Color.fromARGB(36, 255, 255, 255);
+  static const buttonDisabled = Color.fromARGB(103, 0, 0, 0);
   static const buttonNormal = buttonPositive;
 
   static const fieldTextFocusedBackground = Color.fromARGB(103, 0, 0, 0);

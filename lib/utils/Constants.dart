@@ -1,6 +1,7 @@
 class Constants {
   static const String APP_VERSION = "1.0";
   static const double DEFAULT_ROUND_BORDER = 56;
+  static const double DEFAULT_WIDGET_HEIGHT = 40;
   static const Map<String, String> CITIES_COORDINATES = {
     'Salitre': '-7.285748,-40.457514',
     'Campo Sales': '-7.075103,-40.372339',
