@@ -20,7 +20,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 //import 'package:get_it/get_it.dart';
 
 class NewAccountPage extends StatefulWidget {
-  const NewAccountPage({Key? key}) : super(key: key);
+  const NewAccountPage({super.key});
 
   @override
   NewAccountPageState createState() => NewAccountPageState();
@@ -28,7 +28,7 @@ class NewAccountPage extends StatefulWidget {
 
 class NewAccountPageState extends State<NewAccountPage> {
   var preferences = GetIt.I.get<SharedPreferences>();
-  String? textUsername, textUser, textPassword;
+  String? textName, textUser, textPassword;
 
   void showMenuWindow() {}
 
@@ -42,131 +42,127 @@ class NewAccountPageState extends State<NewAccountPage> {
   @override
   Widget build(BuildContext context) {
     final navigator = Navigator.of(context);
-    return PopScope(
-        canPop: false,
-        onPopInvoked: (deiPop) async {
-          await navigator.pushReplacement(MaterialPageRoute(builder: (context) => const LoginPage()));
-        },
-        child: Scaffold(
-          resizeToAvoidBottomInset: true,
-          backgroundColor: AppColors.appBackground,
-          body: Stack(
-            children: [
-              Container(
-                height: MediaQuery.of(context).size.height,
-                decoration: const BoxDecoration(
-                    image: DecorationImage(
-                  fit: BoxFit.fitWidth,
-                  alignment: FractionalOffset.topCenter,
-                  image: AssetImage("assets/images/araripe_church.jpg"),
-                )),
-                child: Column(mainAxisSize: MainAxisSize.min, children: [
-                  const SizedBox(height: 28),
-                  MyToolbar(
-                      title: "Nova Conta",
-                      onBackPressed: () async {
-                        await navigator.pushReplacement(MaterialPageRoute(builder: (context) => const LoginPage()));
-                      },
-                      onMenuPressed: () {
-                        showMenuWindow();
-                      })
-                ]),
-              ),
-              Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Container(
-                    height: 324,
-                    padding: const EdgeInsets.all(24.0),
-                    decoration: const BoxDecoration(
-                      color: AppColors.fragmentBackground,
-                      shape: BoxShape.rectangle,
-                      borderRadius: BorderRadius.only(topLeft: Radius.circular(Constants.DEFAULT_ROUND_BORDER), topRight: Radius.circular(Constants.DEFAULT_ROUND_BORDER)),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.shadow,
-                          spreadRadius: 4,
-                          blurRadius: 4,
-                          offset: Offset(0, 0),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      children: [
-                        const SizedBox(
-                          height: 16,
-                        ),
-                        const SizedBox(
-                            width: double.maxFinite,
-                            child: Padding(
-                              padding: EdgeInsets.only(left: 16),
-                              child: Text("Todos os campos são obrigatorios.", style: TextStyle(color: AppColors.red, fontSize: 14)),
-                            )),
-                        const SizedBox(height: 16),
-                        MyFieldText(
-                            hintText: "Nome",
-                            textCapitalization: TextCapitalization.words,
-                            action: TextInputAction.next,
-                            inputType: TextInputType.text,
-                            inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[a-zA-Z ]"))],
-                            onInput: (text) {
-                              setState(() {
-                                textUsername = text;
-                              });
-                            }),
-                        const SizedBox(
-                          height: 16,
-                        ),
-                        MyFieldText(
-                          hintText: "Usuário",
-                          action: TextInputAction.next,
-                          //inputFormatters: [CpfFormatter()],
-                          inputType: TextInputType.text,
-                          onInput: (text) {
-                            setState(() {
-                              textUser = text;
-                            });
-                          },
-                        ),
-                        const SizedBox(height: 16),
-                        MyFieldText(
-                          hintText: "Senha",
-                          action: TextInputAction.done,
-                          inputType: TextInputType.visiblePassword,
-                          onInput: (text) {
-                            setState(() {
-                              textPassword = text;
-                            });
-                          },
-                        ),
-                        const SizedBox(height: 20),
-                        MyButton(
-                            textButton: "Criar conta",
-                            onClick: textUsername == null || textUsername!.length < 4 || textUser == null || textUser!.length < 4 || textPassword == null || textPassword!.length < 4
-                                ? null
-                                : () async {
-                                    preferences.setString("user", textUser!);
-                                    FocusManager.instance.primaryFocus?.unfocus(); // hide keyboard
-
-                                    Dialogs dialogs = Dialogs(context);
-                                    dialogs.showIndeterminateDialog("Criando conta...");
-                                    //await Future.delayed(const Duration(seconds: 3));
-                                    ApiResponse response = await AuthRepository().createAccount(User(username: textUsername!, email: textUser!, password: textPassword!));
-                                    dialogs.dismiss();
-                                    Utils.vibrate();
-                                    if (response.isOk()) {
-                                      Notify.showToast("Conta criada.");
-                                      await navigator.pushReplacement(MaterialPageRoute(builder: (context) => const LoginPage()));
-                                      return;
-                                    }
-                                    Utils.showSnackbarError(context, response.message!);
-                                  }),
-                        const SizedBox(height: 20),
-                        //MyButton(textButton: "Testar", onClick: () => {newAccountBackend.checkUserExists()},),
-                      ],
-                    ),
-                  ))
-            ],
+    return Scaffold(
+      resizeToAvoidBottomInset: true,
+      backgroundColor: AppColors.appBackground,
+      body: Stack(
+        children: [
+          Container(
+            height: MediaQuery.of(context).size.height,
+            decoration: const BoxDecoration(
+                image: DecorationImage(
+              fit: BoxFit.fitWidth,
+              alignment: FractionalOffset.topCenter,
+              image: AssetImage("assets/images/araripe_church.jpg"),
+            )),
+            child: Column(mainAxisSize: MainAxisSize.min, children: [
+              const SizedBox(height: 28),
+              MyToolbar(
+                  title: "Nova Conta",
+                  onBackPressed: () async {
+                    await navigator.pushReplacement(MaterialPageRoute(builder: (context) => const LoginPage()));
+                  },
+                  onMenuPressed: () {
+                    showMenuWindow();
+                  })
+            ]),
           ),
-        ));
+          Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                height: 324,
+                padding: const EdgeInsets.all(24.0),
+                decoration: const BoxDecoration(
+                  color: AppColors.fragmentBackground,
+                  shape: BoxShape.rectangle,
+                  borderRadius: BorderRadius.only(topLeft: Radius.circular(Constants.DEFAULT_ROUND_BORDER), topRight: Radius.circular(Constants.DEFAULT_ROUND_BORDER)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.shadow,
+                      spreadRadius: 4,
+                      blurRadius: 4,
+                      offset: Offset(0, 0),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    const SizedBox(
+                      height: 16,
+                    ),
+                    const SizedBox(
+                        width: double.maxFinite,
+                        child: Padding(
+                          padding: EdgeInsets.only(left: 16),
+                          child: Text("Todos os campos são obrigatorios.", style: TextStyle(color: AppColors.red, fontSize: 14)),
+                        )),
+                    const SizedBox(height: 16),
+                    MyFieldText(
+                        hintText: "Nome",
+                        textCapitalization: TextCapitalization.words,
+                        action: TextInputAction.next,
+                        inputType: TextInputType.text,
+                        inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[a-zA-Z ]"))],
+                        onInput: (text) {
+                          setState(() {
+                            textName = text;
+                          });
+                        }),
+                    const SizedBox(
+                      height: 16,
+                    ),
+                    MyFieldText(
+                      hintText: "Usuário",
+                      action: TextInputAction.next,
+                      //inputFormatters: [CpfFormatter()],
+                      inputType: TextInputType.text,
+                      onInput: (text) {
+                        setState(() {
+                          textUser = text;
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    MyFieldText(
+                      hintText: "Senha",
+                      action: TextInputAction.done,
+                      inputType: TextInputType.visiblePassword,
+                      onInput: (text) {
+                        setState(() {
+                          textPassword = text;
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    MyButton(
+                        textButton: "Criar conta",
+                        onClick: textName == null || textName!.length < 4 || textUser == null || textUser!.length < 4 || textPassword == null || textPassword!.length < 4
+                            ? null
+                            : () async {
+                                preferences.setString("user", textUser!);
+                                FocusManager.instance.primaryFocus?.unfocus(); // hide keyboard
+
+                                Dialogs dialogs = Dialogs(context);
+                                dialogs.showIndeterminateDialog("Criando conta...");
+                                //await Future.delayed(const Duration(seconds: 3));
+                                ApiResponse response = await AuthRepository().createAccount(User(name: textName!, email: textUser!, password: textPassword!));
+                                dialogs.dismiss();
+                                Utils.vibrate();
+                                if (response.isOk()) {
+                                  Notify.showToast("Conta criada.");
+                                  Navigator.pop(context);
+                                  //await navigator.pushReplacement(MaterialPageRoute(builder: (context) => const LoginPage()));
+                                  return;
+                                }
+                                Utils.showSnackbarError(context, response.message!);
+                              }),
+                    const SizedBox(height: 20),
+                    //MyButton(textButton: "Testar", onClick: () => {newAccountBackend.checkUserExists()},),
+                  ],
+                ),
+              ))
+        ],
+      ),
+    );
   }
 }

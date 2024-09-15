@@ -33,7 +33,8 @@ class ForgottenPasswordPageState extends State<ForgottenPasswordPage> {
     return PopScope(
       canPop: false,
       onPopInvoked: (didPop) async {
-        await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage()));
+        Navigator.pop(context);
+        //await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage()));
       },
       child: Scaffold(
         resizeToAvoidBottomInset: false,

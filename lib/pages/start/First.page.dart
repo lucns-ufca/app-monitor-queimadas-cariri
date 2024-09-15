@@ -61,7 +61,9 @@ class FirstPageState extends State<FirstPage> with SingleTickerProviderStateMixi
                         height: 56,
                         child: ElevatedButton(
                           onPressed: () async {
-                            await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage()));
+                            await Future.delayed(const Duration(milliseconds: 300));
+                            await Navigator.of(context).push(MaterialPageRoute(builder: (context) => const LoginPage()));
+                            // await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage()));
                           },
                           style: ButtonStyle(
                               //foregroundColor: colorsStateText,
@@ -141,7 +143,8 @@ class FirstPageState extends State<FirstPage> with SingleTickerProviderStateMixi
                                               ],
                                             ),
                                             onPressed: () async {
-                                              await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainScreenPage()));
+                                              await Navigator.of(context).push(MaterialPageRoute(builder: (context) => MainScreenPage()));
+                                              //await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainScreenPage()));
                                             }))));
                           }),
                       const SizedBox(

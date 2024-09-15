@@ -3,30 +3,74 @@ import 'dart:convert';
 import 'package:app_monitor_queimadas/utils/Annotator.dart';
 
 class User {
-  String username;
+  String id;
+  String name;
   String email;
   String password;
-  String? refreshToken;
-  String? accessToken;
+  String accessToken;
+  String photoUrl;
+  DateTime? dateLogin;
+  UserType userType = UserType.NORMAL;
 
-  User({this.username = "", this.email = "", this.password = ""});
+  User({this.id = "", this.photoUrl = "", this.accessToken = "", this.name = "", this.email = "", this.password = ""});
 
   Future<void> loadData() async {
     Annotator a = Annotator("user.json");
     if (!a.exists()) return;
     String data = await a.getContent();
     Map<String, dynamic> map = jsonDecode(data);
-    username = map["user_name"] ?? "";
+    name = map["name"] ?? "";
     email = map["email"] ?? "";
-    refreshToken = map["refresh_token"];
     accessToken = map["access_token"];
+    accessToken = map["id"];
+    dateLogin = DateTime.parse(map["date_login"]);
+    int type = map["user_type"] ?? 0;
+    switch (type) {
+      case 0:
+        userType = UserType.NORMAL;
+        break;
+      case 1:
+        userType = UserType.ADMINISTRATOR;
+        break;
+      default:
+        userType = UserType.BANNED;
+        break;
+    }
   }
 
   Future<void> storeData() async {
-    await Annotator("user.json").setContent(json.encode({"user_name": username, "email": email, "access_token": accessToken!, "refresh_token": refreshToken!}));
+    int type = 0;
+    switch (userType) {
+      case UserType.NORMAL:
+        type = 1;
+        break;
+      case UserType.ADMINISTRATOR:
+        type = 2;
+        break;
+      default: // UserType.BANNED
+    }
+    dateLogin = DateTime.now().toLocal();
+    String content = json.encode({"user_type": type, "date_login": dateLogin!.toIso8601String(), "id": id, "name": name, "email": email, "access_token": accessToken, "photo_url": photoUrl});
+    await Annotator("user.json").setContent(content);
+  }
+
+  void setUSerType(int type) {
+    switch (type) {
+      case 0:
+        userType = UserType.NORMAL;
+        break;
+      case 1:
+        userType = UserType.ADMINISTRATOR;
+        break;
+      default:
+        userType = UserType.BANNED;
+        break;
+    }
   }
 
   bool hasAccess() {
-    return refreshToken != null && accessToken != null;
+    return accessToken.isNotEmpty;
   }
 }
+
+enum UserType { NORMAL, ADMINISTRATOR, BANNED }

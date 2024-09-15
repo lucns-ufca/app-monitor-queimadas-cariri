@@ -62,7 +62,7 @@ class TabHomePageState extends State<TabHomePage> {
           color: runColor ? AppColors.mainAreaBackground : AppColors.yellowSky,
           child: const Column(children: [SizedBox(height: 220), ImageTransitionScroller(duration: Duration(seconds: 10), assets: "assets/images/minimal_forest.png", width: 493, height: 220)])),
       Column(children: [
-        const SizedBox(height: 20),
+        const SizedBox(height: 16),
         Container(
             padding: const EdgeInsets.all(24),
             child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
@@ -74,10 +74,11 @@ class TabHomePageState extends State<TabHomePage> {
                   height: 56,
                   child: ElevatedButton(
                     onPressed: () async {
+                      await Future.delayed(const Duration(milliseconds: 300));
                       if (user.hasAccess()) {
                         // open profile page
                       } else {
-                        await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage()));
+                        await Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginPage()));
                       }
                     },
                     style: ButtonStyle(

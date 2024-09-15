@@ -49,7 +49,7 @@ class AppColors {
   static const fieldTextDisabledBackground = Color.fromARGB(85, 0, 0, 0);
   static const fieldTextCursor = white;
   static const fieldTextText = Color.fromARGB(131, 255, 255, 255);
-  static const fieldTextHint = Color.fromARGB(100, 255, 255, 255);
+  static const fieldTextHint = Color.fromARGB(171, 255, 255, 255);
   static const red = Color.fromARGB(255, 224, 54, 82);
   static const graphLines = Color.fromARGB(28, 255, 255, 255);
 }
