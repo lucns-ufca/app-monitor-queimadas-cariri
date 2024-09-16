@@ -1,11 +1,10 @@
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
-import 'package:app_monitor_queimadas/models/user.model.dart';
+import 'package:app_monitor_queimadas/models/User.model.dart';
 import 'package:app_monitor_queimadas/pages/content/reports/FireReportPages.page.dart';
-import 'package:app_monitor_queimadas/pages/content/tabs/TabHome.page.dart';
-import 'package:app_monitor_queimadas/pages/content/tabs/TabMap.page.dart';
-import 'package:app_monitor_queimadas/pages/content/tabs/TabNature.page.dart';
-import 'package:app_monitor_queimadas/pages/content/tabs/TabStatistics.page.dart';
-import 'package:app_monitor_queimadas/pages/start/First.page.dart';
+import 'package:app_monitor_queimadas/pages/content/tabs/Home.tab.dart';
+import 'package:app_monitor_queimadas/pages/content/tabs/Map.tab.dart';
+import 'package:app_monitor_queimadas/pages/content/tabs/Nature.tab.dart';
+import 'package:app_monitor_queimadas/pages/content/tabs/Statistics.tab.dart';
 import 'package:app_monitor_queimadas/utils/AppColors.dart';
 import 'package:app_monitor_queimadas/utils/PermissionData.dart';
 import 'package:flutter/material.dart';
@@ -23,41 +22,39 @@ class MainScreenPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PopScope(
-        canPop: false,
+        canPop: !user.hasAccess(),
         onPopInvoked: (didPop) async {
           if (user.hasAccess()) {
             SystemNavigator.pop();
           } else {
-            await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const FirstPage()));
+            //await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const FirstPage()));
           }
         },
-        child: AnnotatedRegion<SystemUiOverlayStyle>(
-            value: const SystemUiOverlayStyle(statusBarColor: Colors.transparent, systemNavigationBarColor: AppColors.fragmentBackground),
-            child: Scaffold(
-                extendBody: true,
-                backgroundColor: AppColors.appBackground,
-                body: PageView(physics: const NeverScrollableScrollPhysics(), controller: pageController, children: const [TabHomePage(), TabStatisticsPage(), TabMapPage(), TabNaturePage()]),
-                floatingActionButton: SizedBox(
-                    width: 56,
-                    height: 56,
-                    child: ElevatedButton(
-                        style: ButtonStyle(
-                            //foregroundColor: colorsStateText,
-                            padding: WidgetStateProperty.all<EdgeInsetsGeometry>(EdgeInsetsDirectional.zero),
-                            elevation: WidgetStateProperty.all<double>(4),
-                            overlayColor: WidgetStateProperty.resolveWith((states) => Colors.white.withOpacity(0.5)),
-                            backgroundColor: WidgetStateProperty.all<Color>(AppColors.accent),
-                            shape: WidgetStateProperty.all<OvalBorder>(const OvalBorder())),
-                        onPressed: () async {
-                          await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => FireReportPages(permissions: permissions)));
-                        },
-                        child: const Icon(Icons.local_fire_department))),
-                floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-                bottomNavigationBar: NavigationBar(
-                  onTabSelected: (index) {
-                    pageController.animateToPage(index, duration: const Duration(milliseconds: 300), curve: Curves.ease);
-                  },
-                ))));
+        child: Scaffold(
+            extendBody: true,
+            backgroundColor: AppColors.appBackground,
+            body: PageView(physics: const NeverScrollableScrollPhysics(), controller: pageController, children: const [TabHomePage(), TabStatisticsPage(), TabMapPage(), TabNaturePage()]),
+            floatingActionButton: SizedBox(
+                width: 56,
+                height: 56,
+                child: ElevatedButton(
+                    style: ButtonStyle(
+                        //foregroundColor: colorsStateText,
+                        padding: WidgetStateProperty.all<EdgeInsetsGeometry>(EdgeInsetsDirectional.zero),
+                        elevation: WidgetStateProperty.all<double>(4),
+                        overlayColor: WidgetStateProperty.resolveWith((states) => Colors.white.withOpacity(0.5)),
+                        backgroundColor: WidgetStateProperty.all<Color>(AppColors.accent),
+                        shape: WidgetStateProperty.all<OvalBorder>(const OvalBorder())),
+                    onPressed: () async {
+                      await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => FireReportPages(permissions: permissions)));
+                    },
+                    child: const Icon(Icons.local_fire_department))),
+            floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+            bottomNavigationBar: NavigationBar(
+              onTabSelected: (index) {
+                pageController.animateToPage(index, duration: const Duration(milliseconds: 300), curve: Curves.ease);
+              },
+            )));
   }
 }
 

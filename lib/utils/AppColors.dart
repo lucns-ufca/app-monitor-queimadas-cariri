@@ -52,4 +52,11 @@ class AppColors {
   static const fieldTextHint = Color.fromARGB(171, 255, 255, 255);
   static const red = Color.fromARGB(255, 224, 54, 82);
   static const graphLines = Color.fromARGB(28, 255, 255, 255);
+
+  static const List<Color> gradientSky = [
+    Color.fromARGB(255, 55, 255, 195),
+    Color.fromARGB(255, 55, 102, 255),
+    Color.fromARGB(255, 55, 102, 255),
+    Color.fromARGB(255, 55, 255, 195),
+  ];
 }

@@ -1,6 +1,5 @@
 // @Developed by @lucns
 
-import 'package:app_monitor_queimadas/pages/start/Login.page.dart';
 import 'package:app_monitor_queimadas/utils/Constants.dart';
 import 'package:flutter/material.dart';
 
@@ -29,7 +28,6 @@ class ForgottenPasswordPageState extends State<ForgottenPasswordPage> {
 
   @override
   Widget build(BuildContext context) {
-    final navigator = Navigator.of(context);
     return PopScope(
       canPop: false,
       onPopInvoked: (didPop) async {
@@ -54,7 +52,7 @@ class ForgottenPasswordPageState extends State<ForgottenPasswordPage> {
                 MyToolbar(
                     title: "Recuperação de Senha",
                     onBackPressed: () async {
-                      await navigator.pushReplacement(MaterialPageRoute(builder: (context) => const LoginPage()));
+                      //await navigator.pushReplacement(MaterialPageRoute(builder: (context) => const LoginPage()));
                     },
                     onMenuPressed: () {
                       showMenuWindow();

@@ -1,7 +1,7 @@
 // Developed by @lucns
 
 import 'package:app_monitor_queimadas/pages/content/MainScreen.page.dart';
-import 'package:app_monitor_queimadas/pages/start/Login.page.dart';
+import 'package:app_monitor_queimadas/pages/start/Acess.page.dart';
 import 'package:app_monitor_queimadas/utils/AppColors.dart';
 import 'package:app_monitor_queimadas/utils/Constants.dart';
 import 'package:app_monitor_queimadas/widgets/DynamicWidgetOpacity.widget.dart';
@@ -21,13 +21,16 @@ class FirstPageState extends State<FirstPage> with SingleTickerProviderStateMixi
 
   @override
   void initState() {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(systemNavigationBarColor: Colors.transparent, statusBarColor: Colors.transparent, statusBarIconBrightness: Brightness.light, systemNavigationBarIconBrightness: Brightness.light));
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [SystemUiOverlay.top]);
-
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      systemNavigationBarColor: Colors.transparent,
+      systemNavigationBarIconBrightness: Brightness.light,
+      statusBarIconBrightness: Brightness.light,
+    ));
     animationController = AnimationController(vsync: this, duration: const Duration(seconds: 10));
     animation = Tween(begin: 0.0, end: 1.0).chain(CurveTween(curve: Curves.fastEaseInToSlowEaseOut)).animate(animationController!);
     animationController!.forward();
-
     super.initState();
   }
 
@@ -40,6 +43,7 @@ class FirstPageState extends State<FirstPage> with SingleTickerProviderStateMixi
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      primary: false,
       body: Container(
         decoration: const BoxDecoration(
             image: DecorationImage(
@@ -62,7 +66,7 @@ class FirstPageState extends State<FirstPage> with SingleTickerProviderStateMixi
                         child: ElevatedButton(
                           onPressed: () async {
                             await Future.delayed(const Duration(milliseconds: 300));
-                            await Navigator.of(context).push(MaterialPageRoute(builder: (context) => const LoginPage()));
+                            await Navigator.of(context).push(MaterialPageRoute(builder: (context) => const AccessPage()));
                             // await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage()));
                           },
                           style: ButtonStyle(
@@ -150,7 +154,7 @@ class FirstPageState extends State<FirstPage> with SingleTickerProviderStateMixi
                       const SizedBox(
                         height: 64,
                       ),
-                      DynamicWidgetOpacity(opacityStart: 1, opacityEnd: 0.5, duration: const Duration(milliseconds: 2500), child: const Image(image: ResizeImage(AssetImage('assets/images/ufca_white.png'), width: 105, height: 33))),
+                      const DynamicOpacity(opacityStart: 1, opacityEnd: 0.5, duration: Duration(milliseconds: 2500), child: Image(image: AssetImage('assets/images/ufca_white.png'))),
                       const SizedBox(
                         height: 16,
                       ),

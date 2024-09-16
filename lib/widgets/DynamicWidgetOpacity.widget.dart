@@ -3,24 +3,18 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 
-class DynamicWidgetOpacity extends StatefulWidget {
+class DynamicOpacity extends StatefulWidget {
   final double opacityStart, opacityEnd;
   final Duration duration;
   final Widget child;
 
-  DynamicWidgetOpacity(
-      {Key? key,
-      required this.duration,
-      required this.opacityStart,
-      required this.opacityEnd,
-      required this.child})
-      : super(key: key);
+  const DynamicOpacity({super.key, required this.duration, required this.opacityStart, required this.opacityEnd, required this.child});
 
   @override
-  State<DynamicWidgetOpacity> createState() => _DynamicWidgetOpacityState();
+  State<DynamicOpacity> createState() => _DynamicWidgetOpacityState();
 }
 
-class _DynamicWidgetOpacityState extends State<DynamicWidgetOpacity> {
+class _DynamicWidgetOpacityState extends State<DynamicOpacity> {
   _DynamicWidgetOpacityState();
   Timer? timer;
   bool imageOpacityGo = true;

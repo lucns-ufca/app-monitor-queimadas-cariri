@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:app_monitor_queimadas/utils/Annotator.dart';
+import 'package:get_it/get_it.dart';
 
 class User {
   String id;
@@ -23,6 +24,7 @@ class User {
     email = map["email"] ?? "";
     accessToken = map["access_token"];
     accessToken = map["id"];
+    photoUrl = map["photo_url"];
     dateLogin = DateTime.parse(map["date_login"]);
     int type = map["user_type"] ?? 0;
     switch (type) {
@@ -50,6 +52,7 @@ class User {
       default: // UserType.BANNED
     }
     dateLogin = DateTime.now().toLocal();
+    GetIt.instance.registerLazySingleton<User>(() => this);
     String content = json.encode({"user_type": type, "date_login": dateLogin!.toIso8601String(), "id": id, "name": name, "email": email, "access_token": accessToken, "photo_url": photoUrl});
     await Annotator("user.json").setContent(content);
   }

@@ -1,7 +1,10 @@
 // @developes by @lucns
 
+import 'dart:convert';
+
 import 'package:app_monitor_queimadas/api/Api.dart';
-import 'package:app_monitor_queimadas/models/user.model.dart';
+import 'package:app_monitor_queimadas/models/User.model.dart';
+import 'package:app_monitor_queimadas/utils/Log.out.dart';
 import 'package:dio/dio.dart';
 
 class AuthRepository {
@@ -11,11 +14,13 @@ class AuthRepository {
 
   Future<ApiResponse> login(User user) async {
     try {
-      Response response = await api.post('auth/login', {"email": user.email, "password": user.password});
-      if (response.data["access_token"] == null) {
+      Response response = await api.post('users/login.php', {"email": user.email, "password": user.password});
+      if (response.data == null) {
         return ApiResponse(message: "Não foi possivel realizar o login nesse momento.");
       }
-      user.accessToken = response.data["access_token"];
+      Map<String, dynamic> map = jsonDecode(response.data);
+      user.accessToken = map["access_token"];
+      user.setUSerType(map["user_type"]);
       await user.storeData();
 
       return ApiResponse(code: ApiResponseCodes.OK);
@@ -37,12 +42,13 @@ class AuthRepository {
 
   Future<ApiResponse> createAccount(User user) async {
     try {
-      await api.post('admins', {"username": user.name, "email": user.email, "password": user.password});
+      await api.post('users/create_account.php', {"username": user.name, "email": user.email, "password": user.password});
       return ApiResponse(code: ApiResponseCodes.OK);
     } on DioException catch (e) {
       if (e.response == null) {
         return ApiResponse(message: "O servidor não respondeu. Prazo de espera estourado.", code: ApiResponseCodes.GATEWAY_TIMEOUT);
       } else if (e.response!.statusCode != null) {
+        Log.d("lucas", "code ${e.response!.statusCode}");
         String? message;
         if (e.response!.statusCode == ApiResponseCodes.CONFLIT) {
           message = "Este email já está cadastrado! Tente um diferente.";

@@ -1,8 +1,10 @@
 import 'dart:async';
 
-import 'package:app_monitor_queimadas/models/user.model.dart';
-import 'package:app_monitor_queimadas/pages/start/Login.page.dart';
+import 'package:app_monitor_queimadas/models/User.model.dart';
+import 'package:app_monitor_queimadas/pages/start/Acess.page.dart';
 import 'package:app_monitor_queimadas/utils/AppColors.dart';
+import 'package:app_monitor_queimadas/utils/Log.out.dart';
+import 'package:app_monitor_queimadas/widgets/ContainerGradient.widget.dart';
 import 'package:app_monitor_queimadas/widgets/ImageTransitionScroller.widget.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
@@ -30,6 +32,7 @@ class TabHomePageState extends State<TabHomePage> {
   @override
   void initState() {
     super.initState();
+    Log.d("Lucas", "url ${user.photoUrl}");
     SchedulerBinding.instance.addPostFrameCallback((_) async {
       await Future.delayed(const Duration(milliseconds: 300));
       Connectivity connectivity = Connectivity();
@@ -55,12 +58,10 @@ class TabHomePageState extends State<TabHomePage> {
   @override
   Widget build(BuildContext context) {
     return Stack(children: [
-      AnimatedContainer(
-          duration: const Duration(seconds: 10),
-          width: double.maxFinite,
-          height: 440,
-          color: runColor ? AppColors.mainAreaBackground : AppColors.yellowSky,
-          child: const Column(children: [SizedBox(height: 220), ImageTransitionScroller(duration: Duration(seconds: 10), assets: "assets/images/minimal_forest.png", width: 493, height: 220)])),
+      ContainerGradient(
+          colors: AppColors.gradientSky,
+          duration: const Duration(seconds: 30),
+          child: Column(children: [const SizedBox(height: 220), const ImageTransitionScroller(duration: Duration(seconds: 10), assets: "assets/images/minimal_forest.png", width: 493, height: 220), Expanded(child: Container(color: AppColors.appBackground))])),
       Column(children: [
         const SizedBox(height: 16),
         Container(
@@ -78,7 +79,7 @@ class TabHomePageState extends State<TabHomePage> {
                       if (user.hasAccess()) {
                         // open profile page
                       } else {
-                        await Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginPage()));
+                        await Navigator.push(context, MaterialPageRoute(builder: (context) => const AccessPage()));
                       }
                     },
                     style: ButtonStyle(

@@ -5,11 +5,11 @@ import 'dart:io';
 
 import 'package:app_monitor_queimadas/api/Api.dart';
 import 'package:app_monitor_queimadas/models/Prediction.model.dart';
-import 'package:app_monitor_queimadas/models/user.model.dart';
+import 'package:app_monitor_queimadas/models/User.model.dart';
 import 'package:app_monitor_queimadas/pages/content/AboutProject.page.dart';
 import 'package:app_monitor_queimadas/pages/content/reports/FireReportPages.page.dart';
+import 'package:app_monitor_queimadas/pages/start/Acess.page.dart';
 import 'package:app_monitor_queimadas/pages/start/First.page.dart';
-import 'package:app_monitor_queimadas/pages/start/Login.page.dart';
 import 'package:app_monitor_queimadas/pages/dialogs/PopupMenu.dart';
 import 'package:app_monitor_queimadas/repositories/App.repository.dart';
 import 'package:app_monitor_queimadas/utils/Constants.dart';
@@ -90,7 +90,7 @@ class DashboardPageState extends State<DashboardPage> {
     popupMenu.showMenu(items, (index) async {
       switch (items[index].text) {
         case "Login":
-          await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage()));
+          await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const AccessPage()));
           break;
         case "Sobre o Projeto":
           await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const AboutPage()));

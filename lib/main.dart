@@ -2,17 +2,25 @@
 
 import 'dart:io';
 
-import 'package:app_monitor_queimadas/models/user.model.dart';
+import 'package:app_monitor_queimadas/models/User.model.dart';
 import 'package:app_monitor_queimadas/pages/content/MainScreen.page.dart';
 import 'package:app_monitor_queimadas/pages/start/First.page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:app_monitor_queimadas/utils/AppColors.dart';
+import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent,
+    systemNavigationBarColor: Colors.transparent,
+    systemNavigationBarIconBrightness: Brightness.light,
+    statusBarIconBrightness: Brightness.light,
+  ));
+
   runApp(const SplashScreen());
 
   SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
@@ -32,15 +40,12 @@ void main() async {
 class MyApp extends StatelessWidget {
   final User user;
 
-  MyApp(this.user, {super.key});
+  const MyApp(this.user, {super.key});
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(
-        const SystemUiOverlayStyle(statusBarColor: AppColors.fragmentBackground, systemNavigationBarColor: AppColors.fragmentBackground, statusBarIconBrightness: Brightness.light, systemNavigationBarIconBrightness: Brightness.light));
-
     return MaterialApp(
-        color: Colors.black,
+        color: AppColors.appBackground,
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(primary: Colors.white, seedColor: AppColors.accent),
