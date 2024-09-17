@@ -25,16 +25,16 @@ class PopupWindow {
         return Align(
             alignment: position ?? Alignment.center,
             child: Container(
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 color: AppColors.menuBackground,
                 shape: BoxShape.rectangle,
-                borderRadius: BorderRadius.all(Radius.circular(24)),
+                borderRadius: const BorderRadius.all(Radius.circular(24)),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.shadow,
-                    spreadRadius: 4,
-                    blurRadius: 4,
-                    offset: Offset(0, 0),
+                    color: AppColors.shadow.withOpacity(0.25),
+                    spreadRadius: 2,
+                    blurRadius: 2,
+                    offset: const Offset(0, -2),
                   ),
                 ],
               ),

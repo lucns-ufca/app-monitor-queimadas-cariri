@@ -1,18 +1,20 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'PredictionData.model.dart';
+part of 'PredictionMonthly.model.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-PredictionData _$PredictionDataFromJson(Map<String, dynamic> json) =>
-    PredictionData(
+PredictionMonthlyModel _$PredictionMonthlyModelFromJson(
+        Map<String, dynamic> json) =>
+    PredictionMonthlyModel(
       fireOccurrences: (json['fireOccurrences'] as num?)?.toInt(),
       firesPredicted: (json['firesPredicted'] as num?)?.toInt(),
     );
 
-Map<String, dynamic> _$PredictionDataToJson(PredictionData instance) =>
+Map<String, dynamic> _$PredictionMonthlyModelToJson(
+        PredictionMonthlyModel instance) =>
     <String, dynamic>{
       'fireOccurrences': instance.fireOccurrences,
       'firesPredicted': instance.firesPredicted,

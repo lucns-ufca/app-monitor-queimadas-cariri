@@ -89,6 +89,19 @@ class User {
     if (response.statusCode! > 199 && response.statusCode! < 300) return image;
     return null;
   }
+
+  Future<void> clear() async {
+    Directory directory = await getApplicationDocumentsDirectory();
+    File("${directory.path}/profile_picture.jpg").delete();
+    await Annotator("user.json").delete();
+    id = "";
+    photoUrl = "";
+    accessToken = "";
+    name = "";
+    email = "";
+    password = "";
+    GetIt.instance.registerLazySingleton<User>(() => this);
+  }
 }
 
 enum UserType { NORMAL, ADMINISTRATOR, BANNED }

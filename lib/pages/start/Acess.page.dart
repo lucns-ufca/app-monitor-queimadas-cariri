@@ -106,21 +106,18 @@ class LoginFormState extends State<LoginForm> {
                     ]))))
       ]),
       Column(mainAxisSize: MainAxisSize.min, children: [
-        ExpandablePageView(
-            // physics: const NeverScrollableScrollPhysics(),
-            pageController: pageController,
-            children: [
-              LoginTab(scrollToNewAccount: () {
-                pageController.animateToPage(1, duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
-              }),
-              NewAccountTab(scrollToLogin: (email) {
-                setState(() {
-                  textUser = email;
-                });
-                pageController.animateToPage(0, duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
-              }),
-              //Container(height: 300, color: Colors.green),
-            ]),
+        ExpandablePageView(physics: const NeverScrollableScrollPhysics(), pageController: pageController, children: [
+          LoginTab(scrollToNewAccount: () {
+            pageController.animateToPage(1, duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
+          }),
+          NewAccountTab(scrollToLogin: (email) {
+            setState(() {
+              textUser = email;
+            });
+            pageController.animateToPage(0, duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
+          }),
+          //Container(height: 300, color: Colors.green),
+        ]),
         const SizedBox(height: 8),
         Divider(height: 1, indent: 24, endIndent: 24, color: Colors.white.withOpacity(0.5), thickness: 1),
         const SizedBox(height: 36),

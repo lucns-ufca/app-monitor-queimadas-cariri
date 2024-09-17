@@ -2,7 +2,11 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:app_monitor_queimadas/models/User.model.dart';
+import 'package:app_monitor_queimadas/pages/content/AboutProject.page.dart';
+import 'package:app_monitor_queimadas/pages/dialogs/PopupMenu.dart';
 import 'package:app_monitor_queimadas/pages/start/Acess.page.dart';
+import 'package:app_monitor_queimadas/pages/start/First.page.dart';
+import 'package:app_monitor_queimadas/repositories/App.repository.dart';
 import 'package:app_monitor_queimadas/utils/AppColors.dart';
 import 'package:app_monitor_queimadas/widgets/ContainerGradient.widget.dart';
 import 'package:app_monitor_queimadas/widgets/ImageTransitionScroller.widget.dart';
@@ -21,6 +25,7 @@ class TabHomePage extends StatefulWidget {
 
 class TabHomePageState extends State<TabHomePage> {
   final user = GetIt.I.get<User>();
+  final appRepository = GetIt.I.get<AppRepository>();
   bool runColor = false;
   bool loadingTop = true;
   bool loadingBottom = true;
@@ -31,12 +36,31 @@ class TabHomePageState extends State<TabHomePage> {
   Future<File?>? imageProfile;
 
   void profileClick() async {
-    await Future.delayed(const Duration(milliseconds: 300));
     if (user.hasAccess()) {
-      // open profile page
+      showMenuWindow();
     } else {
+      await Future.delayed(const Duration(milliseconds: 300));
       await Navigator.push(context, MaterialPageRoute(builder: (context) => const AccessPage()));
     }
+  }
+
+  void showMenuWindow() {
+    PopupMenu popupMenu = PopupMenu(context: context);
+    List<String> titles = [if (!user.hasAccess()) "Login", if (user.hasAccess()) "Validação de queimadas", "Sobre o Projeto", if (user.hasAccess()) "Logout"];
+    var items = popupMenu.generateIds(titles);
+    popupMenu.showMenu(items, (index) async {
+      switch (items[index].text) {
+        case "Login":
+          await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const AccessPage()));
+          break;
+        case "Sobre o Projeto":
+          await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const AboutPage()));
+        case "Logout":
+          user.clear();
+          await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const FirstPage()));
+          break;
+      }
+    });
   }
 
   @override

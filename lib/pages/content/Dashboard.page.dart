@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:app_monitor_queimadas/api/Api.dart';
-import 'package:app_monitor_queimadas/models/Prediction.model.dart';
+import 'package:app_monitor_queimadas/models/PredictionCity.model.dart';
 import 'package:app_monitor_queimadas/models/User.model.dart';
 import 'package:app_monitor_queimadas/pages/content/AboutProject.page.dart';
 import 'package:app_monitor_queimadas/pages/content/reports/FireReportPages.page.dart';
@@ -47,7 +47,7 @@ class DashboardPageState extends State<DashboardPage> {
   bool updatingPrediction = false;
   Timeregister timeRegisterPredictionTotal = const Timeregister("prediction_total");
   AppRepository appRepository = AppRepository();
-  Prediction? prediction;
+  PredictionCityModel? prediction;
 
   Future<void> requestPredictionValues() async {
     Log.d("Lucas", "requestPredictionValues");
@@ -58,7 +58,7 @@ class DashboardPageState extends State<DashboardPage> {
     }
     ApiResponse response = await appRepository.getPredictionValues();
     if (response.code == 200) {
-      prediction = Prediction.fromJson(jsonDecode(response.data));
+      prediction = PredictionCityModel.fromJson(jsonDecode(response.data));
       final Directory directory = await getApplicationDocumentsDirectory();
       final File file = File("${directory.path}/${prediction!.city}}");
       await file.writeAsString(response.data);
