@@ -1,7 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:app_monitor_queimadas/api/Api.dart';
 import 'package:app_monitor_queimadas/utils/Annotator.dart';
+import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
+import 'package:path_provider/path_provider.dart';
 
 class User {
   String id;
@@ -17,7 +21,7 @@ class User {
 
   Future<void> loadData() async {
     Annotator a = Annotator("user.json");
-    if (!a.exists()) return;
+    if (!await a.exists()) return;
     String data = await a.getContent();
     Map<String, dynamic> map = jsonDecode(data);
     name = map["name"] ?? "";
@@ -73,6 +77,17 @@ class User {
 
   bool hasAccess() {
     return accessToken.isNotEmpty;
+  }
+
+  Future<File?> getProfileImage() async {
+    if (photoUrl.isEmpty) return null;
+    Directory directory = await getApplicationDocumentsDirectory();
+    File image = File("${directory.path}/profile_picture.jpg");
+    if (await image.exists() && await image.length() > 0) return image;
+    Response? response = await ControllerApi().download(photoUrl, image);
+    if (response.statusCode == null) return null;
+    if (response.statusCode! > 199 && response.statusCode! < 300) return image;
+    return null;
   }
 }
 

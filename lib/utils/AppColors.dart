@@ -53,10 +53,5 @@ class AppColors {
   static const red = Color.fromARGB(255, 224, 54, 82);
   static const graphLines = Color.fromARGB(28, 255, 255, 255);
 
-  static const List<Color> gradientSky = [
-    Color.fromARGB(255, 55, 255, 195),
-    Color.fromARGB(255, 55, 102, 255),
-    Color.fromARGB(255, 55, 102, 255),
-    Color.fromARGB(255, 55, 255, 195),
-  ];
+  static const List<Color> gradientSky = [Color.fromARGB(255, 42, 212, 161), Color.fromARGB(255, 56, 94, 218), Color.fromARGB(255, 56, 94, 218), Color.fromARGB(255, 42, 212, 161)];
 }

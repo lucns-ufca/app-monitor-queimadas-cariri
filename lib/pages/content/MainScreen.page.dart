@@ -71,6 +71,18 @@ class NavigationBarState extends State<NavigationBar> {
   int tabIndex = 0;
 
   @override
+  void initState() {
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      systemNavigationBarColor: Colors.transparent,
+      systemNavigationBarIconBrightness: Brightness.light,
+      statusBarIconBrightness: Brightness.light,
+    ));
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return AnimatedBottomNavigationBar.builder(
       splashColor: Colors.transparent,

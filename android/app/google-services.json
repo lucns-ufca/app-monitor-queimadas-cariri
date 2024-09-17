@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "552777543697",
+    "project_id": "monitorqueimadas",
+    "storage_bucket": "monitorqueimadas.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:552777543697:android:3f8589485c1a4e344cc1b0",
+        "android_client_info": {
+          "package_name": "com.example.app_monitor_queimadas"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "552777543697-qr3bnnv4181j1sqf35h93gkr1poabglg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDJHLd-PYytZ7ssBL74i3PrxdRdKBdbyOI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "552777543697-qr3bnnv4181j1sqf35h93gkr1poabglg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

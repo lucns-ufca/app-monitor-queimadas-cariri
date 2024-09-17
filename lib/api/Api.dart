@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 
@@ -67,6 +69,19 @@ class ApiResponseCodes {
 class ControllerApi {
   final api = Api(Dio());
   bool recursible = false;
+
+  Future<Response> download(String url, File file) async {
+    try {
+      Response response = await api.dio.get(url, options: Options(responseType: ResponseType.bytes, followRedirects: false));
+      RandomAccessFile randomAccessFile = await file.open(mode: FileMode.write);
+      List<int> imageBytes = response.data as List<int>;
+      await randomAccessFile.writeFrom(imageBytes, 0, imageBytes.length);
+      await randomAccessFile.close();
+      return response;
+    } on DioException {
+      rethrow;
+    }
+  }
 
   Future<Response> get(String urlPath, {Map<String, dynamic>? parameters}) async {
     try {

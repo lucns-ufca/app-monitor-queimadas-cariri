@@ -1,18 +1,17 @@
 // Developed vy @lucns
 
 import 'dart:io';
-
-import 'package:get_it/get_it.dart';
+import 'package:path_provider/path_provider.dart';
 
 class Annotator {
   final String defaultFile;
   String? relativePath;
-  Directory directory = GetIt.I.get<Directory>();
 
   Annotator(this.relativePath) : defaultFile = "data.txt";
 
-  bool exists() {
-    return File("${directory.path}/${relativePath ?? defaultFile}").existsSync();
+  Future<bool> exists() async {
+    Directory directory = await getApplicationDocumentsDirectory();
+    return await File("${directory.path}/${relativePath ?? defaultFile}").exists();
   }
 
   void setRelativePath(String relativePath) {
@@ -20,22 +19,25 @@ class Annotator {
   }
 
   Future<void> delete() async {
+    Directory directory = await getApplicationDocumentsDirectory();
     await File("${directory.path}/${relativePath ?? defaultFile}").delete();
   }
 
   Future<void> setContent(String text) async {
+    Directory directory = await getApplicationDocumentsDirectory();
     final File file = File("${directory.path}/${relativePath ?? defaultFile}");
     await file.writeAsString(text);
   }
 
   Future<String> getContent() async {
-    if (exists()) {
-      return await File(getPath()).readAsString();
+    if (await exists()) {
+      return await File(await getPath()).readAsString();
     }
     return "";
   }
 
-  String getPath() {
+  Future<String> getPath() async {
+    Directory directory = await getApplicationDocumentsDirectory();
     return "${directory.path}/${relativePath ?? defaultFile}";
   }
 }

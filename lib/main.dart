@@ -1,35 +1,21 @@
 // Developed by @lucns
 
-import 'dart:io';
-
 import 'package:app_monitor_queimadas/models/User.model.dart';
 import 'package:app_monitor_queimadas/pages/content/MainScreen.page.dart';
 import 'package:app_monitor_queimadas/pages/start/First.page.dart';
 import 'package:flutter/material.dart';
 import 'package:app_monitor_queimadas/utils/AppColors.dart';
-import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-    statusBarColor: Colors.transparent,
-    systemNavigationBarColor: Colors.transparent,
-    systemNavigationBarIconBrightness: Brightness.light,
-    statusBarIconBrightness: Brightness.light,
-  ));
-
   runApp(const SplashScreen());
 
   SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-  Directory directory = await getApplicationDocumentsDirectory();
 
   GetIt sl = GetIt.instance;
   sl.allowReassignment = true;
   sl.registerLazySingleton<SharedPreferences>(() => sharedPreferences);
-  sl.registerLazySingleton<Directory>(() => directory);
   User user = User();
   await user.loadData();
   sl.registerLazySingleton<User>(() => user);

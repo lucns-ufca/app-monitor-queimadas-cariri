@@ -1,9 +1,9 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:app_monitor_queimadas/models/User.model.dart';
 import 'package:app_monitor_queimadas/pages/start/Acess.page.dart';
 import 'package:app_monitor_queimadas/utils/AppColors.dart';
-import 'package:app_monitor_queimadas/utils/Log.out.dart';
 import 'package:app_monitor_queimadas/widgets/ContainerGradient.widget.dart';
 import 'package:app_monitor_queimadas/widgets/ImageTransitionScroller.widget.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -28,11 +28,20 @@ class TabHomePageState extends State<TabHomePage> {
   List<String> listNews = [];
   List<String> listCities = [];
   StreamSubscription<List<ConnectivityResult>>? subscription;
+  Future<File?>? imageProfile;
+
+  void profileClick() async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    if (user.hasAccess()) {
+      // open profile page
+    } else {
+      await Navigator.push(context, MaterialPageRoute(builder: (context) => const AccessPage()));
+    }
+  }
 
   @override
   void initState() {
-    super.initState();
-    Log.d("Lucas", "url ${user.photoUrl}");
+    imageProfile = user.getProfileImage();
     SchedulerBinding.instance.addPostFrameCallback((_) async {
       await Future.delayed(const Duration(milliseconds: 300));
       Connectivity connectivity = Connectivity();
@@ -47,6 +56,7 @@ class TabHomePageState extends State<TabHomePage> {
         });
       });
     });
+    super.initState();
   }
 
   @override
@@ -70,27 +80,31 @@ class TabHomePageState extends State<TabHomePage> {
               const Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [Text("Monitor", style: TextStyle(color: Colors.white, fontSize: 48, fontFamily: 'MontBlancLight')), Text("de Queimadas Cariri", style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold))]),
-              SizedBox(
-                  width: 56,
-                  height: 56,
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      await Future.delayed(const Duration(milliseconds: 300));
-                      if (user.hasAccess()) {
-                        // open profile page
-                      } else {
-                        await Navigator.push(context, MaterialPageRoute(builder: (context) => const AccessPage()));
+              FutureBuilder(
+                  future: imageProfile,
+                  builder: (context, result) {
+                    if (result.connectionState == ConnectionState.done) {
+                      if (result.data == null) {
+                        return getProfileButton();
                       }
-                    },
-                    style: ButtonStyle(
-                        //foregroundColor: colorsStateText,
-                        padding: WidgetStateProperty.all<EdgeInsetsGeometry>(EdgeInsetsDirectional.zero),
-                        elevation: WidgetStateProperty.all<double>(0.0),
-                        overlayColor: WidgetStateProperty.resolveWith((states) => AppColors.accent),
-                        backgroundColor: WidgetStateProperty.all<Color>(Colors.white.withOpacity(0.5)),
-                        shape: WidgetStateProperty.all<OvalBorder>(const OvalBorder())),
-                    child: const Icon(Icons.person_outline),
-                  ))
+                      return SizedBox(
+                          width: 56,
+                          height: 56,
+                          child: ClipRRect(
+                              borderRadius: BorderRadius.circular(38),
+                              child: Stack(children: [
+                                Image(image: FileImage(result.data as File), width: 56, height: 56),
+                                Positioned.fill(
+                                    child: Material(
+                                        color: Colors.transparent,
+                                        child: InkWell(
+                                          splashColor: Colors.white.withOpacity(0.5),
+                                          onTap: () => profileClick(),
+                                        )))
+                              ])));
+                    }
+                    return getProfileButton(loading: true);
+                  }),
             ])),
         Expanded(child: Padding(padding: const EdgeInsets.symmetric(horizontal: 24), child: getMainContent())),
         const SizedBox(height: 72)
@@ -132,6 +146,23 @@ class TabHomePageState extends State<TabHomePage> {
       // listCities.isNotEmpty
       return Column(children: [SizedBox(height: 220, child: _getCenteredloading("Carregando noticias...")), const SizedBox(height: 16), _getBottomContent()]);
     }
+  }
+
+  Widget getProfileButton({bool loading = false}) {
+    return SizedBox(
+        width: 56,
+        height: 56,
+        child: ElevatedButton(
+          onPressed: () => profileClick(),
+          style: ButtonStyle(
+              //foregroundColor: colorsStateText,
+              padding: WidgetStateProperty.all<EdgeInsetsGeometry>(EdgeInsetsDirectional.zero),
+              elevation: WidgetStateProperty.all<double>(0.0),
+              overlayColor: WidgetStateProperty.resolveWith((states) => AppColors.accent),
+              backgroundColor: WidgetStateProperty.all<Color>(Colors.white.withOpacity(0.5)),
+              shape: WidgetStateProperty.all<OvalBorder>(const OvalBorder())),
+          child: loading ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.accent)) : const Icon(Icons.person_outline),
+        ));
   }
 
   Widget _getTopContent() {
