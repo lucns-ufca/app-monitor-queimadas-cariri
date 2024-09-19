@@ -15,74 +15,83 @@ import 'package:path_provider/path_provider.dart';
 
 class AppRepository {
   final ControllerApi api = ControllerApi();
-  List<PredictionCityModel>? predictionCities;
-  List<WeatherCityModel>? weatherCities;
-  List<ProbabilityCityModel>? probabilitiesCities;
+  void Function()? onUpdateConcluded;
 
-  AppRepository({this.predictionCities, this.probabilitiesCities, this.weatherCities});
+  List<PredictionCityModel> predictionCities = [];
+  List<WeatherCityModel> weatherCities = [];
+  List<ProbabilityCityModel> probabilitiesCities = [];
 
-  List<PredictionCityModel>? get getPredictionCities => predictionCities;
-  List<WeatherCityModel>? get getWeatherCities => weatherCities;
-  List<ProbabilityCityModel>? get getProbabilityCities => probabilitiesCities;
+  AppRepository();
+
+  List<PredictionCityModel> get getPredictionCities => predictionCities;
+  List<WeatherCityModel> get getWeatherCities => weatherCities;
+  List<ProbabilityCityModel> get getProbabilityCities => probabilitiesCities;
+
+  void setOnUpdateConcluded(void Function()? onUpdateConcluded) {
+    this.onUpdateConcluded = onUpdateConcluded;
+  }
 
   Future<void> addToPredictionCities(String path) async {
     File file = File(path);
     if (!await file.exists()) return;
     String jsonString = await file.readAsString();
     PredictionCityModel model = PredictionCityModel.fromJson(jsonDecode(jsonString));
-    predictionCities!.add(model);
+    predictionCities.add(model);
   }
 
   Future<void> addToWeatherCities(String path) async {
     File file = File(path);
     if (!await file.exists()) return;
     String jsonString = await file.readAsString();
-    WeatherCityModel model = WeatherCityModel.fromJson(jsonDecode(jsonString));
-    weatherCities!.add(model);
+    List<dynamic> jsonArray = jsonDecode(jsonString);
+    weatherCities.clear();
+    for (dynamic json in jsonArray) {
+      weatherCities.add(WeatherCityModel.fromJson(json));
+    }
   }
 
   Future<void> addToProbabilitiesCities(String path) async {
     File file = File(path);
     if (!await file.exists()) return;
     String jsonString = await file.readAsString();
-    ProbabilityCityModel model = ProbabilityCityModel.fromJson(jsonDecode(jsonString));
-    probabilitiesCities!.add(model);
+    List<dynamic> jsonArray = jsonDecode(jsonString);
+    probabilitiesCities.clear();
+    for (dynamic json in jsonArray) {
+      probabilitiesCities.add(ProbabilityCityModel.fromJson(json));
+    }
   }
 
   Future<void> updateLocal() async {
     Directory directory = await getApplicationDocumentsDirectory();
-    if (predictionCities == null) {
-      for (String cityName in Constants.CITIES_COORDINATES.keys) {
-        String cityWithoutAccents = Utils.removeDiacritics(cityName);
-        await addToPredictionCities("${directory.path}/data/prediction/$cityWithoutAccents.json");
-        await addToWeatherCities("${directory.path}/data/weather/$cityWithoutAccents.json");
-        await addToProbabilitiesCities("${directory.path}/data/probabilities/$cityWithoutAccents.json");
-      }
-      await addToPredictionCities("${directory.path}/data/prediction/Chapada do Araripe.json");
-      await addToWeatherCities("${directory.path}/data/weather/Chapada do Araripe.json");
-      await addToProbabilitiesCities("${directory.path}/data/probabilities/Chapada do Araripe.json");
+    predictionCities.clear();
+    for (String cityName in Constants.CITIES_COORDINATES.keys) {
+      String cityWithoutAccents = Utils.removeDiacritics(cityName);
+      await addToPredictionCities("${directory.path}/data/prediction/$cityWithoutAccents.json");
     }
+    await addToPredictionCities("${directory.path}/data/prediction/Chapada do Araripe.json");
+    await addToWeatherCities("${directory.path}/data/weather/WeatherData.json");
+    await addToProbabilitiesCities("${directory.path}/data/weather/ProbabilityData.json");
   }
 
-  Future<bool> allowUpdatePrediction() async {
-    if (predictionCities == null) return true;
-    DateTime old = DateTime.parse(predictionCities![0].dateTime!).toLocal();
+  bool allowUpdatePrediction() {
+    if (predictionCities.isEmpty) return true;
+    DateTime old = DateTime.parse(predictionCities[0].dateTime!).toLocal();
     DateTime today = DateTime.now().toLocal();
     if (today.difference(old).inMinutes > 70) return true;
     return false;
   }
 
-  Future<bool> allowUpdateWeather() async {
-    if (weatherCities == null) return true;
-    DateTime old = DateTime.parse(weatherCities![0].dateTime!).toLocal();
+  bool allowUpdateWeather() {
+    if (weatherCities.isEmpty) return true;
+    DateTime old = DateTime.parse(weatherCities[0].dateTime!).toLocal();
     DateTime today = DateTime.now().toLocal();
     if (today.difference(old).inMinutes > 20) return true;
     return false;
   }
 
-  Future<bool> allowUpdateProbability() async {
-    if (probabilitiesCities == null) return true;
-    DateTime old = DateTime.parse(probabilitiesCities![0].probabilities![0].dateTime!).toLocal();
+  bool allowUpdateProbability() {
+    if (probabilitiesCities.isEmpty) return true;
+    DateTime old = DateTime.parse(probabilitiesCities[0].probabilities![0].dateTime!).toLocal();
     DateTime today = DateTime.now().toLocal();
     if (today.difference(old).inDays > 0) return true;
     return false;

@@ -12,6 +12,8 @@ class ProbabilityModel {
   double? temperature;
   @JsonKey(name: 'humidity')
   int? humidity;
+  @JsonKey(name: 'precipitation')
+  double? precipitation;
   @JsonKey(name: 'uv_index')
   int? uvIndex;
   @JsonKey(name: 'probability')

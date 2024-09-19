@@ -14,7 +14,7 @@ ProbabilityModel _$ProbabilityModelFromJson(Map<String, dynamic> json) =>
       humidity: (json['humidity'] as num?)?.toInt(),
       uvIndex: (json['uv_index'] as num?)?.toInt(),
       probability: (json['probability'] as num?)?.toInt(),
-    );
+    )..precipitation = (json['precipitation'] as num?)?.toDouble();
 
 Map<String, dynamic> _$ProbabilityModelToJson(ProbabilityModel instance) =>
     <String, dynamic>{
@@ -22,6 +22,7 @@ Map<String, dynamic> _$ProbabilityModelToJson(ProbabilityModel instance) =>
       'date_time': instance.dateTime,
       'temperature': instance.temperature,
       'humidity': instance.humidity,
+      'precipitation': instance.precipitation,
       'uv_index': instance.uvIndex,
       'probability': instance.probability,
     };

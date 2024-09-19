@@ -89,6 +89,9 @@ flutter:
   - family: MontBlancLight
     fonts:
       - asset: assets/fonts/MontBlancLight.otf
+  - family: RobotoCondensedLight
+    fonts:
+      - asset: assets/fonts/RobotoCondensedLight.ttf
       
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

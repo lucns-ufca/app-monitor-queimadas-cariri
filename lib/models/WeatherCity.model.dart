@@ -4,19 +4,13 @@ part 'WeatherCity.model.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class WeatherCityModel {
-  @JsonKey(name: 'timestamp')
   int? timestamp;
-  @JsonKey(name: 'dateTime')
+  @JsonKey(name: 'date_time')
   String? dateTime;
-  @JsonKey(name: 'city')
   String? city;
-  @JsonKey(name: 'temperature')
   double? temperature;
-  @JsonKey(name: 'humidity')
   int? humidity;
-  @JsonKey(name: 'precipitation')
   double? precipitation;
-  @JsonKey(name: 'cloud')
   int? cloud;
   @JsonKey(name: 'carbon_monoxide')
   int? carbonMonoxide;
