@@ -37,12 +37,12 @@ class CustomCheckBoxState extends State<CustomCheckBox> {
             child: Checkbox(
               side: const BorderSide(width: 2, color: AppColors.textDisabled),
               shape: const CircleBorder(side: BorderSide(width: 2)),
-              fillColor: MaterialStateProperty.resolveWith((states) {
-                if (states.contains(MaterialState.disabled)) {
+              fillColor: WidgetStateProperty.resolveWith((states) {
+                if (states.contains(WidgetState.disabled)) {
                   return AppColors.buttonDisabled;
-                } else if (states.contains(MaterialState.pressed)) {
+                } else if (states.contains(WidgetState.pressed)) {
                   return Colors.white;
-                } else if (states.contains(MaterialState.selected)) {
+                } else if (states.contains(WidgetState.selected)) {
                   return AppColors.accent;
                 }
                 return AppColors.appBackground;

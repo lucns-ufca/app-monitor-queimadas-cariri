@@ -189,7 +189,6 @@ class TabHomePageState extends State<TabHomePage> {
       });
     }
 
-/*
     if (predictionCities.isEmpty || appRepository.allowUpdatePrediction()) {
       await appRepository.updatePrediction();
       await updatePrediction();
@@ -212,7 +211,6 @@ class TabHomePageState extends State<TabHomePage> {
       loadingTop = false;
       loadingBottom = false;
     });
-    */
   }
 
   @override

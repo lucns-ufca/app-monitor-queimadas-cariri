@@ -80,8 +80,8 @@ class _MyTextFieldState extends State<MyFieldText> {
                     }
                     widget.onInput!(text);
                   },
-                  maxLines: widget.maximumLines ?? 1,
-                  expands: widget.maximumLines != null && widget.maximumLines! > 1,
+                  maxLines: widget.inputType == TextInputType.multiline ? null : 1,
+                  expands: widget.inputType == TextInputType.multiline,
                   textAlign: TextAlign.start,
                   textAlignVertical: widget.textAlignVertical ?? TextAlignVertical.center,
                   enabled: widget.isEnabled,

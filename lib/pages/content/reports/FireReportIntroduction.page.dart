@@ -1,4 +1,5 @@
 import 'package:app_monitor_queimadas/utils/AppColors.dart';
+import 'package:app_monitor_queimadas/utils/Log.out.dart';
 import 'package:app_monitor_queimadas/utils/PermissionData.dart';
 import 'package:app_monitor_queimadas/widgets/CustomCheckBox.widget.dart';
 import 'package:flutter/material.dart';
@@ -38,7 +39,7 @@ class FireReportIntroductionPageState extends State<FireReportIntroductionPage> 
                     lockManuallyCheck: true,
                     checked: permission.granted,
                     onCheck: (checked) async {
-                      if (checked) return;
+                      if (permission.granted) return;
                       if (await permission.request) {
                         controller.setChecked(true);
                         widget.onPermissionChanged();

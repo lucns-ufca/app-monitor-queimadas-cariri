@@ -237,10 +237,11 @@ class FireReportSenderPageState extends State<FireReportSenderPage> {
                           textAlignVertical: TextAlignVertical.top,
                           isEnabled: !buttonsChanged,
                           height: 150,
+                          maximumLines: 10,
                           hintText: "Escreva um relato aqui...",
                           text: getInitialText(),
-                          action: TextInputAction.done,
-                          inputType: TextInputType.text,
+                          action: TextInputAction.newline,
+                          inputType: TextInputType.multiline,
                           textCapitalization: TextCapitalization.sentences,
                           onInput: (text) {
                             description = text;
