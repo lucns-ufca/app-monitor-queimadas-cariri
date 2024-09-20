@@ -10,9 +10,8 @@ import 'package:app_monitor_queimadas/pages/start/tabs/Login.tab.dart';
 import 'package:app_monitor_queimadas/pages/start/tabs/NewAccount.tab.dart';
 import 'package:app_monitor_queimadas/repositories/Auth.repository.dart';
 import 'package:app_monitor_queimadas/utils/AppColors.dart';
-import 'package:app_monitor_queimadas/utils/Constants.dart';
+import 'package:app_monitor_queimadas/widgets/AppLogos.widget.dart';
 import 'package:app_monitor_queimadas/widgets/ContainerGradient.widget.dart';
-import 'package:app_monitor_queimadas/widgets/DynamicWidgetOpacity.widget.dart';
 import 'package:app_monitor_queimadas/widgets/ExpandablePageView.widget.dart';
 import 'package:app_monitor_queimadas/widgets/ImageTransitionScroller.widget.dart';
 import 'package:flutter/material.dart';
@@ -47,6 +46,7 @@ class LoginFormState extends State<LoginForm> {
   var preferences = GetIt.I.get<SharedPreferences>();
   String? textUser, textPassword;
   PageController pageController = PageController();
+  int page = 0;
 
   @override
   void initState() {
@@ -58,13 +58,19 @@ class LoginFormState extends State<LoginForm> {
     GoogleSignIn googleSignIn = GoogleSignIn();
     final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
     if (googleUser == null) return;
-    GoogleSignInAuthentication? googleAuth = await googleUser.authentication;
     User user = User();
     user.name = googleUser.displayName ?? "";
     user.email = googleUser.email;
     user.id = googleUser.id;
     user.photoUrl = googleUser.photoUrl ?? "";
-    user.accessToken = googleAuth.accessToken ?? "";
+    /*
+    try { // dando problema no firebase
+      GoogleSignInAuthentication? googleAuth = await googleUser.authentication;
+      user.accessToken = googleAuth.accessToken ?? "";
+    } catch (e, stacktrace) {
+      print(stacktrace);
+    }
+    */
     if (user.email.isNotEmpty) {
       AuthRepository authRepository = AuthRepository();
       ApiResponse response = await authRepository.getUserType(user.email);
@@ -84,59 +90,51 @@ class LoginFormState extends State<LoginForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(children: [
-      Column(mainAxisSize: MainAxisSize.max, children: [
-        SizedBox(height: MediaQuery.of(context).size.height * 0.6),
-        const ImageTransitionScroller(duration: Duration(seconds: 20), assets: "assets/images/minimal_forest2.png", width: 637, height: 223),
-        Expanded(
-            child: Container(
-                width: double.maxFinite,
-                color: AppColors.appBackground,
-                child: const Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Column(mainAxisSize: MainAxisSize.min, children: [
-                      DynamicOpacity(opacityStart: 1, opacityEnd: 0.5, duration: Duration(milliseconds: 2500), child: Image(image: AssetImage('assets/images/ufca_white.png'))),
-                      SizedBox(
-                        height: 16,
-                      ),
-                      Text("MONITOR DE QUEIMADAS VERSAO ${Constants.APP_VERSION}", style: TextStyle(color: Colors.white, fontSize: 12, fontFamily: "MontBlancLight")),
-                      SizedBox(
-                        height: 32,
-                      ),
-                    ]))))
-      ]),
-      Column(mainAxisSize: MainAxisSize.min, children: [
-        ExpandablePageView(physics: const NeverScrollableScrollPhysics(), pageController: pageController, children: [
-          LoginTab(scrollToNewAccount: () {
-            pageController.animateToPage(1, duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
-          }),
-          NewAccountTab(scrollToLogin: (email) {
-            setState(() {
-              textUser = email;
-            });
-            pageController.animateToPage(0, duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
-          }),
-          //Container(height: 300, color: Colors.green),
-        ]),
-        const SizedBox(height: 8),
-        Divider(height: 1, indent: 24, endIndent: 24, color: Colors.white.withOpacity(0.5), thickness: 1),
-        const SizedBox(height: 36),
-        ElevatedButton(
-            style: ButtonStyle(
-                backgroundColor: WidgetStateProperty.all<Color>(AppColors.accent),
-                overlayColor: WidgetStateProperty.all<Color>(Colors.white.withOpacity(0.5)),
-                shape: WidgetStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.circular(28), side: const BorderSide(color: Colors.transparent)))),
-            onPressed: () => signInWithGoogle(),
-            child: Row(mainAxisSize: MainAxisSize.min, children: [
-              Stack(children: [
-                Opacity(opacity: 0.5, child: Image.asset("assets/images/google_logo.webp", width: 24, height: 24, color: Colors.black)),
-                ClipRect(child: BackdropFilter(filter: ImageFilter.blur(sigmaX: 1, sigmaY: 1), child: Image.asset("assets/images/google_logo.webp", width: 24, height: 24)))
-              ]),
-              const SizedBox(width: 8),
-              const Text("Entrar com a Google", style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w500))
-            ]))
-      ])
-    ]);
+    return PopScope(
+        canPop: page == 0,
+        onPopInvoked: (a) {
+          if (page == 1) pageController.animateToPage(0, duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
+        },
+        child: Stack(children: [
+          Column(mainAxisSize: MainAxisSize.max, mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            const SizedBox(),
+            Column(mainAxisSize: MainAxisSize.min, children: [
+              Container(transform: Matrix4.translationValues(0, 2, 0), child: const ImageTransitionScroller(duration: Duration(seconds: 20), assets: "assets/images/minimal_forest2.png", width: 637, height: 223)),
+              Container(height: MediaQuery.of(context).size.height * 0.2, width: double.maxFinite, color: AppColors.appBackground, child: const Align(alignment: Alignment.bottomCenter, child: AppLogos()))
+            ])
+          ]),
+          Column(mainAxisSize: MainAxisSize.min, children: [
+            ExpandablePageView(onPageChanged: (index) => setState(() => page = index), physics: const NeverScrollableScrollPhysics(), pageController: pageController, children: [
+              LoginTab(scrollToNewAccount: () {
+                pageController.animateToPage(1, duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
+              }),
+              NewAccountTab(scrollToLogin: (email) {
+                setState(() {
+                  textUser = email;
+                });
+                pageController.animateToPage(0, duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
+              }),
+              //Container(height: 300, color: Colors.green),
+            ]),
+            const SizedBox(height: 8),
+            Divider(height: 1, indent: 24, endIndent: 24, color: Colors.white.withOpacity(0.5), thickness: 1),
+            const SizedBox(height: 36),
+            ElevatedButton(
+                style: ButtonStyle(
+                    backgroundColor: WidgetStateProperty.all<Color>(AppColors.fragmentBackground),
+                    overlayColor: WidgetStateProperty.all<Color>(Colors.white.withOpacity(0.5)),
+                    shape: WidgetStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.circular(28), side: const BorderSide(color: Colors.transparent)))),
+                onPressed: () => signInWithGoogle(),
+                child: Row(mainAxisSize: MainAxisSize.min, children: [
+                  Stack(children: [
+                    Opacity(opacity: 0.5, child: Image.asset("assets/images/google_logo.webp", width: 24, height: 24, color: Colors.black)),
+                    ClipRect(child: BackdropFilter(filter: ImageFilter.blur(sigmaX: 1, sigmaY: 1), child: Image.asset("assets/images/google_logo.webp", width: 24, height: 24)))
+                  ]),
+                  const SizedBox(width: 8),
+                  const Text("Entrar com a Google", style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w500))
+                ]))
+          ])
+        ]));
   }
 
   bool isUserValid() {

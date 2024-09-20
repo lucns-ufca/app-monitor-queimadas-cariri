@@ -248,16 +248,25 @@ class TabHomePageState extends State<TabHomePage> {
       ContainerGradient(
           colors: AppColors.gradientSky,
           duration: const Duration(seconds: 30),
-          child: Column(children: [const SizedBox(height: 440), const ImageTransitionScroller(duration: Duration(seconds: 10), assets: "assets/images/minimal_forest.png", width: 493, height: 222), Expanded(child: Container(color: AppColors.appBackground))])),
+          child: Column(mainAxisSize: MainAxisSize.max, mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            const SizedBox(),
+            Column(mainAxisSize: MainAxisSize.min, children: [
+              Container(transform: Matrix4.translationValues(0, 2, 0), child: const ImageTransitionScroller(duration: Duration(seconds: 10), assets: "assets/images/minimal_forest.png", width: 493, height: 222)),
+              Container(height: MediaQuery.of(context).size.height * 0.2, color: AppColors.appBackground)
+            ])
+          ])),
       Column(children: [
         const SizedBox(height: 16),
         Container(
             padding: const EdgeInsets.all(24),
             child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-              const Column(
+              /*
+              const Column( // logo antigo
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [Text("Monitor", style: TextStyle(color: Colors.white, fontSize: 48, fontFamily: 'MontBlancLight')), Text("de Queimadas Cariri", style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold))]),
+                  */
+              Image.asset('assets/images/monitor_queimadas_cariri.png', width: 184, height: 72),
               FutureBuilder(
                   future: imageProfile,
                   builder: (context, result) {
@@ -284,16 +293,17 @@ class TabHomePageState extends State<TabHomePage> {
                             child: CircleAvatar(
                                 backgroundColor: Colors.white,
                                 radius: 36,
-                                child: Stack(children: [
-                                  ClipOval(child: Image(image: FileImage(result.data as File), width: 52, height: 52)),
+                                child: ClipOval(
+                                    child: Stack(children: [
+                                  Image(image: FileImage(result.data as File), width: 52, height: 52),
                                   Positioned.fill(
                                       child: Material(
                                           color: Colors.transparent,
                                           child: InkWell(
-                                            splashColor: Colors.white.withOpacity(0.5),
+                                            splashColor: Colors.white.withOpacity(0.75),
                                             onTap: () => profileClick(),
                                           )))
-                                ]))),
+                                ])))),
                         const SizedBox(height: 4),
                         Text(
                           name,
@@ -358,7 +368,7 @@ class TabHomePageState extends State<TabHomePage> {
                 padding: WidgetStateProperty.all<EdgeInsetsGeometry>(EdgeInsetsDirectional.zero),
                 elevation: WidgetStateProperty.all<double>(0.0),
                 overlayColor: WidgetStateProperty.resolveWith((states) => AppColors.accent),
-                backgroundColor: WidgetStateProperty.all<Color>(Colors.white.withOpacity(0.5)),
+                backgroundColor: WidgetStateProperty.all<Color>(AppColors.ticketColor),
                 shape: WidgetStateProperty.all<OvalBorder>(const OvalBorder())),
             child: loading ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.accent)) : const Icon(Icons.person_outline),
           )),

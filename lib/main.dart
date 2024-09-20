@@ -21,7 +21,7 @@ void main() async {
   User user = User();
   await user.loadData();
   sl.registerLazySingleton<User>(() => user);
-
+  await Future.delayed(const Duration(seconds: 1));
   runApp(MyApp(user));
 }
 
@@ -57,11 +57,6 @@ class SplashScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.maxFinite,
-      height: double.maxFinite,
-      color: AppColors.fragmentBackground,
-      child: const Image(image: ResizeImage(AssetImage('assets/images/ufca_white.png'), width: 105, height: 33)),
-    );
+    return Container(width: double.maxFinite, height: double.maxFinite, color: AppColors.appBackground, child: Center(child: Image.asset('assets/images/monitor_queimadas_cariri.png', width: 184, height: 72)));
   }
 }

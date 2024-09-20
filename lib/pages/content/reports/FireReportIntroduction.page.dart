@@ -1,5 +1,4 @@
 import 'package:app_monitor_queimadas/utils/AppColors.dart';
-import 'package:app_monitor_queimadas/utils/Log.out.dart';
 import 'package:app_monitor_queimadas/utils/PermissionData.dart';
 import 'package:app_monitor_queimadas/widgets/CustomCheckBox.widget.dart';
 import 'package:flutter/material.dart';

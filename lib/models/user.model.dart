@@ -27,7 +27,7 @@ class User {
     name = map["name"] ?? "";
     email = map["email"] ?? "";
     accessToken = map["access_token"];
-    accessToken = map["id"];
+    id = map["id"];
     photoUrl = map["photo_url"];
     dateLogin = DateTime.parse(map["date_login"]);
     int type = map["user_type"] ?? 0;
@@ -76,7 +76,8 @@ class User {
   }
 
   bool hasAccess() {
-    return accessToken.isNotEmpty;
+    return email.isNotEmpty;
+    //return accessToken.isNotEmpty;
   }
 
   Future<File?> getProfileImage() async {

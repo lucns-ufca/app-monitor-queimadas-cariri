@@ -58,6 +58,21 @@ android {
             signingConfig signingConfigs.debug
         }
     }
+    
+    signingConfigs {
+        debug {
+            storeFile file("debug.keystore")
+            storePassword "android"
+            keyAlias "androiddebugkey"
+            keyPassword "android"
+        }
+        key{
+            keyAlias 'lucas321'
+            keyPassword 'lucas321'
+            storeFile file('my_keysore.jks')
+            storePassword 'lucas321'
+        }
+    }
 }
 
 flutter {

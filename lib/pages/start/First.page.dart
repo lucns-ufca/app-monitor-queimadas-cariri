@@ -3,8 +3,7 @@
 import 'package:app_monitor_queimadas/pages/content/MainScreen.page.dart';
 import 'package:app_monitor_queimadas/pages/start/Acess.page.dart';
 import 'package:app_monitor_queimadas/utils/AppColors.dart';
-import 'package:app_monitor_queimadas/utils/Constants.dart';
-import 'package:app_monitor_queimadas/widgets/DynamicWidgetOpacity.widget.dart';
+import 'package:app_monitor_queimadas/widgets/AppLogos.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -56,28 +55,28 @@ class FirstPageState extends State<FirstPage> with SingleTickerProviderStateMixi
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-                padding: const EdgeInsets.only(top: 48, right: 24),
-                width: double.maxFinite,
-                child: Align(
-                    alignment: Alignment.centerRight,
-                    child: SizedBox(
-                        width: 56,
-                        height: 56,
-                        child: ElevatedButton(
-                          onPressed: () async {
-                            await Future.delayed(const Duration(milliseconds: 300));
-                            await Navigator.of(context).push(MaterialPageRoute(builder: (context) => const AccessPage()));
-                            // await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage()));
-                          },
-                          style: ButtonStyle(
-                              //foregroundColor: colorsStateText,
-                              padding: WidgetStateProperty.all<EdgeInsetsGeometry>(EdgeInsetsDirectional.zero),
-                              elevation: WidgetStateProperty.all<double>(0.0),
-                              overlayColor: WidgetStateProperty.resolveWith((states) => AppColors.accent),
-                              backgroundColor: WidgetStateProperty.all<Color>(Colors.white.withOpacity(0.5)),
-                              shape: WidgetStateProperty.all<OvalBorder>(const OvalBorder())),
-                          child: const Icon(Icons.person_outline),
-                        )))),
+                padding: const EdgeInsets.fromLTRB(24, 48, 24, 0),
+                child: Row(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                  Image.asset('assets/images/monitor_queimadas_cariri.png', width: 184, height: 72),
+                  SizedBox(
+                      width: 56,
+                      height: 56,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          await Future.delayed(const Duration(milliseconds: 300));
+                          await Navigator.of(context).push(MaterialPageRoute(builder: (context) => const AccessPage()));
+                          // await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage()));
+                        },
+                        style: ButtonStyle(
+                            //foregroundColor: colorsStateText,
+                            padding: WidgetStateProperty.all<EdgeInsetsGeometry>(EdgeInsetsDirectional.zero),
+                            elevation: WidgetStateProperty.all<double>(0.0),
+                            overlayColor: WidgetStateProperty.resolveWith((states) => AppColors.accent),
+                            backgroundColor: WidgetStateProperty.all<Color>(AppColors.ticketColor),
+                            shape: WidgetStateProperty.all<OvalBorder>(const OvalBorder())),
+                        child: const Icon(Icons.person_outline),
+                      ))
+                ])),
             Expanded(
                 child: AnimatedBuilder(
                     animation: animationController!,
@@ -92,12 +91,12 @@ class FirstPageState extends State<FirstPage> with SingleTickerProviderStateMixi
                                   const SizedBox(
                                     height: 56,
                                   ),
-                                  Image.asset("assets/icons/initial_white_marker.png", width: 52, height: 72),
+                                  Image.asset("assets/icons/initial_white_marker.png", height: 56),
                                   const SizedBox(
                                     height: 24,
                                   ),
-                                  const Text("CHAPADA", style: TextStyle(color: Colors.white, fontSize: 72, height: 1, fontFamily: 'CocoSharpBold')),
-                                  const Text("DO ARARIPE", style: TextStyle(color: Colors.white, fontSize: 48, height: 1, fontFamily: 'MontBlancLight')),
+                                  const Text("CHAPADA", style: TextStyle(color: Colors.white, fontSize: 56, height: 1, fontFamily: 'CocoSharpBold')),
+                                  const Text("DO ARARIPE", style: TextStyle(color: Colors.white, fontSize: 36, height: 1, fontFamily: 'MontBlancLight')),
                                 ],
                               )));
                     })),
@@ -126,12 +125,13 @@ class FirstPageState extends State<FirstPage> with SingleTickerProviderStateMixi
                                           borderRadius: BorderRadius.circular(48),
                                         ),
                                         child: ElevatedButton(
-                                            style: ElevatedButton.styleFrom(
-                                              elevation: 8,
-                                              padding: EdgeInsets.zero,
-                                              backgroundColor: Colors.transparent,
-                                              shadowColor: Colors.black,
-                                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(48)),
+                                            style: ButtonStyle(
+                                              overlayColor: WidgetStateProperty.all<Color>(AppColors.accent.withOpacity(0.5)),
+                                              elevation: WidgetStateProperty.all<double>(8),
+                                              padding: WidgetStateProperty.all<EdgeInsetsGeometry>(EdgeInsets.zero),
+                                              backgroundColor: WidgetStateProperty.all<Color>(Colors.transparent),
+                                              shadowColor: WidgetStateProperty.all<Color>(Colors.black),
+                                              shape: WidgetStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.circular(48))),
                                             ),
                                             child: Row(
                                               mainAxisSize: MainAxisSize.max,
@@ -154,14 +154,7 @@ class FirstPageState extends State<FirstPage> with SingleTickerProviderStateMixi
                       const SizedBox(
                         height: 64,
                       ),
-                      const DynamicOpacity(opacityStart: 1, opacityEnd: 0.5, duration: Duration(milliseconds: 2500), child: Image(image: AssetImage('assets/images/ufca_white.png'))),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      const Text("MONITOR DE QUEIMADAS VERSAO ${Constants.APP_VERSION}", style: TextStyle(color: Colors.white, fontSize: 12, fontFamily: "MontBlancLight")),
-                      const SizedBox(
-                        height: 32,
-                      ),
+                      const AppLogos()
                     ]))),
           ],
         ),

@@ -7,9 +7,9 @@
     <uses-permission android:name="android.permission.FLASHLIGHT"/>
 
     <application
-        android:label="app_monitor_queimadas"
+        android:label="Monitor de Queimadas Cariri"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/launcher_icon">
         <activity
             android:name=".MainActivity"
             android:exported="true"

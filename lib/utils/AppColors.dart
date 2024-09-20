@@ -18,19 +18,19 @@ class AppColors {
   static const gray_8 = Color.fromARGB(255, 18, 18, 18);
   static const black = Color.fromARGB(255, 10, 10, 10);
 
-  static const accentLight = Color.fromARGB(255, 72, 133, 255);
-  static const accent = Color.fromARGB(255, 35, 109, 255);
+  static const accentLight = Color.fromARGB(255, 255, 177, 69);
+  static const accent = Color.fromARGB(255, 242, 158, 39);
   static const graphRed = Color.fromARGB(255, 199, 28, 71);
   static const yellowSky = Color.fromARGB(255, 230, 162, 36);
   static const ripple = Color.fromARGB(188, 255, 255, 255);
   static const shadow = Color.fromARGB(75, 0, 0, 0);
   static const dialogBackground = Color.fromARGB(208, 74, 208, 208);
 
-  static const appBackground = Color.fromARGB(255, 21, 24, 29);
-  static const mainAreaBackground = Color.fromARGB(255, 45, 112, 212);
+  static const appBackground = Color.fromARGB(255, 45, 32, 15);
+  static const mainAreaBackground = Color.fromARGB(255, 212, 139, 37);
   static const appBackgroundInDialog = Color.fromARGB(255, 83, 64, 21);
   static const fragmentBackgroundInDialog = Color.fromARGB(255, 21, 21, 21);
-  static const fragmentBackground = Color.fromARGB(255, 33, 34, 63);
+  static const fragmentBackground = Color.fromARGB(255, 81, 59, 28);
   static const fragmentBackgroundError = Color.fromARGB(208, 109, 32, 38);
   static const menuBackground = Color.fromARGB(255, 33, 34, 63);
   static const cardBackground = gray_7;
@@ -53,9 +53,9 @@ class AppColors {
   static const red = Color.fromARGB(255, 224, 54, 82);
   static const graphLines = Color.fromARGB(28, 255, 255, 255);
 
-  static const ticketColor = Color.fromARGB(178, 214, 240, 255);
-  static const titleDark = Color.fromARGB(255, 17, 48, 102);
-  static const descriptionDark = Color.fromARGB(255, 27, 55, 110);
+  static const ticketColor = Color.fromARGB(118, 255, 248, 241);
+  static const titleDark = Color.fromARGB(255, 102, 65, 17);
+  static const descriptionDark = Color.fromARGB(255, 110, 71, 27);
 
-  static const List<Color> gradientSky = [Color.fromARGB(255, 42, 212, 161), Color.fromARGB(255, 56, 94, 218), Color.fromARGB(255, 56, 94, 218), Color.fromARGB(255, 42, 212, 161)];
+  static const List<Color> gradientSky = [Color.fromARGB(255, 42, 212, 161), Color.fromARGB(255, 218, 129, 56), Color.fromARGB(255, 218, 129, 56), Color.fromARGB(255, 42, 212, 161)];
 }

@@ -4,8 +4,9 @@ class ExpandablePageView extends StatefulWidget {
   final List<Widget> children;
   final PageController pageController;
   final ScrollPhysics? physics;
+  final Function(int)? onPageChanged;
 
-  const ExpandablePageView({super.key, this.physics, required this.children, required this.pageController});
+  const ExpandablePageView({super.key, this.onPageChanged, this.physics, required this.children, required this.pageController});
 
   @override
   State<ExpandablePageView> createState() => _ExpandablePageViewState();
@@ -43,6 +44,9 @@ class _ExpandablePageViewState extends State<ExpandablePageView> with TickerProv
       tween: Tween<double>(begin: _heights[0], end: _currentHeight),
       builder: (context, value, child) => SizedBox(height: value, child: child),
       child: PageView(
+        onPageChanged: (i) {
+          if (widget.onPageChanged != null) widget.onPageChanged!(i);
+        },
         physics: widget.physics,
         controller: widget.pageController,
         children: _sizeReportingChildren.asMap().map((index, child) => MapEntry(index, child)).values.toList(),
