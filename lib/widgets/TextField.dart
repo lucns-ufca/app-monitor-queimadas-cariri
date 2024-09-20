@@ -139,7 +139,7 @@ class _MyTextFieldState extends State<MyFieldText> {
                       filled: true,
                       hintStyle: TextStyle(color: widget.isEnabled ? AppColors.fieldTextHint : AppColors.textDisabled, fontSize: fontSize, fontWeight: FontWeight.w400),
                       hintText: widget.hintText,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16)));
+                      contentPadding: EdgeInsets.only(left: 16, right: 16, top: widget.inputType == TextInputType.multiline ? 16 : 0)));
             })));
   }
 }
