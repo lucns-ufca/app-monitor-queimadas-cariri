@@ -187,6 +187,7 @@ class TabHomePageState extends State<TabHomePage> {
     List<PredictionCityModel> predictionCities = appRepository.getPredictionCities;
     listCities = appRepository.getWeatherCities;
     List<ProbabilityCityModel> probabilitiesCities = appRepository.getProbabilityCities;
+    setState(() {});
 
     if (predictionCities.isEmpty || appRepository.allowUpdatePrediction()) {
       await appRepository.updatePrediction();
@@ -419,31 +420,24 @@ class TabHomePageState extends State<TabHomePage> {
                     ))),
           ])),
       const SizedBox(height: 16),
-      if (loadingTop)
-        const Align(
-            alignment: Alignment.topLeft,
-            child: Column(children: [
-              Row(mainAxisSize: MainAxisSize.min, children: [
-                SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(
-                      color: Colors.white,
-                      strokeWidth: 2,
-                    )),
-                SizedBox(width: 16),
-                Text("Atualizando eventos...", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16))
-              ]),
-              SizedBox(height: 16),
-            ])),
-      if (!loadingTop)
-        Align(
-            alignment: Alignment.topLeft,
-            child: Padding(
-                padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
-                child: Row(
-                    mainAxisSize: MainAxisSize.max,
-                    children: [const Text("Utimos eventos", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)), const SizedBox(width: 8), Expanded(child: Container(height: 1, color: Colors.white))]))),
+      Align(
+          alignment: Alignment.topLeft,
+          child: Padding(
+              padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
+              child: Row(mainAxisSize: MainAxisSize.max, children: [
+                if (loadingTop)
+                  const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      )),
+                if (loadingTop) const SizedBox(width: 8),
+                Text(loadingTop ? "Carregando eventos..." : "Utimos eventos", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                const SizedBox(width: 8),
+                Expanded(child: Container(height: 1, color: Colors.white))
+              ]))),
       getCards(),
     ]);
   }
@@ -453,31 +447,24 @@ class TabHomePageState extends State<TabHomePage> {
       return Expanded(
           child: Column(
         children: [
-          if (loadingTop)
-            const Align(
-                alignment: Alignment.topLeft,
-                child: Column(children: [
-                  Row(mainAxisSize: MainAxisSize.min, children: [
-                    SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 2,
-                        )),
-                    SizedBox(width: 16),
-                    Text("Atualizando cidades...", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16))
-                  ]),
-                  SizedBox(height: 16),
-                ])),
-          if (!loadingTop)
-            Align(
-                alignment: Alignment.topLeft,
-                child: Padding(
-                    padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
-                    child: Row(
-                        mainAxisSize: MainAxisSize.max,
-                        children: [const Text("Cidades monitoradas", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)), const SizedBox(width: 8), Expanded(child: Container(height: 1, color: Colors.white))]))),
+          Align(
+              alignment: Alignment.topLeft,
+              child: Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
+                  child: Row(mainAxisSize: MainAxisSize.max, children: [
+                    if (loadingBottom)
+                      const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          )),
+                    if (loadingBottom) const SizedBox(width: 8),
+                    Text(loadingBottom ? "Carregando cidades" : "Cidades monitoradas", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                    const SizedBox(width: 8),
+                    Expanded(child: Container(height: 1, color: Colors.white))
+                  ]))),
           Flexible(
               child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
