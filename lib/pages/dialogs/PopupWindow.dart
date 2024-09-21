@@ -34,7 +34,7 @@ class PopupWindow {
                     color: AppColors.shadow.withOpacity(0.25),
                     spreadRadius: 2,
                     blurRadius: 2,
-                    offset: const Offset(0, -2),
+                    offset: const Offset(0, 4),
                   ),
                 ],
               ),

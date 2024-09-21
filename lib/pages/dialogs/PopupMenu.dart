@@ -30,7 +30,7 @@ class PopupMenu extends PopupWindow {
 
   Widget _getWidgetItem(PopupMenuItem item, Function() onClickListener) {
     return SizedBox(
-        height: 56,
+        height: 48,
         child: TextButton(
             style: ButtonStyle(
                 padding: WidgetStateProperty.all(const EdgeInsets.symmetric(horizontal: 24)),
@@ -42,7 +42,7 @@ class PopupMenu extends PopupWindow {
                     onClickListener();
                   }
                 : null,
-            child: Align(alignment: Alignment.centerLeft, child: Text(item.text, style: TextStyle(overflow: TextOverflow.ellipsis, fontSize: 16, color: item.isEnabled ? Colors.white : Colors.white.withOpacity(0.5))))));
+            child: Align(alignment: Alignment.centerLeft, child: Text(item.text, style: TextStyle(fontWeight: FontWeight.bold, overflow: TextOverflow.ellipsis, fontSize: 16, color: item.isEnabled ? AppColors.titleDark : Colors.white.withOpacity(0.5))))));
   }
 }
 

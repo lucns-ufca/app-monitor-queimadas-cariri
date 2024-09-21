@@ -32,7 +32,7 @@ class AppColors {
   static const fragmentBackgroundInDialog = Color.fromARGB(255, 21, 21, 21);
   static const fragmentBackground = Color.fromARGB(255, 81, 59, 28);
   static const fragmentBackgroundError = Color.fromARGB(208, 109, 32, 38);
-  static const menuBackground = Color.fromARGB(255, 33, 34, 63);
+  static const menuBackground = Color.fromARGB(195, 248, 212, 177);
   static const cardBackground = gray_7;
 
   static const textNormal = Color.fromARGB(197, 255, 255, 255);
@@ -54,7 +54,7 @@ class AppColors {
   static const graphLines = Color.fromARGB(28, 255, 255, 255);
 
   static const ticketColor = Color.fromARGB(118, 255, 248, 241);
-  static const titleDark = Color.fromARGB(255, 102, 65, 17);
+  static const titleDark = Color.fromARGB(255, 70, 43, 9);
   static const descriptionDark = Color.fromARGB(255, 110, 71, 27);
 
   static const List<Color> gradientSky = [Color.fromARGB(255, 42, 212, 161), Color.fromARGB(255, 218, 129, 56), Color.fromARGB(255, 218, 129, 56), Color.fromARGB(255, 42, 212, 161)];

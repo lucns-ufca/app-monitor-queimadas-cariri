@@ -19,6 +19,7 @@ import 'package:app_monitor_queimadas/widgets/TicketView.widget.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
 
@@ -37,7 +38,7 @@ class TabHomePageState extends State<TabHomePage> {
   bool loadingBottom = true;
   bool connected = true;
   List<NewsModel> listNews = [];
-  List<String> listCities = [];
+  List<WeatherCityModel> listCities = [];
   StreamSubscription<List<ConnectivityResult>>? subscription;
   Future<File?>? imageProfile;
   PredictionCityModel? selectedHighestOccurred;
@@ -173,35 +174,27 @@ class TabHomePageState extends State<TabHomePage> {
   }
 
   void updateLists() async {
+    setState(() {
+      loadingTop = true;
+      loadingBottom = true;
+    });
     await appRepository.updateLocal();
     updatePrediction();
     updateWeather();
     updateProbabilities();
     listNews.shuffle();
 
-    List<PredictionCityModel>? predictionCities = appRepository.getPredictionCities;
-    List<WeatherCityModel>? weatherCities = appRepository.getWeatherCities;
-    List<ProbabilityCityModel>? probabilitiesCities = appRepository.getProbabilityCities;
-    if (predictionCities.isNotEmpty || weatherCities.isNotEmpty || probabilitiesCities.isNotEmpty) {
-      setState(() {
-        loadingTop = false;
-        loadingBottom = false;
-      });
-    }
+    List<PredictionCityModel> predictionCities = appRepository.getPredictionCities;
+    listCities = appRepository.getWeatherCities;
+    List<ProbabilityCityModel> probabilitiesCities = appRepository.getProbabilityCities;
 
     if (predictionCities.isEmpty || appRepository.allowUpdatePrediction()) {
       await appRepository.updatePrediction();
       await updatePrediction();
-      setState(() {
-        loadingTop = true;
-      });
     }
-    if (weatherCities.isEmpty || appRepository.allowUpdateWeather()) {
+    if (listCities.isEmpty || appRepository.allowUpdateWeather()) {
       await appRepository.updateWeather();
       await updateWeather();
-      setState(() {
-        loadingBottom = false;
-      });
     }
     if (probabilitiesCities.isEmpty || appRepository.allowUpdateProbability()) {
       await appRepository.updateProbabilities();
@@ -346,12 +339,11 @@ class TabHomePageState extends State<TabHomePage> {
                 child: Row(mainAxisSize: MainAxisSize.min, children: [SvgPicture.asset("assets/icons/alert.svg", width: 16, height: 16), const SizedBox(width: 8), const Text("Sem conexão!", style: TextStyle(color: AppColors.red))])));
       }
     }
-    if (listNews.isNotEmpty && listCities.isNotEmpty) {
+    if (listNews.isNotEmpty && appRepository.getWeatherCities.isNotEmpty) {
       return Column(children: [_getTopContent(), const SizedBox(height: 16), _getBottomContent()]);
     } else if (listNews.isNotEmpty) {
       return Column(children: [_getTopContent(), const SizedBox(height: 16), Expanded(child: SizedBox(child: _getCenteredloading("Carregando cidades...")))]);
     } else {
-      // listCities.isNotEmpty
       return Column(children: [SizedBox(height: 220, child: _getCenteredloading("Carregando noticias...")), const SizedBox(height: 16), _getBottomContent()]);
     }
   }
@@ -444,12 +436,73 @@ class TabHomePageState extends State<TabHomePage> {
               ]),
               SizedBox(height: 16),
             ])),
-      if (!loadingTop) const Align(alignment: Alignment.topLeft, child: Padding(padding: EdgeInsets.fromLTRB(24, 16, 24, 16), child: Text("Ultimos eventos", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)))),
+      if (!loadingTop)
+        Align(
+            alignment: Alignment.topLeft,
+            child: Padding(
+                padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
+                child: Row(
+                    mainAxisSize: MainAxisSize.max,
+                    children: [const Text("Utimos eventos", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)), const SizedBox(width: 8), Expanded(child: Container(height: 1, color: Colors.white))]))),
       getCards(),
     ]);
   }
 
   Widget _getBottomContent() {
+    if (listCities.isNotEmpty) {
+      return Expanded(
+          child: Column(
+        children: [
+          if (loadingTop)
+            const Align(
+                alignment: Alignment.topLeft,
+                child: Column(children: [
+                  Row(mainAxisSize: MainAxisSize.min, children: [
+                    SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        )),
+                    SizedBox(width: 16),
+                    Text("Atualizando cidades...", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16))
+                  ]),
+                  SizedBox(height: 16),
+                ])),
+          if (!loadingTop)
+            Align(
+                alignment: Alignment.topLeft,
+                child: Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
+                    child: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        children: [const Text("Cidades monitoradas", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)), const SizedBox(width: 8), Expanded(child: Container(height: 1, color: Colors.white))]))),
+          Flexible(
+              child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: SingleChildScrollView(
+                      child: Column(
+                          children: List.generate(listCities.length, (index) {
+                    return Column(children: [
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(color: AppColors.ticketColor, borderRadius: BorderRadius.circular(24)),
+                        width: double.maxFinite,
+                        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                          Text(listCities[index].city!, style: const TextStyle(color: AppColors.titleDark, fontSize: 24, fontWeight: FontWeight.bold)),
+                          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                            Text("${listCities[index].temperature!}º", style: const TextStyle(color: AppColors.titleDark, fontSize: 16, fontWeight: FontWeight.bold)),
+                            Text("Dias sem chuva:${listCities[index].daysWithoutRain!}", style: const TextStyle(color: AppColors.titleDark, fontSize: 16, fontWeight: FontWeight.bold)),
+                          ])
+                        ]),
+                      ),
+                      SizedBox(height: index < listCities.length - 1 ? 8 : 24)
+                    ]);
+                  })))))
+        ],
+      ));
+    }
     return Expanded(
         child: Container(
             width: double.maxFinite,
@@ -511,7 +564,7 @@ class TabHomePageState extends State<TabHomePage> {
                               padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
                               color: AppColors.ticketColor,
                               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                Text(listNews[index].title!, style: const TextStyle(height: 1.2, color: AppColors.titleDark, fontSize: 24, fontWeight: FontWeight.bold)),
+                                Text(listNews[index].title!, style: const TextStyle(height: 1.2, color: AppColors.titleDark, fontSize: 24, fontWeight: FontWeight.w400)),
                                 const SizedBox(height: 8),
                                 Expanded(child: SingleChildScrollView(child: Text(listNews[index].description!, style: const TextStyle(height: 1.2, color: AppColors.descriptionDark, fontSize: 16, fontWeight: FontWeight.bold)))),
                               ]))));
