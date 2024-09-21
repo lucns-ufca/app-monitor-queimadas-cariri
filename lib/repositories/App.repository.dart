@@ -11,9 +11,12 @@ import 'package:app_monitor_queimadas/utils/Constants.dart';
 import 'package:app_monitor_queimadas/utils/Utils.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:get_it/get_it.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AppRepository {
+  var preferences = GetIt.I.get<SharedPreferences>();
   final ControllerApi api = ControllerApi();
   void Function()? onUpdateConcluded;
 
@@ -173,11 +176,24 @@ class AppRepository {
   }
 
   Future<ApiResponse> reportFire(FormData formData) async {
-    try {
-      Response response = await api.post('reports/reports.php', formData);
-      return ApiResponse(code: response.statusCode, data: response.data);
-    } on DioException catch (e) {
-      return _getDefaultErrorResponse(e);
+    String ip = preferences.getString("ip") ?? "";
+    String port = preferences.getString("port") ?? "";
+    bool useLocal = preferences.getBool("use_local") ?? false;
+    if (useLocal && ip.isNotEmpty && port.isNotEmpty) {
+      Dio api = Dio(BaseOptions(baseUrl: 'http://$ip:$port/'));
+      try {
+        Response response = await api.post('warnings/create', data: formData);
+        return ApiResponse(code: response.statusCode, data: response.data);
+      } on DioException catch (e) {
+        return _getDefaultErrorResponse(e);
+      }
+    } else {
+      try {
+        Response response = await api.post('reports/reports.php', formData);
+        return ApiResponse(code: response.statusCode, data: response.data);
+      } on DioException catch (e) {
+        return _getDefaultErrorResponse(e);
+      }
     }
   }
 

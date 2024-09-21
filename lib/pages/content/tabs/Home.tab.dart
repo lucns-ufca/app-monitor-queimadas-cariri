@@ -7,6 +7,7 @@ import 'package:app_monitor_queimadas/models/User.model.dart';
 import 'package:app_monitor_queimadas/models/WeatherCity.model.dart';
 import 'package:app_monitor_queimadas/models/content/News.model.dart';
 import 'package:app_monitor_queimadas/pages/content/AboutProject.page.dart';
+import 'package:app_monitor_queimadas/pages/content/IpDefinition.page.dart';
 import 'package:app_monitor_queimadas/pages/dialogs/PopupMenu.dart';
 import 'package:app_monitor_queimadas/pages/start/Acess.page.dart';
 import 'package:app_monitor_queimadas/pages/start/First.page.dart';
@@ -19,7 +20,6 @@ import 'package:app_monitor_queimadas/widgets/TicketView.widget.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
 
@@ -55,10 +55,13 @@ class TabHomePageState extends State<TabHomePage> {
 
   void showMenuWindow() {
     PopupMenu popupMenu = PopupMenu(context: context);
-    List<String> titles = [if (!user.hasAccess()) "Login", if (user.hasAccess()) "Validação de queimadas", "Sobre o Projeto", if (user.hasAccess()) "Logout"];
+    List<String> titles = ["Definir IP", if (!user.hasAccess()) "Login", if (user.hasAccess()) "Validação de queimadas", "Sobre o Projeto", if (user.hasAccess()) "Logout"];
     var items = popupMenu.generateIds(titles);
     popupMenu.showMenu(items, (index) async {
       switch (items[index].text) {
+        case "Definir IP":
+          await Navigator.push(context, MaterialPageRoute(builder: (context) => const IpDefinitionPage()));
+          break;
         case "Login":
           await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const AccessPage()));
           break;
@@ -73,11 +76,11 @@ class TabHomePageState extends State<TabHomePage> {
   }
 
   Future<void> updateWeather() async {
-    List<WeatherCityModel> weatherCities = appRepository.getWeatherCities;
-    if (weatherCities.isNotEmpty) {
+    listCities = appRepository.getWeatherCities;
+    if (listCities.isNotEmpty) {
       WeatherCityModel highestTemperature = WeatherCityModel();
       WeatherCityModel highestDaysWithoutRain = WeatherCityModel();
-      for (WeatherCityModel model in weatherCities) {
+      for (WeatherCityModel model in listCities) {
         if (highestTemperature.timestamp == null || model.temperature! > highestTemperature.temperature!) {
           highestTemperature = model;
         }
@@ -192,6 +195,10 @@ class TabHomePageState extends State<TabHomePage> {
     if (predictionCities.isEmpty || appRepository.allowUpdatePrediction()) {
       await appRepository.updatePrediction();
       await updatePrediction();
+      setState(() {
+        loadingTop = true;
+        loadingBottom = false;
+      });
     }
     if (listCities.isEmpty || appRepository.allowUpdateWeather()) {
       await appRepository.updateWeather();
@@ -330,7 +337,7 @@ class TabHomePageState extends State<TabHomePage> {
                         strokeWidth: 3,
                       )),
                   SizedBox(width: 16),
-                  Text("Carregando dados...", style: TextStyle(color: Colors.white))
+                  Text("Carregando dados...\nA primeira vez pode levar até 30 segundos.", style: TextStyle(color: Colors.white))
                 ])));
       } else {
         return Center(
@@ -340,7 +347,7 @@ class TabHomePageState extends State<TabHomePage> {
                 child: Row(mainAxisSize: MainAxisSize.min, children: [SvgPicture.asset("assets/icons/alert.svg", width: 16, height: 16), const SizedBox(width: 8), const Text("Sem conexão!", style: TextStyle(color: AppColors.red))])));
       }
     }
-    if (listNews.isNotEmpty && appRepository.getWeatherCities.isNotEmpty) {
+    if (listNews.isNotEmpty && listCities.isNotEmpty) {
       return Column(children: [_getTopContent(), const SizedBox(height: 16), _getBottomContent()]);
     } else if (listNews.isNotEmpty) {
       return Column(children: [_getTopContent(), const SizedBox(height: 16), Expanded(child: SizedBox(child: _getCenteredloading("Carregando cidades...")))]);
@@ -490,26 +497,7 @@ class TabHomePageState extends State<TabHomePage> {
         ],
       ));
     }
-    return Expanded(
-        child: Container(
-            width: double.maxFinite,
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(color: Colors.black.withOpacity(0.25), shape: BoxShape.rectangle, borderRadius: const BorderRadius.all(Radius.circular(36))),
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              if (loadingBottom)
-                const Row(mainAxisSize: MainAxisSize.min, children: [
-                  SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(
-                        color: AppColors.accent,
-                        strokeWidth: 3,
-                      )),
-                  SizedBox(width: 16),
-                  Text("Carregando cidades...", style: TextStyle(color: Colors.white))
-                ]),
-              const Text("lista aqui", style: TextStyle(color: Colors.white, fontSize: 24))
-            ])));
+    return Expanded(child: _getCenteredloading("Carregando Cidades..."));
   }
 
   Widget _getCenteredloading(String text) {

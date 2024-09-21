@@ -1,0 +1,129 @@
+import 'dart:developer';
+
+import 'package:app_monitor_queimadas/utils/AppColors.dart';
+import 'package:app_monitor_queimadas/utils/Utils.dart';
+import 'package:app_monitor_queimadas/widgets/Button.dart';
+import 'package:app_monitor_queimadas/widgets/CustomCheckBox.widget.dart';
+import 'package:app_monitor_queimadas/widgets/TextField.dart';
+import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+class IpDefinitionPage extends StatefulWidget {
+  const IpDefinitionPage({super.key});
+
+  @override
+  State<StatefulWidget> createState() => IpDefinitionPageState();
+}
+
+class IpDefinitionPageState extends State<IpDefinitionPage> {
+  var preferences = GetIt.I.get<SharedPreferences>();
+  String? ip, port;
+  bool? useLocal;
+
+  void showSnackBar() {
+    Utils.showSnackbarSucess(context, "Salvo", duration: const Duration(seconds: 1));
+  }
+
+  @override
+  void initState() {
+    ip = preferences.getString("ip");
+    port = preferences.getString("port");
+    useLocal = preferences.getBool("use_local");
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        backgroundColor: AppColors.fragmentBackground,
+        body: Container(
+            padding: const EdgeInsets.all(24),
+            width: double.maxFinite,
+            height: double.maxFinite,
+            child: Column(children: [
+              const SizedBox(height: 72),
+              const Text("Definir IP Local", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w300, fontSize: 36)),
+              const SizedBox(height: 56),
+              Row(children: [
+                const Expanded(child: Padding(padding: EdgeInsets.only(left: 8), child: Text("ip:", style: TextStyle(color: AppColors.white_3)))),
+                const SizedBox(width: 18),
+                Container(
+                    padding: const EdgeInsets.only(left: 8),
+                    width: 96,
+                    child: const Text(
+                      "porta:",
+                      style: TextStyle(color: AppColors.white_3),
+                    ))
+              ]),
+              const SizedBox(height: 4),
+              Row(
+                children: [
+                  Expanded(
+                      child: MyFieldText(
+                    text: ip ?? "",
+                    hintText: '192.168.1.1',
+                    action: TextInputAction.next,
+                    inputType: TextInputType.number,
+                    onInput: (text) {
+                      setState(() {
+                        ip = text;
+                      });
+                    },
+                  )),
+                  const SizedBox(width: 8),
+                  const Text(":", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 24)),
+                  const SizedBox(width: 8),
+                  SizedBox(
+                      width: 96,
+                      child: MyFieldText(
+                        text: port ?? "",
+                        hintText: '1234',
+                        action: TextInputAction.next,
+                        inputType: TextInputType.number,
+                        onInput: (text) {
+                          setState(() {
+                            port = text;
+                          });
+                        },
+                      )),
+                ],
+              ),
+              const SizedBox(height: 48),
+              CustomCheckBox(
+                  text: "Usar IP local",
+                  checked: useLocal ?? false,
+                  onCheck: (checked) async {
+                    await preferences.setBool("use_local", checked);
+                  }),
+              const SizedBox(height: 48),
+              MyButton(
+                onClick: isValidIp() && isValidPort()
+                    ? () async {
+                        log("aaaa");
+                        await preferences.setString("ip", ip!);
+                        await preferences.setString("port", port!);
+                        FocusManager.instance.primaryFocus?.unfocus(); // hide keyboard
+                        showSnackBar();
+                        //Navigator.pop(context);
+                      }
+                    : null,
+                textButton: "Salvar",
+              ),
+            ])));
+  }
+
+  bool isValidIp() {
+    if (ip != null) {
+      if (ip!.contains(".")) {
+        List<String> segments = ip!.split(".");
+        return segments.length == 4;
+      }
+    }
+    return false;
+  }
+
+  bool isValidPort() {
+    return port != null && port!.isNotEmpty;
+  }
+}

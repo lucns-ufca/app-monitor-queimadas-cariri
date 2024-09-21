@@ -4,7 +4,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 class Notify {
   static showToast(String text, {bool longTost = false}) {
-    Fluttertoast.showToast(msg: text, toastLength: longTost ? Toast.LENGTH_LONG : Toast.LENGTH_SHORT, gravity: ToastGravity.BOTTOM, backgroundColor: AppColors.fragmentBackground, textColor: Colors.white, fontSize: 16.0);
+    Fluttertoast.showToast(msg: text, toastLength: longTost ? Toast.LENGTH_LONG : Toast.LENGTH_SHORT, gravity: ToastGravity.BOTTOM, backgroundColor: AppColors.ticketColor, textColor: AppColors.titleDark, fontSize: 16);
   }
 
   static showSnackbar(BuildContext context, String text) {
