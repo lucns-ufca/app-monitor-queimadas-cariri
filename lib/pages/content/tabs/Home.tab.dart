@@ -273,9 +273,6 @@ class TabHomePageState extends State<TabHomePage> {
                   future: imageProfile,
                   builder: (context, result) {
                     if (result.connectionState == ConnectionState.done) {
-                      if (result.data == null) {
-                        return getProfileButton();
-                      }
                       String name = "";
                       if (user.name.contains(" ")) {
                         List<String> segments = user.name.split(" ");
@@ -287,6 +284,9 @@ class TabHomePageState extends State<TabHomePage> {
                         name += ' ${segments[segments.length - 1]}';
                       } else {
                         name = user.name;
+                      }
+                      if (result.data == null) {
+                        return getProfileButton(name: name);
                       }
                       return Column(mainAxisSize: MainAxisSize.min, children: [
                         SizedBox(
@@ -362,7 +362,7 @@ class TabHomePageState extends State<TabHomePage> {
     }
   }
 
-  Widget getProfileButton({bool loading = false}) {
+  Widget getProfileButton({String name = "Visitante", bool loading = false}) {
     return Column(mainAxisSize: MainAxisSize.min, children: [
       SizedBox(
           width: 56,
@@ -379,7 +379,7 @@ class TabHomePageState extends State<TabHomePage> {
             child: loading ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.accent)) : const Icon(Icons.person_outline),
           )),
       const SizedBox(height: 4),
-      const Text("Visitante", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontFamily: "RobotoCondensedLight")),
+      Text(name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontFamily: "RobotoCondensedLight")),
     ]);
   }
 

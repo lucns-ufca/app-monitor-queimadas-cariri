@@ -28,6 +28,7 @@ class RadioGroupState extends State<RadioGroup> {
   Widget build(BuildContext context) {
     if (widget.direction == Axis.vertical) {
       return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: List.generate(widget.radios.length, (index) {
             if (index < widget.radios.length) {
@@ -51,7 +52,7 @@ class RadioGroupState extends State<RadioGroup> {
   }
 
   Widget getWidget(int index) {
-    return Row(children: [
+    return Row(mainAxisSize: MainAxisSize.min, children: [
       Transform.scale(
           scale: 1.25,
           child: SizedBox(
