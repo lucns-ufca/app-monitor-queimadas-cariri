@@ -126,24 +126,20 @@ class FirstPageState extends State<FirstPage> with SingleTickerProviderStateMixi
                                         ),
                                         child: ElevatedButton(
                                             style: ButtonStyle(
-                                              overlayColor: WidgetStateProperty.all<Color>(AppColors.accent.withOpacity(0.5)),
-                                              elevation: WidgetStateProperty.all<double>(8),
-                                              padding: WidgetStateProperty.all<EdgeInsetsGeometry>(EdgeInsets.zero),
-                                              backgroundColor: WidgetStateProperty.all<Color>(Colors.transparent),
-                                              shadowColor: WidgetStateProperty.all<Color>(Colors.black),
-                                              shape: WidgetStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.circular(48))),
+                                              overlayColor: WidgetStatePropertyAll(AppColors.accent.withOpacity(0.5)),
+                                              elevation: const WidgetStatePropertyAll(8),
+                                              padding: const WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 24)),
+                                              backgroundColor: const WidgetStatePropertyAll(Colors.transparent),
+                                              shadowColor: const WidgetStatePropertyAll(Colors.black),
+                                              shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(48))),
                                             ),
                                             child: Row(
                                               mainAxisSize: MainAxisSize.max,
                                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                               children: [
-                                                const Padding(padding: EdgeInsets.only(left: 36), child: Text("Acessar plataforma.\nSou visitante.", style: TextStyle(color: Colors.white, fontSize: 20, height: 1.5, fontWeight: FontWeight.w600))),
-                                                SizedBox(
-                                                  height: double.maxFinite,
-                                                  width: 96,
-                                                  //decoration: const BoxDecoration(color: Color.fromARGB(87, 40, 248, 255), borderRadius: BorderRadius.only(topRight: Radius.circular(48), bottomRight: Radius.circular(48))),
-                                                  child: Center(child: Image.asset("assets/icons/arrow_right.png", width: 36, height: 36)),
-                                                )
+                                                Text("Acessar plataforma.\nSou visitante.", style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 20, height: 1.5, fontWeight: FontWeight.w600)),
+                                                const SizedBox(width: 16),
+                                                Image.asset("assets/icons/arrow_right.png", width: 36, height: 36),
                                               ],
                                             ),
                                             onPressed: () async {

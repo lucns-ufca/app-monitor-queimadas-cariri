@@ -1,3 +1,8 @@
-import 'package:app_monitor_queimadas/models/content/Data.model.dart';
+import 'package:intl/intl.dart';
 
-class NewsModel extends BaseModel {}
+class NewsModel {
+  String? title, description;
+  int priority = 0;
+  String date = DateFormat('Hoje às kk:mm').format(DateTime.now().toLocal());
+  String? assetsIcon;
+}

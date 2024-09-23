@@ -106,17 +106,24 @@ class FireReportSenderPageState extends State<FireReportSenderPage> {
 
   Future<int> sendData() async {
     bool useLocal = preferences.getBool("use_local") ?? false;
+    int sentType = preferences.getInt("sent_type") ?? 0;
     buttonLoadingController.setLoading(true);
 
-    FormData formData = FormData();
-    if (!useLocal) formData.fields.add(MapEntry("city", cityName ?? "(Não foi possível obter o nome da cidade. GPS sem precisão!)"));
-    formData.fields.add(MapEntry("latitude", latitude.toString()));
-    formData.fields.add(MapEntry("longitude", longitude.toString()));
-    if (!useLocal) formData.fields.add(MapEntry("timestamp", DateTime.now().toLocal().millisecondsSinceEpoch.toString()));
-    if (!useLocal) formData.fields.add(MapEntry("date_time", getDateTime()));
-    formData.fields.add(MapEntry("description", description ?? getInitialText()));
-    if (!useLocal) formData.files.add(MapEntry("image", MultipartFile.fromFileSync(imageFile!.path)));
-    ApiResponse response = await appRepository.reportFire(formData);
+    ApiResponse response;
+    if (sentType == 0) {
+      FormData formData = FormData();
+      if (!useLocal) formData.fields.add(MapEntry("city", cityName ?? "(Não foi possível obter o nome da cidade. GPS sem precisão!)"));
+      formData.fields.add(MapEntry("latitude", latitude.toString()));
+      formData.fields.add(MapEntry("longitude", longitude.toString()));
+      if (useLocal) formData.fields.add(const MapEntry("imgUrl", "teste"));
+      if (!useLocal) formData.fields.add(MapEntry("timestamp", DateTime.now().toLocal().millisecondsSinceEpoch.toString()));
+      if (!useLocal) formData.fields.add(MapEntry("date_time", getDateTime()));
+      formData.fields.add(MapEntry("description", description ?? getInitialText()));
+      if (!useLocal) formData.files.add(MapEntry("image", MultipartFile.fromFileSync(imageFile!.path)));
+      response = await appRepository.reportFireFormData(formData);
+    } else {
+      response = await appRepository.reportFireJson({"imgUrl": "https://url.io/image.jpg", "latitude": latitude, "longitude": longitude, "description": description ?? getInitialText()});
+    }
     Log.d("Lucas", "Response code: ${response.code}");
     switch (response.code) {
       case ApiResponseCodes.OK:

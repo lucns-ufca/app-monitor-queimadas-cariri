@@ -1,13 +1,13 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'WeatherCity.model.dart';
+part of 'Forecast.model.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-WeatherCityModel _$WeatherCityModelFromJson(Map<String, dynamic> json) =>
-    WeatherCityModel(
+ForecastModel _$ForecastModelFromJson(Map<String, dynamic> json) =>
+    ForecastModel(
       timestamp: (json['timestamp'] as num?)?.toInt(),
       dateTime: json['dateTime'] as String?,
       city: json['city'] as String?,
@@ -21,7 +21,7 @@ WeatherCityModel _$WeatherCityModelFromJson(Map<String, dynamic> json) =>
       fireRisk: (json['fireRisk'] as num?)?.toInt(),
     );
 
-Map<String, dynamic> _$WeatherCityModelToJson(WeatherCityModel instance) =>
+Map<String, dynamic> _$ForecastModelToJson(ForecastModel instance) =>
     <String, dynamic>{
       'timestamp': instance.timestamp,
       'dateTime': instance.dateTime,

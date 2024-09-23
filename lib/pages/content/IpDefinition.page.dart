@@ -1,9 +1,8 @@
-import 'dart:developer';
-
 import 'package:app_monitor_queimadas/utils/AppColors.dart';
 import 'package:app_monitor_queimadas/utils/Utils.dart';
 import 'package:app_monitor_queimadas/widgets/Button.dart';
 import 'package:app_monitor_queimadas/widgets/CustomCheckBox.widget.dart';
+import 'package:app_monitor_queimadas/widgets/RadioGroup.widget.dart';
 import 'package:app_monitor_queimadas/widgets/TextField.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -20,6 +19,7 @@ class IpDefinitionPageState extends State<IpDefinitionPage> {
   var preferences = GetIt.I.get<SharedPreferences>();
   String? ip, port;
   bool? useLocal;
+  int sentType = 0;
 
   void showSnackBar() {
     Utils.showSnackbarSucess(context, "Salvo", duration: const Duration(seconds: 1));
@@ -30,6 +30,7 @@ class IpDefinitionPageState extends State<IpDefinitionPage> {
     ip = preferences.getString("ip");
     port = preferences.getString("port");
     useLocal = preferences.getBool("use_local");
+    sentType = preferences.getInt("sent_type") ?? 0;
     super.initState();
   }
 
@@ -97,10 +98,16 @@ class IpDefinitionPageState extends State<IpDefinitionPage> {
                     await preferences.setBool("use_local", checked);
                   }),
               const SizedBox(height: 48),
+              RadioGroup(
+                  direction: Axis.horizontal,
+                  onCheckChanged: (selectedRadioButton) {
+                    preferences.setInt("sent_type", selectedRadioButton.title == 'Usar Form-Data' ? 0 : 1);
+                  },
+                  radios: [RadioButton(title: "Usar Form-Data", checked: sentType == 0, enabled: true), RadioButton(title: "Usar JSON", checked: sentType == 1, enabled: true)]),
+              const SizedBox(height: 48),
               MyButton(
                 onClick: isValidIp() && isValidPort()
                     ? () async {
-                        log("aaaa");
                         await preferences.setString("ip", ip!);
                         await preferences.setString("port", port!);
                         FocusManager.instance.primaryFocus?.unfocus(); // hide keyboard
