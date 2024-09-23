@@ -319,7 +319,7 @@ class TabHomePageState extends State<TabHomePage> {
         Expanded(
             child: CustomScrollView(
           slivers: [
-            SliverFillRemaining(hasScrollBody: false, child: Expanded(child: getMainContent())),
+            SliverFillRemaining(hasScrollBody: false, child: getMainContent()),
           ],
         )),
         const SizedBox(height: 72)
