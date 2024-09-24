@@ -100,7 +100,7 @@ class LoginFormState extends State<LoginForm> {
             const SizedBox(),
             Column(mainAxisSize: MainAxisSize.min, children: [
               Container(transform: Matrix4.translationValues(0, 2, 0), child: const ImageTransitionScroller(duration: Duration(seconds: 20), assets: "assets/images/minimal_forest2.png", width: 637, height: 223)),
-              Container(height: MediaQuery.of(context).size.height * 0.2, width: double.maxFinite, color: AppColors.appBackground, child: const Align(alignment: Alignment.bottomCenter, child: AppLogos()))
+              Container(height: MediaQuery.of(context).size.height * 0.2, width: double.maxFinite, color: AppColors.appBackground, child: const Align(alignment: Alignment.bottomCenter, child: AppLogos(showAppLogo: true)))
             ])
           ]),
           Column(mainAxisSize: MainAxisSize.min, children: [

@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:app_monitor_queimadas/api/Api.dart';
-import 'package:app_monitor_queimadas/pages/content/Dashboard.page.dart';
+import 'package:app_monitor_queimadas/pages/content/MainScreen.page.dart';
 import 'package:app_monitor_queimadas/pages/content/reports/FireReportPages.page.dart';
 import 'package:app_monitor_queimadas/pages/dialogs/BasicDialogs.dart';
 import 'package:app_monitor_queimadas/repositories/App.repository.dart';
@@ -19,6 +19,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:get_it/get_it.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class FireReportSenderPage extends StatefulWidget {
   final CallbackController callbackController;
@@ -44,13 +46,14 @@ class FireReportSenderPageState extends State<FireReportSenderPage> {
   Dialogs? dialogs;
   ButtonLoadingController buttonLoadingController = ButtonLoadingController();
   AppRepository appRepository = AppRepository();
+  var preferences = GetIt.I.get<SharedPreferences>();
 
   void attemptSendData() async {
     setState(() {
       hasError = false;
       sending = true;
     });
-    int maximumAttempts = 2;
+    int maximumAttempts = 1;
     int attempts = 0;
     int status = -1;
     while (status != 0 && attempts < maximumAttempts) {
@@ -60,7 +63,8 @@ class FireReportSenderPageState extends State<FireReportSenderPage> {
         case 0:
           buttonLoadingController.setLoading(false);
           dialogs!.showDialogSuccess(() async {
-            await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const DashboardPage()));
+            //await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const DashboardPage()));
+            await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainScreenPage()));
           });
           setState(() {
             sending = false;
@@ -101,17 +105,25 @@ class FireReportSenderPageState extends State<FireReportSenderPage> {
   }
 
   Future<int> sendData() async {
+    bool useLocal = preferences.getBool("use_local") ?? false;
+    int sentType = preferences.getInt("sent_type") ?? 0;
     buttonLoadingController.setLoading(true);
 
-    FormData formData = FormData();
-    formData.fields.add(MapEntry("city", cityName!));
-    formData.fields.add(MapEntry("latitude", latitude.toString()));
-    formData.fields.add(MapEntry("longitude", longitude.toString()));
-    formData.fields.add(MapEntry("timestamp", DateTime.now().toLocal().millisecondsSinceEpoch.toString()));
-    formData.fields.add(MapEntry("date_time", getDateTime()));
-    formData.fields.add(MapEntry("description", description ?? getInitialText()));
-    formData.files.add(MapEntry("image", MultipartFile.fromFileSync(imageFile!.path)));
-    ApiResponse response = await appRepository.reportFire(formData);
+    ApiResponse response;
+    if (sentType == 0) {
+      FormData formData = FormData();
+      if (!useLocal) formData.fields.add(MapEntry("city", cityName ?? "(Não foi possível obter o nome da cidade. GPS sem precisão!)"));
+      formData.fields.add(MapEntry("latitude", latitude.toString()));
+      formData.fields.add(MapEntry("longitude", longitude.toString()));
+      if (useLocal) formData.fields.add(const MapEntry("imgUrl", "teste"));
+      if (!useLocal) formData.fields.add(MapEntry("timestamp", DateTime.now().toLocal().millisecondsSinceEpoch.toString()));
+      if (!useLocal) formData.fields.add(MapEntry("date_time", getDateTime()));
+      formData.fields.add(MapEntry("description", description ?? getInitialText()));
+      if (!useLocal) formData.files.add(MapEntry("image", MultipartFile.fromFileSync(imageFile!.path)));
+      response = await appRepository.reportFireFormData(formData);
+    } else {
+      response = await appRepository.reportFireJson({"imgUrl": "https://url.io/image.jpg", "latitude": latitude, "longitude": longitude, "description": description ?? getInitialText()});
+    }
     Log.d("Lucas", "Response code: ${response.code}");
     switch (response.code) {
       case ApiResponseCodes.OK:
@@ -190,7 +202,8 @@ class FireReportSenderPageState extends State<FireReportSenderPage> {
             Notify.showToast("Envio em andamento...");
             return;
           }
-          await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const DashboardPage()));
+          //await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const DashboardPage()));
+          await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainScreenPage()));
         },
         child: Container(
           width: MediaQuery.of(context).size.width,

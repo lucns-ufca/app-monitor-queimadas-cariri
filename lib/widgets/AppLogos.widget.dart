@@ -3,7 +3,8 @@ import 'package:app_monitor_queimadas/widgets/DynamicWidgetOpacity.widget.dart';
 import 'package:flutter/material.dart';
 
 class AppLogos extends StatelessWidget {
-  const AppLogos({super.key});
+  final bool showAppLogo;
+  const AppLogos({this.showAppLogo = false, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -15,9 +16,13 @@ class AppLogos extends StatelessWidget {
           child: SizedBox(
               height: 56,
               child: Row(children: [
+                const SizedBox(width: 16),
                 Expanded(child: Image.asset('assets/images/lisia.png')),
-                const SizedBox(width: 48),
+                SizedBox(width: showAppLogo ? 16 : 48),
+                if (showAppLogo) Expanded(child: Image.asset('assets/images/monitor_queimadas_cariri.png')),
+                if (showAppLogo) const SizedBox(width: 16),
                 Expanded(child: Image.asset('assets/images/ufca_brightness.png')),
+                const SizedBox(width: 16),
               ]))),
       const SizedBox(
         height: 16,

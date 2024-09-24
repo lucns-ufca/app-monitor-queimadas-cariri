@@ -65,7 +65,7 @@ class ButtonLoadingState extends State<ButtonLoading> {
               padding: WidgetStateProperty.all(const EdgeInsets.all(0)),
               splashFactory: width == 56 ? NoSplash.splashFactory : InkRipple.splashFactory,
               backgroundColor: WidgetStateProperty.all(widget.onPressed == null ? AppColors.buttonDisabled : AppColors.buttonNormal),
-              foregroundColor: WidgetStateProperty.all(widget.onPressed == null ? AppColors.textDisabled : Colors.white),
+              foregroundColor: WidgetStateProperty.all(widget.onPressed == null ? AppColors.textDisabled : AppColors.titleDark),
               overlayColor: WidgetStateProperty.all(width == minimum || widget.onPressed == null ? Colors.transparent : Colors.white.withOpacity(0.3))),
           child: AnimatedSwitcher(
               switchInCurve: Curves.linear,

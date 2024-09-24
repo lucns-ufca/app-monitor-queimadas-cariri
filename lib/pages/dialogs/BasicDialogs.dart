@@ -1,6 +1,5 @@
 // @Developed by @lucns
 
-import 'package:app_monitor_queimadas/widgets/Button.dart';
 import 'package:app_monitor_queimadas/widgets/TransparentButton.widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -94,7 +93,7 @@ class Dialogs {
             child: Container(
                 padding: const EdgeInsets.all(24),
                 decoration: const BoxDecoration(
-                  color: AppColors.fragmentBackgroundError,
+                  color: AppColors.fragmentBackground,
                   borderRadius: BorderRadius.all(Radius.circular(24)),
                   boxShadow: [
                     BoxShadow(
@@ -110,10 +109,11 @@ class Dialogs {
                   const SizedBox(height: 8),
                   Text(textAlign: TextAlign.start, description, maxLines: 10, style: const TextStyle(color: Colors.white, fontSize: 16, overflow: TextOverflow.visible)),
                   const SizedBox(height: 24),
-                  Center(
-                      child: MyButton(
-                          textButton: "OK",
-                          onClick: () async {
+                  SizedBox(
+                      width: double.maxFinite,
+                      child: TransparentButton(
+                          text: "OK",
+                          onTap: () async {
                             await Future.delayed(const Duration(milliseconds: 150));
                             Navigator.of(context).pop();
                           }))

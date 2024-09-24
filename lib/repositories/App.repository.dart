@@ -5,27 +5,28 @@ import 'dart:io';
 
 import 'package:app_monitor_queimadas/api/Api.dart';
 import 'package:app_monitor_queimadas/models/PredictionCity.model.dart';
-import 'package:app_monitor_queimadas/models/ProbabilityCity.model.dart';
+import 'package:app_monitor_queimadas/models/ForecastCity.model.dart';
 import 'package:app_monitor_queimadas/models/WeatherCity.model.dart';
-import 'package:app_monitor_queimadas/utils/Constants.dart';
-import 'package:app_monitor_queimadas/utils/Utils.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:get_it/get_it.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AppRepository {
+  var preferences = GetIt.I.get<SharedPreferences>();
   final ControllerApi api = ControllerApi();
   void Function()? onUpdateConcluded;
 
   List<PredictionCityModel> predictionCities = [];
   List<WeatherCityModel> weatherCities = [];
-  List<ProbabilityCityModel> probabilitiesCities = [];
+  List<ForecastCityModel> forecastCities = [];
 
   AppRepository();
 
   List<PredictionCityModel> get getPredictionCities => predictionCities;
   List<WeatherCityModel> get getWeatherCities => weatherCities;
-  List<ProbabilityCityModel> get getProbabilityCities => probabilitiesCities;
+  List<ForecastCityModel> get getForecastCities => forecastCities;
 
   void setOnUpdateConcluded(void Function()? onUpdateConcluded) {
     this.onUpdateConcluded = onUpdateConcluded;
@@ -35,8 +36,11 @@ class AppRepository {
     File file = File(path);
     if (!await file.exists()) return;
     String jsonString = await file.readAsString();
-    PredictionCityModel model = PredictionCityModel.fromJson(jsonDecode(jsonString));
-    predictionCities.add(model);
+    List<dynamic> jsonArray = jsonDecode(jsonString);
+    predictionCities.clear();
+    for (dynamic json in jsonArray) {
+      predictionCities.add(PredictionCityModel.fromJson(json));
+    }
   }
 
   Future<void> addToWeatherCities(String path) async {
@@ -50,27 +54,22 @@ class AppRepository {
     }
   }
 
-  Future<void> addToProbabilitiesCities(String path) async {
+  Future<void> addToforecastCities(String path) async {
     File file = File(path);
     if (!await file.exists()) return;
     String jsonString = await file.readAsString();
     List<dynamic> jsonArray = jsonDecode(jsonString);
-    probabilitiesCities.clear();
-    for (dynamic json in jsonArray) {
-      probabilitiesCities.add(ProbabilityCityModel.fromJson(json));
+    forecastCities.clear();
+    for (Map<String, dynamic> json in jsonArray) {
+      forecastCities.add(ForecastCityModel.fromJson(json));
     }
   }
 
   Future<void> updateLocal() async {
     Directory directory = await getApplicationDocumentsDirectory();
-    predictionCities.clear();
-    for (String cityName in Constants.CITIES_COORDINATES.keys) {
-      String cityWithoutAccents = Utils.removeDiacritics(cityName);
-      await addToPredictionCities("${directory.path}/data/prediction/$cityWithoutAccents.json");
-    }
-    await addToPredictionCities("${directory.path}/data/prediction/Chapada do Araripe.json");
-    await addToWeatherCities("${directory.path}/data/weather/WeatherData.json");
-    await addToProbabilitiesCities("${directory.path}/data/weather/ProbabilityData.json");
+    await addToPredictionCities("${directory.path}/data/prediction/AllCitiesPrediction.json");
+    await addToWeatherCities("${directory.path}/data/weather/AllCitiesWeather.json");
+    await addToforecastCities("${directory.path}/data/weather/AllCitiesForecast.json");
   }
 
   bool allowUpdatePrediction() {
@@ -89,9 +88,9 @@ class AppRepository {
     return false;
   }
 
-  bool allowUpdateProbability() {
-    if (probabilitiesCities.isEmpty) return true;
-    DateTime old = DateTime.parse(probabilitiesCities[0].probabilities![0].dateTime!).toLocal();
+  bool allowUpdateForecast() {
+    if (forecastCities.isEmpty) return true;
+    DateTime old = DateTime.parse(forecastCities[0].forecast![0].dateTime!).toLocal();
     DateTime today = DateTime.now().toLocal();
     if (today.difference(old).inDays > 0) return true;
     return false;
@@ -114,49 +113,37 @@ class AppRepository {
   }
 
   Future<void> updatePrediction() async {
-    List<PredictionCityModel> list = [];
     Directory directory = await getApplicationDocumentsDirectory();
-    for (String cityName in Constants.CITIES_COORDINATES.keys) {
-      String cityWithoutAccents = Utils.removeDiacritics(cityName);
-      String stringEncooded = Uri.encodeComponent(cityWithoutAccents);
-      String? data = await downloadData('prediction/predictions.php?city=$stringEncooded', "${directory.path}/data/prediction/$cityWithoutAccents.json");
-      if (data == null) continue;
-      PredictionCityModel predictionCityModel = PredictionCityModel.fromJson(jsonDecode(data));
-      list.add(predictionCityModel);
-      await Future.delayed(const Duration(milliseconds: 250));
-    }
-    predictionCities = list;
-    String stringEncooded = Uri.encodeComponent("Chapada do Araripe");
-    String? data = await downloadData('prediction/predictions.php?city=$stringEncooded', "${directory.path}/data/prediction/Chapada do Araripe.json");
+    String? data = await downloadData('prediction/predictions.php', "${directory.path}/data/prediction/AllCitiesPrediction.json");
     if (data == null) return;
-    PredictionCityModel predictionCityModel = PredictionCityModel.fromJson(jsonDecode(data));
-    list.add(predictionCityModel);
-    predictionCities = list;
+    List<dynamic> jsonArray = jsonDecode(data);
+    predictionCities.clear();
+    for (dynamic json in jsonArray) {
+      predictionCities.add(PredictionCityModel.fromJson(json));
+    }
   }
 
   Future<void> updateWeather() async {
     Directory directory = await getApplicationDocumentsDirectory();
-    String? data = await downloadData('weather/weather.php', "${directory.path}/data/weather/WeatherData.json");
+    String? data = await downloadData('weather/weather.php', "${directory.path}/data/weather/AllCitiesWeather.json");
     if (data == null) return;
     List<dynamic> jsonArray = jsonDecode(data);
-    List<WeatherCityModel> list = [];
+    weatherCities.clear();
     for (Map<String, dynamic> json in jsonArray) {
-      list.add(WeatherCityModel.fromJson(json));
+      weatherCities.add(WeatherCityModel.fromJson(json));
     }
-    weatherCities = list;
   }
 
-  Future<void> updateProbabilities() async {
-    List<ProbabilityCityModel> list = [];
+  Future<void> updateforecast() async {
     Directory directory = await getApplicationDocumentsDirectory();
-    String? data = await downloadData('weather/probabilities.php', "${directory.path}/data/weather/ProbabilityData.json");
+    String? data = await downloadData('weather/forecast.php', "${directory.path}/data/weather/AllCitiesForecast.json");
 
     if (data == null) return;
     List<dynamic> jsonArray = jsonDecode(data);
+    forecastCities.clear();
     for (Map<String, dynamic> json in jsonArray) {
-      list.add(ProbabilityCityModel.fromJson(json));
+      forecastCities.add(ForecastCityModel.fromJson(json));
     }
-    probabilitiesCities = list;
   }
 
   Future<ApiResponse> getPredictionValues({String? city}) async {
@@ -172,13 +159,48 @@ class AppRepository {
     }
   }
 
-  Future<ApiResponse> reportFire(FormData formData) async {
+  Future<ApiResponse> reportFireFormData(FormData formData) async {
+    String ip = preferences.getString("ip") ?? "";
+    String port = preferences.getString("port") ?? "";
+    bool useLocal = preferences.getBool("use_local") ?? false;
+    String baseUrl = useLocal && ip.isNotEmpty && port.isNotEmpty ? "'http://$ip:$port/'" : 'https://lucns.io/apps/monitor_queimadas_cariri/';
+    Dio api = Dio(BaseOptions(baseUrl: baseUrl));
     try {
-      Response response = await api.post('reports/reports.php', formData);
+      Response response = await api.post('warnings/create', data: formData);
       return ApiResponse(code: response.statusCode, data: response.data);
     } on DioException catch (e) {
       return _getDefaultErrorResponse(e);
     }
+    /*
+      try {
+        Response response = await api.post('reports/reports.php', formData);
+        return ApiResponse(code: response.statusCode, data: response.data);
+      } on DioException catch (e) {
+        return _getDefaultErrorResponse(e);
+      }
+      */
+  }
+
+  Future<ApiResponse> reportFireJson(Map<String, dynamic> json) async {
+    String ip = preferences.getString("ip") ?? "";
+    String port = preferences.getString("port") ?? "";
+    bool useLocal = preferences.getBool("use_local") ?? false;
+    String baseUrl = useLocal && ip.isNotEmpty && port.isNotEmpty ? 'http://$ip:$port/' : 'https://lucns.io/apps/monitor_queimadas_cariri/';
+    Dio api = Dio(BaseOptions(baseUrl: baseUrl));
+    try {
+      Response response = await api.post('warnings/create', data: json);
+      return ApiResponse(code: response.statusCode, data: response.data);
+    } on DioException catch (e) {
+      return _getDefaultErrorResponse(e);
+    }
+    /*
+      try {
+        Response response = await api.post('reports/reports.php', formData);
+        return ApiResponse(code: response.statusCode, data: response.data);
+      } on DioException catch (e) {
+        return _getDefaultErrorResponse(e);
+      }
+      */
   }
 
   ApiResponse _getDefaultErrorResponse(DioException e) {
@@ -198,7 +220,7 @@ class AppRepository {
 }
 
 abstract class ResponseCallback {
-  void onProbabilitiesAvailable(List<ProbabilityCityModel>? value);
+  void onforecastAvailable(List<ForecastCityModel>? value);
   void onWeathersAvailable(List<WeatherCityModel>? value);
   void onPredictionsAvailable(List<PredictionCityModel>? value);
 }

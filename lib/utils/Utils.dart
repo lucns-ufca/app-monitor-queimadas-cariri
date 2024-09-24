@@ -73,17 +73,29 @@ class Utils {
     }
   }
 
-  static showSnackbarError(BuildContext context, String message) {
+  static showSnackbarSucess(BuildContext context, String message, {Duration duration = const Duration(seconds: 5)}) {
+    showSnackbar(context, duration, AppColors.fragmentBackgroundSuccess, Colors.white, message);
+  }
+
+  static showSnackbarError(BuildContext context, String message, {Duration duration = const Duration(seconds: 5)}) {
+    showSnackbar(context, duration, AppColors.fragmentBackgroundError, Colors.white, message);
+  }
+
+  static showSnackbarInfo(BuildContext context, String message, {Duration duration = const Duration(seconds: 5)}) {
+    showSnackbar(context, duration, AppColors.fragmentBackgroundInfo, AppColors.titleDark, message);
+  }
+
+  static showSnackbar(BuildContext context, Duration duration, Color colorBackground, Color colorText, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         //elevation: 0,
         //behavior: SnackBarBehavior.fixed,
-        content: Text(message, style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500)),
-        duration: const Duration(seconds: 5),
+        content: Text(message, style: TextStyle(color: colorText, fontSize: 16, fontWeight: FontWeight.bold)),
+        duration: duration,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(topLeft: Radius.circular(16), topRight: Radius.circular(16)),
         ),
-        backgroundColor: AppColors.fragmentBackgroundError,
+        backgroundColor: colorBackground,
         /*
         action: SnackBarAction(
           textColor: Color(0xFFFAF2FB),

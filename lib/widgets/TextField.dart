@@ -18,6 +18,7 @@ class MyFieldText extends StatefulWidget {
   final TextCapitalization? textCapitalization;
   final bool isEnabled;
   final Color textColor;
+  final int? maximumLength;
   final Function(String value)? onInput;
 
   const MyFieldText(
@@ -34,6 +35,7 @@ class MyFieldText extends StatefulWidget {
       this.isEnabled = true,
       this.textCapitalization,
       this.inputFormatters,
+      this.maximumLength,
       this.onInput});
 
   @override
@@ -67,7 +69,7 @@ class _MyTextFieldState extends State<MyFieldText> {
     const double height = Constants.DEFAULT_WIDGET_HEIGHT;
     return SizedBox(
         height: widget.height ?? height,
-        width: widget.width ?? double.maxFinite,
+        width: widget.width ?? MediaQuery.of(context).size.width,
         child: Focus(
             debugLabel: 'MyFieldText',
             child: Builder(builder: (BuildContext context) {
@@ -78,8 +80,9 @@ class _MyTextFieldState extends State<MyFieldText> {
                     if (widget.inputType == TextInputType.visiblePassword) {
                       setState(() {});
                     }
-                    widget.onInput!(text);
+                    if (widget.onInput != null) widget.onInput!(text);
                   },
+                  maxLength: widget.maximumLength,
                   maxLines: widget.inputType == TextInputType.multiline ? null : 1,
                   expands: widget.inputType == TextInputType.multiline,
                   textAlign: TextAlign.start,

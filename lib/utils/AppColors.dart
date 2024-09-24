@@ -24,7 +24,7 @@ class AppColors {
   static const yellowSky = Color.fromARGB(255, 230, 162, 36);
   static const ripple = Color.fromARGB(188, 255, 255, 255);
   static const shadow = Color.fromARGB(75, 0, 0, 0);
-  static const dialogBackground = Color.fromARGB(208, 74, 208, 208);
+  static const dialogBackground = Color.fromARGB(208, 208, 154, 74);
 
   static const appBackground = Color.fromARGB(255, 45, 32, 15);
   static const mainAreaBackground = Color.fromARGB(255, 212, 139, 37);
@@ -32,6 +32,8 @@ class AppColors {
   static const fragmentBackgroundInDialog = Color.fromARGB(255, 21, 21, 21);
   static const fragmentBackground = Color.fromARGB(255, 81, 59, 28);
   static const fragmentBackgroundError = Color.fromARGB(208, 109, 32, 38);
+  static const fragmentBackgroundInfo = Color.fromARGB(208, 255, 182, 47);
+  static const fragmentBackgroundSuccess = Color.fromARGB(208, 26, 194, 102);
   static const menuBackground = Color.fromARGB(195, 248, 212, 177);
   static const cardBackground = gray_7;
 

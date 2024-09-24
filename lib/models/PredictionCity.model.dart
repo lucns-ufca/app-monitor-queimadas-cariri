@@ -5,19 +5,12 @@ part 'PredictionCity.model.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class PredictionCityModel {
+  //@JsonKey(name: 'dateTime')
   int? timestamp;
-
-  @JsonKey(name: 'date_time')
   String? dateTime;
-
   String? city;
-
-  @JsonKey(name: 'prediction_total')
   int? predictionTotal;
-
-  @JsonKey(name: 'occurred_total')
   int? occurredTotal;
-
   List<PredictionMonthlyModel>? months;
 
   PredictionCityModel({this.timestamp, this.predictionTotal, this.dateTime, this.months, this.occurredTotal});

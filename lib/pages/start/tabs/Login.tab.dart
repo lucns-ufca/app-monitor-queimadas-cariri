@@ -37,7 +37,7 @@ class LoginTabState extends State<LoginTab> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: 405,
+        height: MediaQuery.of(context).size.height * 0.58,
         padding: const EdgeInsets.all(24),
         child: Column(children: [
           const SizedBox(height: 24),
