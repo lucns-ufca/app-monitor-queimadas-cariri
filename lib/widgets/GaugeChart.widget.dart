@@ -1,14 +1,14 @@
 import 'package:app_monitor_queimadas/utils/AppColors.dart';
+import 'package:app_monitor_queimadas/widgets/MeasureSize.widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:vector_math/vector_math.dart' as vmath;
 import 'dart:math' as math;
 
 class GaugeChart extends StatefulWidget {
   final double progress;
-  final double width, height;
-  const GaugeChart({super.key, required this.width, required this.height, this.progress = 0, required this.progressController});
-
-  final ProgressController progressController;
+  final ProgressController? progressController;
+  const GaugeChart({super.key, this.progress = 0, this.progressController});
 
   @override
   GaugeChartState createState() => GaugeChartState();
@@ -18,19 +18,24 @@ class GaugeChartState extends State<GaugeChart> with TickerProviderStateMixin {
   Animation<double>? animation;
   AnimationController? controller;
   Tween<double>? tween;
+  Size? size;
 
   @override
   void initState() {
-    widget.progressController.setProgress = setProgress;
+    if (widget.progressController != null) widget.progressController!.setProgress = setProgress;
     controller = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 5),
+      duration: const Duration(milliseconds: 1000),
     );
     controller!.addListener(() {
       setState(() {});
     });
     tween = Tween(begin: 0, end: widget.progress);
     animation = tween!.animate(controller!);
+
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      controller!.forward();
+    });
     super.initState();
   }
 
@@ -56,7 +61,17 @@ class GaugeChartState extends State<GaugeChart> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(width: widget.width, height: widget.height, child: CustomPaint(painter: CustomCircularProgress(width: widget.width, height: widget.height, value: animation!.value / 100)));
+    if (size == null) {
+      return MeasureSize(
+          onChange: (s) {
+            setState(() {
+              size = s;
+            });
+          },
+          child: const SizedBox(width: double.maxFinite, height: double.maxFinite));
+    }
+    double value = size!.width > size!.height ? size!.height : size!.width;
+    return CustomPaint(painter: CustomCircularProgress(width: value, height: value, value: animation!.value / 100));
   }
 }
 

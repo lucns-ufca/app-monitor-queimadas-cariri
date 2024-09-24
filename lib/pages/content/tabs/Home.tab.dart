@@ -7,6 +7,7 @@ import 'package:app_monitor_queimadas/models/User.model.dart';
 import 'package:app_monitor_queimadas/models/WeatherCity.model.dart';
 import 'package:app_monitor_queimadas/models/content/News.model.dart';
 import 'package:app_monitor_queimadas/pages/content/AboutProject.page.dart';
+import 'package:app_monitor_queimadas/pages/content/BaseWidgets.dart';
 import 'package:app_monitor_queimadas/pages/content/IpDefinition.page.dart';
 import 'package:app_monitor_queimadas/pages/dialogs/PopupMenu.dart';
 import 'package:app_monitor_queimadas/pages/start/Acess.page.dart';
@@ -21,7 +22,6 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
 
 class TabHomePage extends StatefulWidget {
@@ -34,13 +34,11 @@ class TabHomePage extends StatefulWidget {
 class TabHomePageState extends State<TabHomePage> {
   final user = GetIt.I.get<User>();
   final appRepository = GetIt.I.get<AppRepository>();
-  bool runColor = false;
   bool loadingTop = true;
   bool loadingBottom = true;
   bool connected = true;
   List<NewsModel> listNews = [];
   List<WeatherCityModel> listCities = [];
-  StreamSubscription<List<ConnectivityResult>>? subscription;
   Future<File?>? imageProfile;
   PredictionCityModel? selectedHighestOccurred;
   PredictionCityModel? selectedCurrentMonthHighestOccurred;
@@ -76,7 +74,7 @@ class TabHomePageState extends State<TabHomePage> {
     });
   }
 
-  Future<void> updateWeather() async {
+  void updateWeather() {
     listCities = appRepository.getWeatherCities;
     if (listCities.isNotEmpty) {
       WeatherCityModel highestTemperature = WeatherCityModel();
@@ -106,7 +104,7 @@ class TabHomePageState extends State<TabHomePage> {
     }
   }
 
-  Future<void> updatePrediction() async {
+  void updatePrediction() {
     int currentMonth = DateTime.now().month;
     List<PredictionCityModel> predictionCities = appRepository.getPredictionCities;
     if (predictionCities.isNotEmpty) {
@@ -133,7 +131,7 @@ class TabHomePageState extends State<TabHomePage> {
     }
   }
 
-  Future<void> updateProbabilities() async {
+  void updateProbabilities() {
     List<ForecastCityModel> probabilitiesCities = appRepository.getForecastCities;
     if (probabilitiesCities.isNotEmpty) {
       ForecastCityModel highestProbabilities = ForecastCityModel();
@@ -201,7 +199,7 @@ class TabHomePageState extends State<TabHomePage> {
 
     if (predictionCities.isEmpty || appRepository.allowUpdatePrediction()) {
       await appRepository.updatePrediction();
-      await updatePrediction();
+      updatePrediction();
       setState(() {
         loadingTop = true;
         loadingBottom = false;
@@ -209,11 +207,11 @@ class TabHomePageState extends State<TabHomePage> {
     }
     if (listCities.isEmpty || appRepository.allowUpdateWeather()) {
       await appRepository.updateWeather();
-      await updateWeather();
+      updateWeather();
     }
     if (probabilitiesCities.isEmpty || appRepository.allowUpdateForecast()) {
       await appRepository.updateforecast();
-      await updateProbabilities();
+      updateProbabilities();
     }
     setState(() {
       loadingTop = false;
@@ -230,10 +228,7 @@ class TabHomePageState extends State<TabHomePage> {
       Connectivity connectivity = Connectivity();
       List<ConnectivityResult> list = await connectivity.checkConnectivity();
       connected = list.any((item) => item != ConnectivityResult.none);
-      setState(() {
-        runColor = true;
-      });
-      subscription = connectivity.onConnectivityChanged.listen((list) {
+      connectivity.onConnectivityChanged.listen((list) {
         setState(() {
           connected = list.any((item) => item != ConnectivityResult.none);
         });
@@ -346,19 +341,15 @@ class TabHomePageState extends State<TabHomePage> {
                   Text("Carregando dados...", style: TextStyle(color: Colors.white))
                 ])));
       } else {
-        return Center(
-            child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(color: Colors.black.withOpacity(0.25), shape: BoxShape.rectangle, borderRadius: const BorderRadius.all(Radius.circular(36))),
-                child: Row(mainAxisSize: MainAxisSize.min, children: [SvgPicture.asset("assets/icons/alert.svg", width: 16, height: 16), const SizedBox(width: 8), const Text("Sem conexão!", style: TextStyle(color: AppColors.red))])));
+        return BaseWidgets().getCenteredError("Sem conexão!");
       }
     }
     if (listNews.isNotEmpty && listCities.isNotEmpty) {
       return Column(children: [_getTopContent(), const SizedBox(height: 16), _getBottomContent()]);
     } else if (listNews.isNotEmpty) {
-      return Column(children: [_getTopContent(), const SizedBox(height: 16), Expanded(child: SizedBox(child: _getCenteredloading("Carregando cidades...")))]);
+      return Column(children: [_getTopContent(), const SizedBox(height: 16), Expanded(child: SizedBox(child: BaseWidgets().getCenteredloading("Carregando cidades...")))]);
     } else {
-      return Column(children: [SizedBox(height: 220, child: _getCenteredloading("Carregando noticias...")), const SizedBox(height: 16), _getBottomContent()]);
+      return Column(children: [SizedBox(height: 220, child: BaseWidgets().getCenteredloading("Carregando noticias...")), const SizedBox(height: 16), _getBottomContent()]);
     }
   }
 
@@ -385,17 +376,19 @@ class TabHomePageState extends State<TabHomePage> {
 
   Widget _getTopContent() {
     List<PredictionCityModel> predictionCities = appRepository.getPredictionCities;
-    PredictionCityModel? chapadaAraripe;
-    if (predictionCities.isNotEmpty) {
-      chapadaAraripe = predictionCities.firstWhere((item) => item.city == "Chapada do Araripe");
+    int predictionTotal = 0;
+    int occurredTotal = 0;
+    for (PredictionCityModel model in predictionCities) {
+      predictionTotal += model.predictionTotal ?? 0;
+      occurredTotal += model.occurredTotal ?? 0;
     }
     return Column(children: [
       Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Row(mainAxisSize: MainAxisSize.max, children: [
-            getCardNumber("Focos ${DateTime.now().year}", selectedHighestOccurred == null ? "" : "${selectedHighestOccurred!.occurredTotal}", "assets/icons/brown_fire.png"),
+            getCardNumber("Focos ${DateTime.now().year}", "$occurredTotal", "assets/icons/brown_fire.png"),
             const SizedBox(width: 8),
-            getCardNumber("Previsto ${DateTime.now().year}", chapadaAraripe == null ? "" : "${chapadaAraripe.predictionTotal}", "assets/icons/brown_search.png"),
+            getCardNumber("Previsto ${DateTime.now().year}", "$predictionTotal", "assets/icons/brown_search.png"),
             const SizedBox(width: 8),
             getCardNumber("Cidades", predictionCities.isEmpty ? "" : "${predictionCities.length - 1}", "assets/icons/brown_pin.png")
           ])),
@@ -469,25 +462,7 @@ class TabHomePageState extends State<TabHomePage> {
         ],
       ));
     }
-    return Expanded(child: _getCenteredloading("Carregando Cidades..."));
-  }
-
-  Widget _getCenteredloading(String text) {
-    return Center(
-        child: Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(color: Colors.black.withOpacity(0.25), shape: BoxShape.rectangle, borderRadius: const BorderRadius.all(Radius.circular(36))),
-            child: Row(mainAxisSize: MainAxisSize.min, children: [
-              const SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: CircularProgressIndicator(
-                    color: AppColors.accent,
-                    strokeWidth: 3,
-                  )),
-              const SizedBox(width: 16),
-              Text(text, style: const TextStyle(color: Colors.white))
-            ])));
+    return Expanded(child: BaseWidgets().getCenteredloading("Carregando Cidades..."));
   }
 
   Widget getTickets() {

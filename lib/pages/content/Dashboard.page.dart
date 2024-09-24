@@ -225,7 +225,7 @@ class DashboardPageState extends State<DashboardPage> {
                               width: 180,
                               height: 180,
                               child: Stack(children: [
-                                GaugeChart(width: 180, height: 180, progressController: progressController),
+                                GaugeChart(progressController: progressController),
                                 Center(
                                     child: updatingPrediction
                                         ? const Text("Carregando...", style: TextStyle(color: AppColors.textNormal))
@@ -243,7 +243,7 @@ class DashboardPageState extends State<DashboardPage> {
                                   width: 110,
                                   height: 110,
                                   child: Stack(children: [
-                                    GaugeChart(width: 110, height: 110, progressController: progressController2),
+                                    GaugeChart(progressController: progressController2),
                                     Center(
                                         child: Column(mainAxisSize: MainAxisSize.min, children: [
                                       Text("$ocurrences/$predicted", style: const TextStyle(color: AppColors.textNormal, fontWeight: FontWeight.w300, fontSize: 24)),

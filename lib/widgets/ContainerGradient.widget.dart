@@ -4,8 +4,9 @@ class ContainerGradient extends StatefulWidget {
   final Duration duration;
   final List<Color> colors;
   final Widget child;
+  final Alignment start, end;
 
-  const ContainerGradient({super.key, required this.duration, required this.colors, required this.child});
+  const ContainerGradient({super.key, this.start = Alignment.topLeft, this.end = Alignment.bottomRight, required this.duration, required this.colors, required this.child});
 
   @override
   State<ContainerGradient> createState() => _FancyContainer();
@@ -52,8 +53,8 @@ class _FancyContainer extends State<ContainerGradient> with SingleTickerProvider
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       tileMode: TileMode.repeated,
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
+                      begin: widget.start,
+                      end: widget.end,
                       transform: SlideGradient(
                         controller.value,
                         height * (height / width),

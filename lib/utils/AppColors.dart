@@ -60,4 +60,12 @@ class AppColors {
   static const descriptionDark = Color.fromARGB(255, 110, 71, 27);
 
   static const List<Color> gradientSky = [Color.fromARGB(255, 42, 212, 161), Color.fromARGB(255, 218, 129, 56), Color.fromARGB(255, 218, 129, 56), Color.fromARGB(255, 42, 212, 161)];
+  static const List<Color> gradientDark = [
+    Color.fromARGB(255, 58, 44, 31),
+    Color.fromARGB(255, 88, 60, 33),
+    Color.fromARGB(255, 88, 60, 33),
+    Color.fromARGB(255, 88, 60, 33),
+    Color.fromARGB(255, 58, 44, 31),
+    Color.fromARGB(255, 58, 44, 31),
+  ];
 }
