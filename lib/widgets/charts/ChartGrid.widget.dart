@@ -1,9 +1,11 @@
+import 'package:app_monitor_queimadas/models/PredictionCity.model.dart';
 import 'package:app_monitor_queimadas/utils/AppColors.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
 class ChartGrid extends StatefulWidget {
-  const ChartGrid({super.key});
+  final PredictionCityModel city;
+  const ChartGrid({required this.city, super.key});
 
   @override
   State<ChartGrid> createState() => _LineChartSample2State();
@@ -27,9 +29,9 @@ class _LineChartSample2State extends State<ChartGrid> {
           aspectRatio: 1.70,
           child: Padding(
             padding: const EdgeInsets.only(
-              right: 18,
-              left: 4,
-              top: 20,
+              right: 16,
+              left: 0,
+              top: 16,
               bottom: 8,
             ),
             child: LineChart(
@@ -87,7 +89,6 @@ class _LineChartSample2State extends State<ChartGrid> {
   }
 
   Widget leftTitleWidgets(double value, TitleMeta meta) {
-    const style = TextStyle(fontWeight: FontWeight.w300, fontSize: 15, color: AppColors.textNormal);
     String text;
     switch (value.toInt()) {
       case 0:
@@ -105,20 +106,15 @@ class _LineChartSample2State extends State<ChartGrid> {
       case 4:
         text = '400';
         break;
-      case 5:
-        text = '500';
-        break;
-      case 6:
-        text = '600';
-        break;
       default:
         return const SizedBox();
     }
 
-    return Padding(padding: const EdgeInsets.only(right: 8), child: Text(text, style: style, textAlign: TextAlign.right));
+    return Padding(padding: const EdgeInsets.only(right: 8), child: Text(text, style: const TextStyle(fontWeight: FontWeight.w300, fontSize: 12, color: AppColors.textNormal), textAlign: TextAlign.right));
   }
 
   LineChartData mainData() {
+    int currentMonth = DateTime.now().month;
     return LineChartData(
       gridData: FlGridData(
         show: true,
@@ -170,23 +166,12 @@ class _LineChartSample2State extends State<ChartGrid> {
       minX: 0,
       maxX: 11,
       minY: 0,
-      maxY: 6,
+      maxY: 4,
       lineBarsData: [
         LineChartBarData(
-          spots: const [
-            FlSpot(0, 3),
-            FlSpot(1, 4),
-            FlSpot(2, 6),
-            FlSpot(3, 4),
-            FlSpot(4, 3),
-            FlSpot(5, 1),
-            FlSpot(6, 4),
-            FlSpot(7, 2),
-            FlSpot(8, 1),
-            FlSpot(9, 2),
-            FlSpot(10, 3),
-            FlSpot(11, 5),
-          ],
+          spots: List.generate(currentMonth, (index) {
+            return FlSpot(index.toDouble(), widget.city.months![index].firesPredicted!.toDouble() / 100);
+          }),
           isCurved: false,
           gradient: LinearGradient(
             colors: gradientColors2,
@@ -204,20 +189,9 @@ class _LineChartSample2State extends State<ChartGrid> {
           ),
         ),
         LineChartBarData(
-          spots: const [
-            FlSpot(0, 4),
-            FlSpot(1, 2),
-            FlSpot(2, 5),
-            FlSpot(3, 3),
-            FlSpot(4, 4),
-            FlSpot(5, 3),
-            FlSpot(6, 6),
-            FlSpot(7, 4),
-            FlSpot(8, 2),
-            FlSpot(9, 1),
-            FlSpot(10, 4),
-            FlSpot(11, 2),
-          ],
+          spots: List.generate(currentMonth, (index) {
+            return FlSpot(index.toDouble(), widget.city.months![index].fireOccurrences!.toDouble() / 100);
+          }),
           isCurved: false,
           gradient: LinearGradient(
             colors: gradientColors,

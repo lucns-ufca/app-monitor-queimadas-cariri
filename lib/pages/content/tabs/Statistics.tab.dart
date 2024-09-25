@@ -1,4 +1,5 @@
 import 'package:app_monitor_queimadas/models/PredictionCity.model.dart';
+import 'package:app_monitor_queimadas/models/PredictionMonthly.model.dart';
 import 'package:app_monitor_queimadas/pages/content/BaseWidgets.dart';
 import 'package:app_monitor_queimadas/repositories/App.repository.dart';
 import 'package:app_monitor_queimadas/utils/AppColors.dart';
@@ -6,6 +7,7 @@ import 'package:app_monitor_queimadas/utils/Utils.dart';
 import 'package:app_monitor_queimadas/widgets/ContainerGradient.widget.dart';
 import 'package:app_monitor_queimadas/widgets/GaugeChart.widget.dart';
 import 'package:app_monitor_queimadas/widgets/charts/ChartGrid.widget.dart';
+import 'package:app_monitor_queimadas/widgets/charts/PieChart.widget.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -29,6 +31,7 @@ class TabStatisticsPageState extends State<TabStatisticsPage> {
   int predictedForCurrentMonth = 0;
   double percentage = 0;
   double percentage2 = 0;
+  PredictionCityModel? chapadaAraripe;
 
   void updateLists() async {
     setState(() {
@@ -54,6 +57,16 @@ class TabStatisticsPageState extends State<TabStatisticsPage> {
     percentage2 = (ocurrencesForCurrentMonth / predictedForCurrentMonth) * 100.0;
     if (percentage2 > 100) percentage2 = 100;
 
+    chapadaAraripe = PredictionCityModel();
+    chapadaAraripe!.months = List.generate(12, (index) => PredictionMonthlyModel(fireOccurrences: 0, firesPredicted: 0));
+    chapadaAraripe!.occurredTotal = occurredTotal;
+    chapadaAraripe!.predictionTotal = predictionTotal;
+    for (PredictionCityModel city in predictionCities!) {
+      for (int i = 0; i < currentMonth; i++) {
+        chapadaAraripe!.months![i].fireOccurrences = chapadaAraripe!.months![i].fireOccurrences! + city.months![i].fireOccurrences!;
+        chapadaAraripe!.months![i].firesPredicted = chapadaAraripe!.months![i].firesPredicted! + city.months![i].firesPredicted!;
+      }
+    }
     setState(() {});
 
     if (predictionCities!.isEmpty || appRepository.allowUpdatePrediction()) {
@@ -87,7 +100,7 @@ class TabStatisticsPageState extends State<TabStatisticsPage> {
     return Stack(children: [
       const ContainerGradient(colors: AppColors.gradientDark, duration: Duration(seconds: 30), child: Column(mainAxisSize: MainAxisSize.max, mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [])),
       Column(children: [
-        const SizedBox(height: 24),
+        const SizedBox(height: 36),
         Container(
             padding: const EdgeInsets.only(left: 16),
             width: double.maxFinite,
@@ -95,9 +108,14 @@ class TabStatisticsPageState extends State<TabStatisticsPage> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
-                children: [Text("Metricas", style: TextStyle(color: Colors.white, fontSize: 36, fontFamily: 'MontBlancLight')), Text("Gerais", style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w500))])),
+                children: [Text("Métricas", style: TextStyle(color: Colors.white, fontSize: 36, fontWeight: FontWeight.w200)), Text("Gerais de Predição", style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w300))])),
         const SizedBox(height: 16),
-        Container(padding: const EdgeInsets.all(16), child: getMainContent())
+        Expanded(
+            child: CustomScrollView(
+          slivers: [
+            SliverFillRemaining(hasScrollBody: false, child: getMainContent()),
+          ],
+        ))
       ])
     ]);
   }
@@ -105,45 +123,83 @@ class TabStatisticsPageState extends State<TabStatisticsPage> {
   Widget getMainContent() {
     if (connected) {
       if (predictionCities != null && predictionCities!.isNotEmpty) {
-        double size = MediaQuery.of(context).size.width * 0.5;
-        return Column(children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              SizedBox(
-                  width: size,
-                  height: size,
-                  child: Stack(children: [
-                    GaugeChart(progress: percentage),
-                    Center(
-                        child: Column(mainAxisSize: MainAxisSize.min, children: [
-                      Text("$occurredTotal/$predictionTotal", style: const TextStyle(color: AppColors.textNormal, fontWeight: FontWeight.w300, fontSize: 24)),
-                      const Text("Previsto anual", style: TextStyle(fontWeight: FontWeight.w300, color: AppColors.textNormal)),
-                      const SizedBox(height: 2),
-                      Text("Restando ${Utils.getRemainderDays()} dias", style: const TextStyle(fontWeight: FontWeight.w300, color: AppColors.accentLight, fontSize: 12)),
-                      const SizedBox(height: 16)
-                    ]))
-                  ])),
-              const SizedBox(width: 24),
-              Expanded(
-                  child: SizedBox(
-                      height: size - 44,
+        double size = MediaQuery.of(context).size.width * 0.6;
+        double space = 16;
+        double padding = 8;
+        double size2 = (MediaQuery.of(context).size.width * 0.4) - (2 * padding) - space;
+        return SingleChildScrollView(
+            child: Column(mainAxisSize: MainAxisSize.min, children: [
+          Container(
+              padding: EdgeInsets.symmetric(horizontal: padding),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  SizedBox(
+                      width: size,
+                      height: size,
                       child: Stack(children: [
-                        GaugeChart(progress: percentage2),
+                        SizedBox(width: size, height: size, child: GaugeChart(progress: percentage)),
                         Center(
                             child: Column(mainAxisSize: MainAxisSize.min, children: [
-                          Text("$ocurrencesForCurrentMonth/$predictedForCurrentMonth", style: const TextStyle(color: AppColors.textNormal, fontWeight: FontWeight.w300, fontSize: 14)),
-                          Text(Utils.getMonthName(), style: const TextStyle(fontWeight: FontWeight.w300, color: AppColors.textNormal, fontSize: 12)),
+                          Text("$occurredTotal/$predictionTotal", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w400, fontSize: 24)),
+                          const Text("Previsto anual", style: TextStyle(fontWeight: FontWeight.w300, color: AppColors.white_2)),
+                          const SizedBox(height: 2),
+                          Text("Restando ${Utils.getRemainderDays()} dias", style: const TextStyle(fontWeight: FontWeight.w400, color: AppColors.accentLight, fontSize: 12)),
                           const SizedBox(height: 16)
                         ]))
-                      ])))
-            ],
-          ),
+                      ])),
+                  SizedBox(width: space),
+                  Expanded(
+                      child: Column(children: [
+                    SizedBox(
+                        width: size2,
+                        height: size2,
+                        child: Stack(children: [
+                          SizedBox(width: size2, height: size2, child: GaugeChart(progress: percentage2)),
+                          Center(
+                              child: Column(mainAxisSize: MainAxisSize.min, children: [
+                            Text("$ocurrencesForCurrentMonth/$predictedForCurrentMonth", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w300, fontSize: 14)),
+                            Text(Utils.getMonthName(), style: const TextStyle(fontWeight: FontWeight.w300, color: AppColors.white_2, fontSize: 12)),
+                            const SizedBox(height: 8)
+                          ]))
+                        ])),
+                    const SizedBox(
+                      height: 24,
+                    )
+                  ]))
+                ],
+              )),
+          Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(children: [const Text("Ano Selecionado", style: TextStyle(color: AppColors.white_5, fontWeight: FontWeight.bold, fontSize: 16)), const SizedBox(width: 8), Expanded(child: Container(height: 1, color: AppColors.white_5))])),
+          const SizedBox(height: 16),
           Container(
-            decoration: const BoxDecoration(color: AppColors.shadow, borderRadius: BorderRadius.all(Radius.circular(24))),
-            child: const ChartGrid(),
+            decoration: const BoxDecoration(color: AppColors.shadow, borderRadius: BorderRadius.all(Radius.circular(4))),
+            child: Column(children: [
+              Container(
+                  padding: const EdgeInsets.only(left: 16, top: 8),
+                  child: Row(children: [
+                    Container(width: 8, height: 8, color: Colors.red),
+                    const SizedBox(width: 8),
+                    const Text("Ocorrido", style: TextStyle(color: Colors.white, fontSize: 12)),
+                    const SizedBox(width: 16),
+                    Container(width: 8, height: 8, color: Colors.white),
+                    const SizedBox(width: 8),
+                    const Text("Predito", style: TextStyle(color: Colors.white, fontSize: 12))
+                  ])),
+              ChartGrid(
+                city: chapadaAraripe!,
+              ),
+              const SizedBox(height: 16),
+              Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child:
+                      Row(children: [const Text("Cidades de maior ocorrência", style: TextStyle(color: AppColors.white_5, fontWeight: FontWeight.bold, fontSize: 16)), const SizedBox(width: 8), Expanded(child: Container(height: 1, color: AppColors.white_5))])),
+              PieChartSample(predictionCities: predictionCities!),
+              const SizedBox(height: 72),
+            ]),
           )
-        ]);
+        ]));
       }
       if (loading) {
         return BaseWidgets().getCenteredloading("Carregando dados...");
