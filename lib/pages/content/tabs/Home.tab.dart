@@ -317,7 +317,6 @@ class TabHomePageState extends State<TabHomePage> {
             SliverFillRemaining(hasScrollBody: false, child: getMainContent()),
           ],
         )),
-        const SizedBox(height: 72)
       ])
     ]);
   }
@@ -442,7 +441,8 @@ class TabHomePageState extends State<TabHomePage> {
               child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
                   child: Column(
-                      children: List.generate(listCities.length, (index) {
+                      children: List.generate(listCities.length + 1, (index) {
+                    if (index == listCities.length) return const SizedBox(height: 72);
                     return Column(children: [
                       Container(
                         padding: const EdgeInsets.all(16),
