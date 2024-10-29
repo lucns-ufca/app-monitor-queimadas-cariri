@@ -16,13 +16,13 @@ class AppLogos extends StatelessWidget {
           child: SizedBox(
               height: 56,
               child: Row(children: [
-                const SizedBox(width: 16),
+                const SizedBox(width: 24),
                 Expanded(child: Image.asset('assets/images/lisia.png')),
-                SizedBox(width: showAppLogo ? 16 : 48),
+                SizedBox(width: showAppLogo ? 32 : 48),
                 if (showAppLogo) Expanded(child: Image.asset('assets/images/monitor_queimadas_cariri.png')),
-                if (showAppLogo) const SizedBox(width: 16),
+                if (showAppLogo) const SizedBox(width: 32),
                 Expanded(child: Image.asset('assets/images/ufca_brightness.png')),
-                const SizedBox(width: 16),
+                const SizedBox(width: 24),
               ]))),
       const SizedBox(
         height: 16,

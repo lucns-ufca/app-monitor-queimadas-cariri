@@ -5,7 +5,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 class Notify {
   static showToast(String text, {bool longTost = false}) {
-    Fluttertoast.showToast(msg: text, toastLength: longTost ? Toast.LENGTH_LONG : Toast.LENGTH_SHORT, gravity: ToastGravity.BOTTOM, backgroundColor: AppColors.ticketColor, textColor: AppColors.titleDark, fontSize: 16);
+    Fluttertoast.showToast(msg: text, toastLength: longTost ? Toast.LENGTH_LONG : Toast.LENGTH_SHORT, gravity: ToastGravity.BOTTOM, backgroundColor: Color.fromARGB(255, 46, 35, 24), textColor: const Color.fromARGB(255, 255, 148, 16), fontSize: 16);
   }
 
   static showSnackbarSucess(BuildContext context, String message, {Duration duration = const Duration(seconds: 5)}) {
