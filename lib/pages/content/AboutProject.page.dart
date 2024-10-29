@@ -1,6 +1,7 @@
 // @Developed by @lucns
 
 import 'package:app_monitor_queimadas/pages/content/Dashboard.page.dart';
+import 'package:app_monitor_queimadas/pages/content/MainScreen.page.dart';
 import 'package:app_monitor_queimadas/utils/Constants.dart';
 import 'package:flutter/material.dart';
 
@@ -31,7 +32,7 @@ class AboutPageState extends State<AboutPage> {
     return PopScope(
       canPop: false,
       onPopInvoked: (didPop) async {
-        await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const DashboardPage()));
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainScreenPage()));
       },
       child: Scaffold(
         resizeToAvoidBottomInset: false,

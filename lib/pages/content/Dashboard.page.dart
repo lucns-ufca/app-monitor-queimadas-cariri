@@ -257,7 +257,9 @@ class DashboardPageState extends State<DashboardPage> {
                           child: Container(
                             padding: const EdgeInsets.all(8),
                             decoration: const BoxDecoration(color: AppColors.shadow, borderRadius: BorderRadius.all(Radius.circular(24))),
-                            child: const ChartGrid(),
+                            child: ChartGrid(
+                              city: PredictionCityModel(),
+                            ),
                           ))
                     ],
                   )),

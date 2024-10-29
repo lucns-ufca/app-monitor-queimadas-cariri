@@ -37,7 +37,6 @@ class LoginTabState extends State<LoginTab> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: MediaQuery.of(context).size.height * 0.58,
         padding: const EdgeInsets.all(24),
         child: Column(children: [
           const SizedBox(height: 24),
@@ -116,7 +115,7 @@ class LoginTabState extends State<LoginTab> {
                       await navigator!.pushReplacement(MaterialPageRoute(builder: (context) => MainScreenPage()));
                       return;
                     }
-                    Utils.showSnackbarError(context, response.message!);
+                    Notify.showSnackbarError(context, response.message!);
                   }
                 : null,
             textButton: "Acessar",
