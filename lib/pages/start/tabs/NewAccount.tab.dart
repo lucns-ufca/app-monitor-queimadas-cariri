@@ -101,7 +101,7 @@ class NewAccountTabState extends State<NewAccountTab> {
                         widget.scrollToLogin(textUser!);
                         return;
                       }
-                      Utils.showSnackbarError(context, response.message!);
+                      Notify.showSnackbarError(context, response.message!);
                     }),
         ],
       ),

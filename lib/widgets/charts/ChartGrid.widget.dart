@@ -106,6 +106,21 @@ class _LineChartSample2State extends State<ChartGrid> {
       case 4:
         text = '400';
         break;
+      case 5:
+        text = '500';
+        break;
+      case 6:
+        text = '600';
+        break;
+      case 7:
+        text = '700';
+        break;
+      case 8:
+        text = '800';
+        break;
+      case 9:
+        text = '900';
+        break;
       default:
         return const SizedBox();
     }
@@ -166,7 +181,7 @@ class _LineChartSample2State extends State<ChartGrid> {
       minX: 0,
       maxX: 11,
       minY: 0,
-      maxY: 4,
+      maxY: 6,
       lineBarsData: [
         LineChartBarData(
           spots: List.generate(currentMonth, (index) {

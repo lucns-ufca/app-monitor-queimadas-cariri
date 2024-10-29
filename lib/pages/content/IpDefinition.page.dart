@@ -1,5 +1,5 @@
 import 'package:app_monitor_queimadas/utils/AppColors.dart';
-import 'package:app_monitor_queimadas/utils/Utils.dart';
+import 'package:app_monitor_queimadas/utils/Notify.dart';
 import 'package:app_monitor_queimadas/widgets/Button.dart';
 import 'package:app_monitor_queimadas/widgets/CustomCheckBox.widget.dart';
 import 'package:app_monitor_queimadas/widgets/RadioGroup.widget.dart';
@@ -22,7 +22,7 @@ class IpDefinitionPageState extends State<IpDefinitionPage> {
   int sentType = 0;
 
   void showSnackBar() {
-    Utils.showSnackbarSucess(context, "Salvo", duration: const Duration(seconds: 1));
+    Notify.showSnackbarSucess(context, "Salvo", duration: const Duration(seconds: 1));
   }
 
   @override
