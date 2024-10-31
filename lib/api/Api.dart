@@ -7,8 +7,8 @@ class Api {
   final Dio dio;
 
   Api(this.dio) {
-    //dio.options.baseUrl = 'https://mmonitorqueimadasbackend.onrender.com/';
-    dio.options.baseUrl = 'https://lucns.io/apps/monitor_queimadas_cariri/';
+    //dio.options.baseUrl = 'https://lucns.io/apps/monitor_queimadas_cariri/';
+    dio.options.baseUrl = 'https://monitorqueimadas.duckdns.org/';
     dio.options.connectTimeout = const Duration(seconds: 60);
     dio.options.receiveTimeout = const Duration(seconds: 30);
     dio.interceptors.add(InterceptorsWrapper(

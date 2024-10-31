@@ -23,26 +23,31 @@ class Dialogs {
   }
 
   void showIndeterminateDialog(String title) {
-    textTitle = MyText(text: title, maxLines: 10, style: const TextStyle(color: AppColors.textNormal), textAlign: TextAlign.start);
     showDialogWindow(
         PopScope(
             canPop: false,
             child: IntrinsicHeight(
                 child: Container(
-                    decoration: const BoxDecoration(color: AppColors.fragmentBackground, borderRadius: BorderRadius.all(Radius.circular(24))),
+                    decoration: const BoxDecoration(boxShadow: [
+                      BoxShadow(
+                        color: AppColors.shadow,
+                        spreadRadius: 4,
+                        blurRadius: 4,
+                        offset: Offset(0, 10),
+                      )
+                    ], color: AppColors.fragmentBackground, borderRadius: BorderRadius.all(Radius.circular(24))),
                     padding: const EdgeInsets.all(24),
                     child: Row(mainAxisSize: MainAxisSize.min, mainAxisAlignment: MainAxisAlignment.start, children: [
-                      const SizedBox(width: 36, child: CircularProgressIndicator(color: AppColors.textNormal)),
+                      const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: AppColors.accent)),
                       const SizedBox(width: 16),
                       Flexible(
-                          child: textTitle ??
-                              Text(
-                                title,
-                                maxLines: 10,
-                                overflow: TextOverflow.ellipsis,
-                                textAlign: TextAlign.start,
-                                style: const TextStyle(color: AppColors.textNormal),
-                              ))
+                          child: Text(
+                        title,
+                        maxLines: 10,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.start,
+                        style: const TextStyle(color: AppColors.textNormal, fontSize: 20, fontWeight: FontWeight.w500),
+                      ))
                     ])))),
         false);
   }

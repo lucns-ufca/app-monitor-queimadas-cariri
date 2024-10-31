@@ -123,6 +123,6 @@ class NewAccountTabState extends State<NewAccountTab> {
   }
 
   bool isNameValid() {
-    return textName != null && textName!.length > 4;
+    return textName != null && textName!.length > 4 && textName!.split(" ")[1].length > 1;
   }
 }

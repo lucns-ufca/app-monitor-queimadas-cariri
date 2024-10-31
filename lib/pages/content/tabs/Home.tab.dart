@@ -194,11 +194,11 @@ class TabHomePageState extends State<TabHomePage> {
 
     List<PredictionCityModel> predictionCities = appRepository.getPredictionCities;
     listCities = appRepository.getWeatherCities;
-    List<ForecastCityModel> probabilitiesCities = appRepository.getForecastCities;
+    //List<ForecastCityModel> probabilitiesCities = appRepository.getForecastCities;
     setState(() {});
 
     if (predictionCities.isEmpty || appRepository.allowUpdatePrediction()) {
-      await appRepository.updatePrediction();
+      await appRepository.updatePrediction(DateTime.now().year);
       updatePrediction();
       setState(() {
         loadingTop = true;
@@ -209,10 +209,12 @@ class TabHomePageState extends State<TabHomePage> {
       await appRepository.updateWeather();
       updateWeather();
     }
+    /*
     if (probabilitiesCities.isEmpty || appRepository.allowUpdateForecast()) {
       await appRepository.updateforecast();
       updateProbabilities();
     }
+    */
     setState(() {
       loadingTop = false;
       loadingBottom = false;
@@ -389,7 +391,7 @@ class TabHomePageState extends State<TabHomePage> {
             const SizedBox(width: 8),
             getCardNumber("Previsto ${DateTime.now().year}", "$predictionTotal", "assets/icons/brown_search.png"),
             const SizedBox(width: 8),
-            getCardNumber("Cidades", predictionCities.isEmpty ? "" : "${predictionCities.length - 1}", "assets/icons/brown_pin.png")
+            getCardNumber("Cidades", predictionCities.isEmpty ? "" : "${predictionCities.length}", "assets/icons/brown_pin.png")
           ])),
       const SizedBox(height: 16),
       Align(

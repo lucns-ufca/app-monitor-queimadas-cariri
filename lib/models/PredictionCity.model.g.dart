@@ -8,10 +8,10 @@ part of 'PredictionCity.model.dart';
 
 PredictionCityModel _$PredictionCityModelFromJson(Map<String, dynamic> json) =>
     PredictionCityModel(
-      timestamp: (json['timestamp'] as num?)?.toInt(),
+      id: json['id'] as String?,
       predictionTotal: (json['predictionTotal'] as num?)?.toInt(),
-      dateTime: json['dateTime'] as String?,
-      months: (json['months'] as List<dynamic>?)
+      dateTime: json['createdAt'] as String?,
+      months: (json['monthData'] as List<dynamic>?)
           ?.map(
               (e) => PredictionMonthlyModel.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -21,10 +21,10 @@ PredictionCityModel _$PredictionCityModelFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$PredictionCityModelToJson(
         PredictionCityModel instance) =>
     <String, dynamic>{
-      'timestamp': instance.timestamp,
-      'dateTime': instance.dateTime,
+      'id': instance.id,
+      'createdAt': instance.dateTime,
       'city': instance.city,
       'predictionTotal': instance.predictionTotal,
       'occurredTotal': instance.occurredTotal,
-      'months': instance.months?.map((e) => e.toJson()).toList(),
+      'monthData': instance.months?.map((e) => e.toJson()).toList(),
     };

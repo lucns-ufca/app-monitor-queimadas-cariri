@@ -8,6 +8,7 @@ part of 'WeatherCity.model.dart';
 
 WeatherCityModel _$WeatherCityModelFromJson(Map<String, dynamic> json) =>
     WeatherCityModel(
+      id: json['id'] as String?,
       timestamp: (json['timestamp'] as num?)?.toInt(),
       dateTime: json['dateTime'] as String?,
       city: json['city'] as String?,
@@ -23,6 +24,7 @@ WeatherCityModel _$WeatherCityModelFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$WeatherCityModelToJson(WeatherCityModel instance) =>
     <String, dynamic>{
+      'id': instance.id,
       'timestamp': instance.timestamp,
       'dateTime': instance.dateTime,
       'city': instance.city,

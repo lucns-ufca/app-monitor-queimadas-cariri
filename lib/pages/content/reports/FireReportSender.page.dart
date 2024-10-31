@@ -16,10 +16,12 @@ import 'package:app_monitor_queimadas/widgets/TextField.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get_it/get_it.dart';
+import 'package:platform_device_id/platform_device_id.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class FireReportSenderPage extends StatefulWidget {
@@ -172,6 +174,15 @@ class FireReportSenderPageState extends State<FireReportSenderPage> {
       }
     } catch (err) {
       // ignored, really.
+    }
+  }
+
+  Future<String?> getDeviceId() async {
+    try {
+      return await PlatformDeviceId.getDeviceId;
+      //log(deviceId)
+    } on PlatformException {
+      return null;
     }
   }
 

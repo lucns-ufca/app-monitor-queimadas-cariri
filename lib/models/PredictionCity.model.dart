@@ -6,14 +6,16 @@ part 'PredictionCity.model.g.dart';
 @JsonSerializable(explicitToJson: true)
 class PredictionCityModel {
   //@JsonKey(name: 'dateTime')
-  int? timestamp;
+  String? id;
+  @JsonKey(name: 'createdAt')
   String? dateTime;
   String? city;
   int? predictionTotal;
   int? occurredTotal;
+  @JsonKey(name: 'monthData')
   List<PredictionMonthlyModel>? months;
 
-  PredictionCityModel({this.timestamp, this.predictionTotal, this.dateTime, this.months, this.occurredTotal});
+  PredictionCityModel({this.id, this.predictionTotal, this.dateTime, this.months, this.occurredTotal});
 
   factory PredictionCityModel.fromJson(Map<String, dynamic> json) => _$PredictionCityModelFromJson(json);
 

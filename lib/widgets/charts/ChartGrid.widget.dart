@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:app_monitor_queimadas/models/PredictionCity.model.dart';
 import 'package:app_monitor_queimadas/utils/AppColors.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -130,6 +132,9 @@ class _LineChartSample2State extends State<ChartGrid> {
 
   LineChartData mainData() {
     int currentMonth = DateTime.now().month;
+    List<int> fireOccurrences = widget.city.months!.map((value) => value.fireOccurrences!).toList();
+    List<int> firesPredicted = widget.city.months!.map((value) => value.firesPredicted!).toList();
+    double maximumY = (max(fireOccurrences.reduce(max), firesPredicted.reduce(max)).toDouble() / 100).roundToDouble();
     return LineChartData(
       gridData: FlGridData(
         show: true,
@@ -181,7 +186,7 @@ class _LineChartSample2State extends State<ChartGrid> {
       minX: 0,
       maxX: 11,
       minY: 0,
-      maxY: 6,
+      maxY: maximumY,
       lineBarsData: [
         LineChartBarData(
           spots: List.generate(currentMonth, (index) {

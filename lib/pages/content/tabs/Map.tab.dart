@@ -10,6 +10,15 @@ class TabMapPage extends StatefulWidget {
 class TabMapPageState extends State<TabMapPage> {
   @override
   Widget build(BuildContext context) {
-    return Container(width: double.maxFinite, height: double.maxFinite, color: Colors.red);
+    return Container(
+      width: double.maxFinite,
+      height: double.maxFinite,
+      color: const Color.fromARGB(255, 65, 48, 25),
+      child: const Center(
+          child: Text(
+        "Em construção...",
+        style: TextStyle(color: Colors.white, fontWeight: FontWeight.w300, fontSize: 24),
+      )),
+    );
   }
 }

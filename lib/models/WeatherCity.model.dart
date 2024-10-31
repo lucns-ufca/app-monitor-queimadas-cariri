@@ -5,6 +5,7 @@ part 'WeatherCity.model.g.dart';
 @JsonSerializable(explicitToJson: true)
 class WeatherCityModel {
   //@JsonKey(name: 'dateTime')
+  String? id;
   int? timestamp;
   String? dateTime;
   String? city;
@@ -17,7 +18,7 @@ class WeatherCityModel {
   int? daysWithoutRain;
   int? fireRisk;
 
-  WeatherCityModel({this.timestamp, this.dateTime, this.city, this.temperature, this.humidity, this.uvIndex, this.precipitation, this.cloud, this.carbonMonoxide, this.daysWithoutRain, this.fireRisk});
+  WeatherCityModel({this.id, this.timestamp, this.dateTime, this.city, this.temperature, this.humidity, this.uvIndex, this.precipitation, this.cloud, this.carbonMonoxide, this.daysWithoutRain, this.fireRisk});
 
   factory WeatherCityModel.fromJson(Map<String, dynamic> json) => _$WeatherCityModelFromJson(json);
 

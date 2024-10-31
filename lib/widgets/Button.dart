@@ -12,7 +12,7 @@ class MyButton extends StatefulWidget {
   final Color colorDisabled;
 
   const MyButton({
-    this.colorBackground = AppColors.accent,
+    this.colorBackground = AppColors.button,
     this.colorRipple,
     this.colorDisabled = AppColors.buttonDisabled,
     required this.textButton,
@@ -40,7 +40,7 @@ class _MyButtonState extends State<MyButton> {
               overlayColor: WidgetStateProperty.all<Color>(widget.onClick == null ? Colors.transparent : widget.colorRipple ?? Colors.white.withOpacity(0.5)),
               shape: WidgetStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.circular(height / 2), side: const BorderSide(color: Colors.transparent)))),
           onPressed: widget.onClick,
-          child: Text(widget.textButton, style: TextStyle(color: widget.onClick == null ? AppColors.textDisabled : AppColors.appBackground, fontSize: 18, fontWeight: FontWeight.w500))),
+          child: Text(widget.textButton, style: TextStyle(color: widget.onClick == null ? AppColors.textDisabled : Colors.white, fontSize: 18, fontWeight: FontWeight.w500))),
     );
   }
 }

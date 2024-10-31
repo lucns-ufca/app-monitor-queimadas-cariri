@@ -41,7 +41,8 @@ class AppColors {
   static const textDisabled = Color.fromARGB(137, 255, 255, 255);
   static const textNormalSecondary = gray_4;
   static const textDisabledSecondary = gray_4;
-  static const buttonPositive = accent;
+  static const button = Color.fromARGB(255, 255, 152, 8);
+  static const buttonPositive = Color.fromARGB(255, 216, 131, 11);
   static const buttonNegative = Color.fromARGB(41, 255, 255, 255);
   static const buttonDisabled = Color.fromARGB(103, 0, 0, 0);
   static const buttonNormal = buttonPositive;

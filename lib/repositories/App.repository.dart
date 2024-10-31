@@ -69,7 +69,7 @@ class AppRepository {
     Directory directory = await getApplicationDocumentsDirectory();
     await addToPredictionCities("${directory.path}/data/prediction/AllCitiesPrediction.json");
     await addToWeatherCities("${directory.path}/data/weather/AllCitiesWeather.json");
-    await addToforecastCities("${directory.path}/data/weather/AllCitiesForecast.json");
+    //await addToforecastCities("${directory.path}/data/weather/AllCitiesForecast.json");
   }
 
   bool allowUpdatePrediction() {
@@ -100,7 +100,7 @@ class AppRepository {
     try {
       Response response = await api.get(url);
       if (response.statusCode == 200) {
-        String jsonString = response.data;
+        String jsonString = json.encode(response.data["data"]);
         File file = File(path);
         await file.create(recursive: true);
         await file.writeAsString(jsonString);
@@ -112,9 +112,9 @@ class AppRepository {
     return null;
   }
 
-  Future<void> updatePrediction() async {
+  Future<void> updatePrediction(int year) async {
     Directory directory = await getApplicationDocumentsDirectory();
-    String? data = await downloadData('prediction/predictions.php', "${directory.path}/data/prediction/AllCitiesPrediction.json");
+    String? data = await downloadData('predictions?page=1&limit=30&year=$year', "${directory.path}/data/prediction/AllCitiesPrediction.json");
     if (data == null) return;
     List<dynamic> jsonArray = jsonDecode(data);
     predictionCities.clear();
@@ -125,7 +125,7 @@ class AppRepository {
 
   Future<void> updateWeather() async {
     Directory directory = await getApplicationDocumentsDirectory();
-    String? data = await downloadData('weather/weather.php', "${directory.path}/data/weather/AllCitiesWeather.json");
+    String? data = await downloadData('fire-weather-data/search?page=1&limit=30', "${directory.path}/data/weather/AllCitiesWeather.json");
     if (data == null) return;
     List<dynamic> jsonArray = jsonDecode(data);
     weatherCities.clear();

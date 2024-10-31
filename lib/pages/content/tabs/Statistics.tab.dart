@@ -70,7 +70,7 @@ class TabStatisticsPageState extends State<TabStatisticsPage> {
     setState(() {});
 
     if (predictionCities!.isEmpty || appRepository.allowUpdatePrediction()) {
-      await appRepository.updatePrediction();
+      await appRepository.updatePrediction(DateTime.now().year);
     }
     setState(() {
       loading = false;
