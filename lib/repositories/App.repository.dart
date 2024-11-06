@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:app_monitor_queimadas/api/Api.dart';
+import 'package:app_monitor_queimadas/api/Controller.api.dart';
 import 'package:app_monitor_queimadas/models/PredictionCity.model.dart';
 import 'package:app_monitor_queimadas/models/ForecastCity.model.dart';
 import 'package:app_monitor_queimadas/models/WeatherCity.model.dart';
@@ -15,7 +16,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class AppRepository {
   var preferences = GetIt.I.get<SharedPreferences>();
-  final ControllerApi api = ControllerApi();
+  final ControllerApi api = ControllerApi(Api(baseUrl: 'https://monitorqueimadas.duckdns.org/'));
   void Function()? onUpdateConcluded;
 
   List<PredictionCityModel> predictionCities = [];
@@ -211,7 +212,7 @@ class AppRepository {
       if (e.response!.statusCode == ApiResponseCodes.UNAUTHORIZED) {
         message = "Sem autorização!";
       } else {
-        message = Api.getError(e.response!.statusCode!);
+        message = ControllerApi.getError(e.response!.statusCode!);
       }
       return ApiResponse(message: message, code: e.response!.statusCode);
     }

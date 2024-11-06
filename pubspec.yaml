@@ -57,6 +57,7 @@ dependencies:
   auto_size_text:
   camera:
   platform_device_id:
+  google_maps_flutter:
 
 dev_dependencies:
   flutter_test:

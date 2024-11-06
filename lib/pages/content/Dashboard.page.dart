@@ -3,7 +3,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:app_monitor_queimadas/api/Api.dart';
+import 'package:app_monitor_queimadas/api/Controller.api.dart';
 import 'package:app_monitor_queimadas/models/PredictionCity.model.dart';
 import 'package:app_monitor_queimadas/models/User.model.dart';
 import 'package:app_monitor_queimadas/pages/content/AboutProject.page.dart';

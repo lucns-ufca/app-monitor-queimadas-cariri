@@ -4,7 +4,6 @@ part 'Forecast.model.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class ForecastModel {
-  //@JsonKey(name: 'timestamp')
   int? timestamp;
   String? dateTime;
   String? city;

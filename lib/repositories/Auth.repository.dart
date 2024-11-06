@@ -1,11 +1,12 @@
 // @developes by @lucns
 
 import 'package:app_monitor_queimadas/api/Api.dart';
+import 'package:app_monitor_queimadas/api/Controller.api.dart';
 import 'package:app_monitor_queimadas/models/User.model.dart';
 import 'package:dio/dio.dart';
 
 class AuthRepository {
-  final ControllerApi api = ControllerApi();
+  final ControllerApi api = ControllerApi(Api(baseUrl: 'https://monitorqueimadas.duckdns.org/'));
 
   AuthRepository();
 
@@ -30,7 +31,7 @@ class AuthRepository {
         if (e.response!.statusCode == ApiResponseCodes.UNAUTHORIZED) {
           message = "Email ou senha inválidos!";
         } else {
-          message = Api.getError(e.response!.statusCode!);
+          message = ControllerApi.getError(e.response!.statusCode!);
         }
         return ApiResponse(message: message, code: e.response!.statusCode);
       }
@@ -50,7 +51,7 @@ class AuthRepository {
         if (e.response!.statusCode == ApiResponseCodes.CONFLIT) {
           message = "Este email já está cadastrado! Tente um diferente.";
         } else {
-          message = Api.getError(e.response!.statusCode!);
+          message = ControllerApi.getError(e.response!.statusCode!);
         }
         return ApiResponse(message: message, code: e.response!.statusCode);
       }
@@ -60,13 +61,13 @@ class AuthRepository {
 
   Future<ApiResponse> getUserType(String email) async {
     try {
-      Response response = await api.post('/users/user_type.php', {"email": email});
+      Response response = await api.post('user_type', {"email": email});
       return ApiResponse(code: ApiResponseCodes.OK, data: response.data);
     } on DioException catch (e) {
       if (e.response == null) {
         return ApiResponse(message: "O servidor não respondeu. Prazo de espera estourado.", code: ApiResponseCodes.GATEWAY_TIMEOUT);
       } else if (e.response!.statusCode != null) {
-        String message = Api.getError(e.response!.statusCode!);
+        String message = ControllerApi.getError(e.response!.statusCode!);
         return ApiResponse(message: message, code: e.response!.statusCode);
       }
     }
