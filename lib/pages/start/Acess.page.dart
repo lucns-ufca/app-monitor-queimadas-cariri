@@ -1,14 +1,11 @@
 // Developed by @lucns
 
-import 'dart:convert';
 import 'dart:ui';
 
-import 'package:app_monitor_queimadas/api/Api.dart';
 import 'package:app_monitor_queimadas/models/User.model.dart';
 import 'package:app_monitor_queimadas/pages/content/MainScreen.page.dart';
 import 'package:app_monitor_queimadas/pages/start/tabs/Login.tab.dart';
 import 'package:app_monitor_queimadas/pages/start/tabs/NewAccount.tab.dart';
-import 'package:app_monitor_queimadas/repositories/Auth.repository.dart';
 import 'package:app_monitor_queimadas/utils/AppColors.dart';
 import 'package:app_monitor_queimadas/widgets/AppLogos.widget.dart';
 import 'package:app_monitor_queimadas/widgets/ContainerGradient.widget.dart';
@@ -71,6 +68,8 @@ class LoginFormState extends State<LoginForm> {
       print(stacktrace);
     }
     */
+
+    /*
     if (user.email.isNotEmpty) {
       AuthRepository authRepository = AuthRepository();
       ApiResponse response = await authRepository.getUserType(user.email);
@@ -78,7 +77,7 @@ class LoginFormState extends State<LoginForm> {
         Map<String, dynamic> map = jsonDecode(response.data);
         user.setUSerType(map['user_type']);
       }
-    }
+      */
 
     await user.storeData();
     openTabsPage();

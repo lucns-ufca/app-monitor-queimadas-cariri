@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:app_monitor_queimadas/api/Api.dart';
+import 'package:app_monitor_queimadas/api/Controller.api.dart';
 import 'package:app_monitor_queimadas/utils/Annotator.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
@@ -85,7 +86,7 @@ class User {
     Directory directory = await getApplicationDocumentsDirectory();
     File image = File("${directory.path}/profile_picture.jpg");
     if (await image.exists() && await image.length() > 0) return image;
-    Response? response = await ControllerApi().download(photoUrl, image);
+    Response? response = await ControllerApi(Api()).download(photoUrl, image);
     if (response.statusCode == null) return null;
     if (response.statusCode! > 199 && response.statusCode! < 300) return image;
     return null;
