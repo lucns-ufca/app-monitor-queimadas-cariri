@@ -20,7 +20,7 @@ class TabStatisticsPage extends StatefulWidget {
   State<StatefulWidget> createState() => TabStatisticsPageState();
 }
 
-class TabStatisticsPageState extends State<TabStatisticsPage> {
+class TabStatisticsPageState extends State<TabStatisticsPage> with AutomaticKeepAliveClientMixin<TabStatisticsPage> {
   bool connected = true;
   final appRepository = GetIt.I.get<AppRepository>();
   List<PredictionCityModel>? predictionCities;
@@ -97,6 +97,7 @@ class TabStatisticsPageState extends State<TabStatisticsPage> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Stack(children: [
       const ContainerGradient(colors: AppColors.gradientDark, duration: Duration(seconds: 30), child: Column(mainAxisSize: MainAxisSize.max, mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [])),
       Column(children: [
@@ -208,4 +209,7 @@ class TabStatisticsPageState extends State<TabStatisticsPage> {
     }
     return BaseWidgets().getCenteredError("Sem conexão!");
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

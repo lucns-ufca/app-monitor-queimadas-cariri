@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:math' as math;
 
 import 'package:app_monitor_queimadas/models/PredictionCity.model.dart';
@@ -144,7 +143,6 @@ class _LineChartSample2State extends State<ChartGrid> {
       if (d > b) b = d;
     }
     double maximumY = (math.max(a, b).toDouble() / 100).roundToDouble() + 1;
-    log("max: $maximumY");
     return LineChartData(
       gridData: FlGridData(
         show: true,

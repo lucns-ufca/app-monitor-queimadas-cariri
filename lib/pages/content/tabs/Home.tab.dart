@@ -31,7 +31,7 @@ class TabHomePage extends StatefulWidget {
   State<StatefulWidget> createState() => TabHomePageState();
 }
 
-class TabHomePageState extends State<TabHomePage> {
+class TabHomePageState extends State<TabHomePage> with AutomaticKeepAliveClientMixin<TabHomePage> {
   final user = GetIt.I.get<User>();
   final appRepository = GetIt.I.get<AppRepository>();
   bool loadingTop = true;
@@ -243,6 +243,7 @@ class TabHomePageState extends State<TabHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Stack(children: [
       ContainerGradient(
           colors: AppColors.gradientSky,
@@ -528,4 +529,7 @@ class TabHomePageState extends State<TabHomePage> {
       ]),
     ));
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

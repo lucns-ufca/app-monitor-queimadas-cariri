@@ -7,9 +7,10 @@ class TabNaturePage extends StatefulWidget {
   State<StatefulWidget> createState() => TabNaturePageState();
 }
 
-class TabNaturePageState extends State<TabNaturePage> {
+class TabNaturePageState extends State<TabNaturePage> with AutomaticKeepAliveClientMixin<TabNaturePage> {
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Container(
       width: double.maxFinite,
       height: double.maxFinite,
@@ -21,4 +22,7 @@ class TabNaturePageState extends State<TabNaturePage> {
       )),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
