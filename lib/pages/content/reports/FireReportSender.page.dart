@@ -1,5 +1,6 @@
 // Developed by @lucns
 
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:app_monitor_queimadas/api/Controller.api.dart';
@@ -8,7 +9,6 @@ import 'package:app_monitor_queimadas/pages/content/reports/FireReportPages.page
 import 'package:app_monitor_queimadas/pages/dialogs/BasicDialogs.dart';
 import 'package:app_monitor_queimadas/repositories/App.repository.dart';
 import 'package:app_monitor_queimadas/utils/AppColors.dart';
-import 'package:app_monitor_queimadas/utils/Log.out.dart';
 import 'package:app_monitor_queimadas/utils/Notify.dart';
 import 'package:app_monitor_queimadas/utils/Utils.dart';
 import 'package:app_monitor_queimadas/widgets/Button.dart';
@@ -109,26 +109,25 @@ class FireReportSenderPageState extends State<FireReportSenderPage> {
   }
 
   Future<int> sendData() async {
-    bool useLocal = preferences.getBool("use_local") ?? false;
     int sentType = preferences.getInt("sent_type") ?? 0;
     buttonLoadingController.setLoading(true);
 
     ApiResponse response;
     if (sentType == 0) {
       FormData formData = FormData();
-      if (!useLocal) formData.fields.add(MapEntry("city", cityName ?? "(Não foi possível obter o nome da cidade. GPS sem precisão!)"));
+      formData.fields.add(MapEntry("city", cityName ?? "(Não foi possível obter o nome da cidade. GPS sem precisão!)"));
       formData.fields.add(MapEntry("latitude", latitude.toString()));
       formData.fields.add(MapEntry("longitude", longitude.toString()));
-      if (useLocal) formData.fields.add(const MapEntry("imgUrl", "teste"));
-      if (!useLocal) formData.fields.add(MapEntry("timestamp", DateTime.now().toLocal().millisecondsSinceEpoch.toString()));
-      if (!useLocal) formData.fields.add(MapEntry("date_time", getDateTime()));
+      formData.fields.add(MapEntry("timestamp", DateTime.now().toLocal().millisecondsSinceEpoch.toString()));
+      formData.fields.add(MapEntry("date_time", getDateTime()));
       formData.fields.add(MapEntry("description", description ?? getInitialText()));
-      if (!useLocal) formData.files.add(MapEntry("image", MultipartFile.fromFileSync(imageFile!.path)));
+      formData.files.add(MapEntry("image", MultipartFile.fromFileSync(imageFile!.path)));
       response = await appRepository.reportFireFormData(formData);
     } else {
-      response = await appRepository.reportFireJson({"imgUrl": "https://url.io/image.jpg", "latitude": latitude, "longitude": longitude, "description": description ?? getInitialText()});
+      Uint8List imageBytes = await imageFile!.readAsBytes();
+      response = await appRepository.reportFireJson({"image": base64Encode(imageBytes), "latitude": latitude, "longitude": longitude, "description": description ?? getInitialText()});
     }
-    Log.d("Lucas", "Response code: ${response.code}");
+    //Log.d("Lucas", "Response code: ${response.code}");
     switch (response.code) {
       case ApiResponseCodes.OK:
         return 3;
@@ -190,6 +189,7 @@ class FireReportSenderPageState extends State<FireReportSenderPage> {
 
   @override
   void initState() {
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual);
     dialogs = Dialogs(context);
     imageFile = File(widget.callbackController.getImagePath());
     Position? position = widget.callbackController.getPosition();
@@ -287,9 +287,12 @@ class FireReportSenderPageState extends State<FireReportSenderPage> {
                               text: hasError ? "Tentar novamente" : (sent ? "Enviado" : "Enviar Alerta"),
                               icon: Icon(!sent || hasError ? Icons.send : Icons.done_outline),
                               controller: buttonLoadingController,
-                              onPressed: () {
+                              onPressed: () async {
                                 if (isValidForm()) {
                                   attemptSendData();
+                                  //List<int> imageBytes = await !.readAsBytes();
+                                  //ui.Image decodedImage = await decodeImageFromList(await imageFile!.readAsBytes());
+                                  //Log.d("lucas", "${decodedImage.width}x${decodedImage.height}");
                                   return;
                                 }
                                 Notify.showToast("Espere um pouco.\nAguardando dados da localização...");
@@ -298,7 +301,7 @@ class FireReportSenderPageState extends State<FireReportSenderPage> {
                               children: [
                                 Expanded(
                                     child: MyButton(
-                                  colorBackground: AppColors.accent,
+                                  colorBackground: AppColors.buttonNegative,
                                   textButton: "Voltar",
                                   onClick: () => widget.callbackController.onPreviousStep(),
                                 )),
@@ -314,6 +317,7 @@ class FireReportSenderPageState extends State<FireReportSenderPage> {
                                 ))
                               ],
                             ))),
+              SizedBox(height: const NavigationBarThemeData().height ?? 24)
             ],
           ),
         ));

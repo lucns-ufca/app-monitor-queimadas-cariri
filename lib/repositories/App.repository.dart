@@ -77,7 +77,7 @@ class AppRepository {
     if (predictionCities.isEmpty) return true;
     DateTime old = DateTime.parse(predictionCities[0].dateTime!).toLocal();
     DateTime today = DateTime.now().toLocal();
-    if (today.difference(old).inMinutes > 70) return true;
+    if (today.difference(old).inMinutes > 60) return true;
     return false;
   }
 
@@ -85,7 +85,7 @@ class AppRepository {
     if (weatherCities.isEmpty) return true;
     DateTime old = DateTime.parse(weatherCities[0].dateTime!).toLocal();
     DateTime today = DateTime.now().toLocal();
-    if (today.difference(old).inMinutes > 20) return true;
+    if (today.difference(old).inMinutes > 15) return true;
     return false;
   }
 
@@ -163,8 +163,7 @@ class AppRepository {
   Future<ApiResponse> reportFireFormData(FormData formData) async {
     String ip = preferences.getString("ip") ?? "";
     String port = preferences.getString("port") ?? "";
-    bool useLocal = preferences.getBool("use_local") ?? false;
-    String baseUrl = useLocal && ip.isNotEmpty && port.isNotEmpty ? "'http://$ip:$port/'" : 'https://lucns.io/apps/monitor_queimadas_cariri/';
+    String baseUrl = ip.isNotEmpty && port.isNotEmpty ? "'http://$ip:$port/'" : 'https://monitorqueimadas.duckdns.org/';
     Dio api = Dio(BaseOptions(baseUrl: baseUrl));
     try {
       Response response = await api.post('warnings/create', data: formData);

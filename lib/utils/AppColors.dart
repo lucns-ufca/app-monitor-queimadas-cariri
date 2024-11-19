@@ -36,6 +36,7 @@ class AppColors {
   static const fragmentBackgroundSuccess = Color.fromARGB(208, 26, 194, 102);
   static const menuBackground = Color.fromARGB(195, 248, 212, 177);
   static const cardBackground = gray_7;
+  static const listDivider = Color.fromARGB(255, 15, 9, 0);
 
   static const textAccent = Color.fromARGB(197, 255, 187, 40);
   static const textNormal = Color.fromARGB(197, 255, 255, 255);

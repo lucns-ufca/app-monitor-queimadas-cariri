@@ -24,6 +24,7 @@ class TabMapPageState extends State<TabMapPage> with AutomaticKeepAliveClientMix
   Set<Marker> markers = {};
   bool updated = false;
   String? selectedCity;
+  bool expanded = false;
 
   void reposition() async {
     await Future.delayed(const Duration(milliseconds: 500));
@@ -86,7 +87,6 @@ class TabMapPageState extends State<TabMapPage> with AutomaticKeepAliveClientMix
         dropDownItems.add(MyDropdownMenuItem(key, "${bdq.occurrences[key].length} foco$s"));
       });
     }
-    log("size: ${dropDownItems.length}");
 
     return Stack(
       children: [
@@ -118,7 +118,7 @@ class TabMapPageState extends State<TabMapPage> with AutomaticKeepAliveClientMix
                                   buttonChild: Padding(
                                       padding: const EdgeInsets.symmetric(horizontal: 8),
                                       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                        const Text("Ocorrido hoje em:", style: TextStyle(color: AppColors.textAccent, fontSize: 18)),
+                                        const Text("Ocorrido hoje em:", style: TextStyle(color: AppColors.accent, fontSize: 18)),
                                         Row(
                                           children: [
                                             const Text(
@@ -128,14 +128,19 @@ class TabMapPageState extends State<TabMapPage> with AutomaticKeepAliveClientMix
                                             const SizedBox(width: 8),
                                             Transform.scale(
                                                 scale: 1.25,
-                                                child: const Icon(
-                                                  Icons.keyboard_arrow_down_outlined,
+                                                child: Icon(
+                                                  expanded ? Icons.keyboard_arrow_up_outlined : Icons.keyboard_arrow_down_outlined,
                                                   color: Colors.white,
                                                 ))
                                           ],
                                         )
                                       ])),
-                                  items: dropDownItems),
+                                  items: dropDownItems,
+                                  onExpanded: (e) {
+                                    setState(() {
+                                      expanded = e;
+                                    });
+                                  }),
                             ),
                           ))
                     ]))))

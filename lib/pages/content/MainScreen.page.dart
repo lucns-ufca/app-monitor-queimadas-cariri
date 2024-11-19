@@ -27,6 +27,13 @@ class MainScreenPage extends StatelessWidget {
           if (user.hasAccess()) {
             SystemNavigator.pop();
           } else {
+            SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+            SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+              statusBarColor: Colors.transparent,
+              systemNavigationBarColor: Colors.transparent,
+              systemNavigationBarIconBrightness: Brightness.light,
+              statusBarIconBrightness: Brightness.light,
+            ));
             //await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const FirstPage()));
           }
         },
@@ -75,7 +82,7 @@ class NavigationBarState extends State<NavigationBar> {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
-      systemNavigationBarColor: Colors.transparent,
+      systemNavigationBarColor: AppColors.fragmentBackground,
       systemNavigationBarIconBrightness: Brightness.light,
       statusBarIconBrightness: Brightness.light,
     ));

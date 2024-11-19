@@ -179,7 +179,6 @@ class _CameraExampleHomeState extends State<FireReportCameraPage> with WidgetsBi
       enableAudio: false,
       imageFormatGroup: ImageFormatGroup.jpeg,
     );
-
     cameraController!.addListener(() {
       if (cameraController!.value.hasError) {
         showInSnackBar('Camera error ${cameraController!.value.errorDescription}');
@@ -244,6 +243,7 @@ class _CameraExampleHomeState extends State<FireReportCameraPage> with WidgetsBi
     }
 
     try {
+      cameraController!.setFlashMode(FlashMode.off);
       final XFile file = await cameraController!.takePicture();
       return file;
     } on CameraException catch (e) {

@@ -29,7 +29,7 @@ class AppLogos extends StatelessWidget {
       ),
       const Text("MONITOR DE QUEIMADAS VERSAO ${Constants.APP_VERSION}", style: TextStyle(color: Colors.white, fontSize: 12, fontFamily: "MontBlancLight")),
       const SizedBox(
-        height: 32,
+        height: 72,
       )
     ]);
   }
