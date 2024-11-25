@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:ui' as ui;
 
-import 'package:app_monitor_queimadas/widgets/MeasureSize.widget.dart';
+import 'package:monitor_queimadas_cariri/widgets/MeasureSize.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
@@ -82,9 +82,9 @@ class ImageTransitionScrollerState extends State<ImageTransitionScroller> with T
           child: Container(width: double.maxFinite, height: double.maxFinite, color: widget.color ?? Colors.transparent));
     }
     if (sizeImage == null) {
-      return Container(width: sizeSpace!.width, height: sizeSpace!.height, color: widget.color ?? Colors.transparent);
+      return Container(width: MediaQuery.of(context).size.width, height: sizeSpace!.height, color: widget.color ?? Colors.transparent);
     }
-    return Container(width: sizeSpace!.width, height: sizeSpace!.height, color: widget.color ?? Colors.transparent, child: selectContent());
+    return Container(width: MediaQuery.of(context).size.width, height: sizeSpace!.height, color: widget.color ?? Colors.transparent, child: selectContent());
   }
 
   Widget selectContent() {

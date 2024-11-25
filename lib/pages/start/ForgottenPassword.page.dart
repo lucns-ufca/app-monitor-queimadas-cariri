@@ -1,10 +1,10 @@
 // @Developed by @lucns
 
-import 'package:app_monitor_queimadas/utils/Constants.dart';
+import 'package:monitor_queimadas_cariri/utils/Constants.dart';
 import 'package:flutter/material.dart';
 
-import 'package:app_monitor_queimadas/widgets/Toolbar.dart';
-import 'package:app_monitor_queimadas/utils/AppColors.dart';
+import 'package:monitor_queimadas_cariri/widgets/Toolbar.dart';
+import 'package:monitor_queimadas_cariri/utils/AppColors.dart';
 import 'package:flutter/services.dart';
 
 class ForgottenPasswordPage extends StatefulWidget {

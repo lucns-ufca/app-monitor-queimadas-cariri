@@ -1,9 +1,9 @@
 // @Developed by @lucns
 
-import 'package:app_monitor_queimadas/pages/dialogs/PopupWindow.dart';
+import 'package:monitor_queimadas_cariri/pages/dialogs/PopupWindow.dart';
 import 'package:flutter/material.dart';
-import 'package:app_monitor_queimadas/utils/AppColors.dart';
-import 'package:app_monitor_queimadas/utils/Utils.dart';
+import 'package:monitor_queimadas_cariri/utils/AppColors.dart';
+import 'package:monitor_queimadas_cariri/utils/Utils.dart';
 
 class PopupMenu extends PopupWindow {
   final BuildContext context;

@@ -1,7 +1,7 @@
-import 'package:app_monitor_queimadas/utils/AppColors.dart';
-import 'package:app_monitor_queimadas/utils/Notify.dart';
-import 'package:app_monitor_queimadas/widgets/RadioGroup.widget.dart';
-import 'package:app_monitor_queimadas/widgets/TextField.dart';
+import 'package:monitor_queimadas_cariri/utils/AppColors.dart';
+import 'package:monitor_queimadas_cariri/utils/Notify.dart';
+import 'package:monitor_queimadas_cariri/widgets/RadioGroup.widget.dart';
+import 'package:monitor_queimadas_cariri/widgets/TextField.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';

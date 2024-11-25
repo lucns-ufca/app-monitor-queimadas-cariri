@@ -1,5 +1,5 @@
-import 'package:app_monitor_queimadas/utils/Constants.dart';
-import 'package:app_monitor_queimadas/widgets/DynamicWidgetOpacity.widget.dart';
+import 'package:monitor_queimadas_cariri/utils/Constants.dart';
+import 'package:monitor_queimadas_cariri/widgets/DynamicWidgetOpacity.widget.dart';
 import 'package:flutter/material.dart';
 
 class AppLogos extends StatelessWidget {

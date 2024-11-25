@@ -1,4 +1,4 @@
-import 'package:app_monitor_queimadas/models/PredictionMonthly.model.dart';
+import 'package:monitor_queimadas_cariri/models/PredictionMonthly.model.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'PredictionCity.model.g.dart';

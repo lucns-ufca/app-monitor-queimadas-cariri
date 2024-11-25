@@ -1,7 +1,7 @@
 import 'dart:math';
 
-import 'package:app_monitor_queimadas/models/PredictionCity.model.dart';
-import 'package:app_monitor_queimadas/utils/AppColors.dart';
+import 'package:monitor_queimadas_cariri/models/PredictionCity.model.dart';
+import 'package:monitor_queimadas_cariri/utils/AppColors.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 

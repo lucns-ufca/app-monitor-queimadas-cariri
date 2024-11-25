@@ -1,23 +1,23 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:app_monitor_queimadas/models/PredictionCity.model.dart';
-import 'package:app_monitor_queimadas/models/ForecastCity.model.dart';
-import 'package:app_monitor_queimadas/models/User.model.dart';
-import 'package:app_monitor_queimadas/models/WeatherCity.model.dart';
-import 'package:app_monitor_queimadas/models/content/News.model.dart';
-import 'package:app_monitor_queimadas/pages/content/AboutProject.page.dart';
-import 'package:app_monitor_queimadas/pages/content/BaseWidgets.dart';
-import 'package:app_monitor_queimadas/pages/content/IpDefinition.page.dart';
-import 'package:app_monitor_queimadas/pages/dialogs/PopupMenu.dart';
-import 'package:app_monitor_queimadas/pages/start/Acess.page.dart';
-import 'package:app_monitor_queimadas/pages/start/First.page.dart';
-import 'package:app_monitor_queimadas/repositories/App.repository.dart';
-import 'package:app_monitor_queimadas/utils/AppColors.dart';
-import 'package:app_monitor_queimadas/utils/Utils.dart';
-import 'package:app_monitor_queimadas/widgets/ContainerGradient.widget.dart';
-import 'package:app_monitor_queimadas/widgets/ImageTransitionScroller.widget.dart';
-import 'package:app_monitor_queimadas/widgets/TicketView.widget.dart';
+import 'package:monitor_queimadas_cariri/models/PredictionCity.model.dart';
+import 'package:monitor_queimadas_cariri/models/ForecastCity.model.dart';
+import 'package:monitor_queimadas_cariri/models/User.model.dart';
+import 'package:monitor_queimadas_cariri/models/WeatherCity.model.dart';
+import 'package:monitor_queimadas_cariri/models/content/News.model.dart';
+import 'package:monitor_queimadas_cariri/pages/content/AboutProject.page.dart';
+import 'package:monitor_queimadas_cariri/pages/content/BaseWidgets.dart';
+import 'package:monitor_queimadas_cariri/pages/content/IpDefinition.page.dart';
+import 'package:monitor_queimadas_cariri/pages/dialogs/PopupMenu.dart';
+import 'package:monitor_queimadas_cariri/pages/start/Acess.page.dart';
+import 'package:monitor_queimadas_cariri/pages/start/First.page.dart';
+import 'package:monitor_queimadas_cariri/repositories/App.repository.dart';
+import 'package:monitor_queimadas_cariri/utils/AppColors.dart';
+import 'package:monitor_queimadas_cariri/utils/Utils.dart';
+import 'package:monitor_queimadas_cariri/widgets/ContainerGradient.widget.dart';
+import 'package:monitor_queimadas_cariri/widgets/ImageTransitionScroller.widget.dart';
+import 'package:monitor_queimadas_cariri/widgets/TicketView.widget.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
@@ -40,7 +40,6 @@ class TabHomePageState extends State<TabHomePage> with AutomaticKeepAliveClientM
   List<NewsModel> listNews = [];
   List<WeatherCityModel> listCities = [];
   Future<File?>? imageProfile;
-  PredictionCityModel? selectedHighestOccurred;
   PredictionCityModel? selectedCurrentMonthHighestOccurred;
 
   void profileClick() async {
@@ -108,10 +107,11 @@ class TabHomePageState extends State<TabHomePage> with AutomaticKeepAliveClientM
     int currentMonth = DateTime.now().month;
     List<PredictionCityModel> predictionCities = appRepository.getPredictionCities;
     if (predictionCities.isNotEmpty) {
+      int occurredTotal = 0;
+      int predictionTotal = 0;
       for (PredictionCityModel model in predictionCities) {
-        if (selectedHighestOccurred == null || model.occurredTotal! > selectedHighestOccurred!.occurredTotal!) {
-          selectedHighestOccurred = model;
-        }
+        occurredTotal += model.occurredTotal!;
+        predictionTotal += model.predictionTotal!;
         if (selectedCurrentMonthHighestOccurred == null || model.months![currentMonth - 1].fireOccurrences! > model.months![currentMonth - 1].fireOccurrences!) {
           selectedCurrentMonthHighestOccurred = model;
         }
@@ -119,8 +119,8 @@ class TabHomePageState extends State<TabHomePage> with AutomaticKeepAliveClientM
       NewsModel news = NewsModel();
       news.assetsIcon = "assets/icons/fire.png";
       news.priority = 1;
-      news.title = "Ocorreram ${selectedHighestOccurred!.occurredTotal} focos de incêndio.";
-      news.description = "A região da Chapada do Araripe tem registrado ${selectedHighestOccurred!.occurredTotal} focos de queimadas só este ano. O atual previsto para o ano inteiro ta sendo de ${selectedHighestOccurred!.predictionTotal}.";
+      news.title = "Ocorreram $occurredTotal focos de incêndio.";
+      news.description = "A região da Chapada do Araripe tem registrado $occurredTotal focos de queimadas só este ano. O atual previsto para o ano inteiro ta sendo de $predictionTotal.";
       listNews.add(news);
       news = NewsModel();
       news.assetsIcon = "assets/icons/fire.png";
@@ -244,6 +244,11 @@ class TabHomePageState extends State<TabHomePage> with AutomaticKeepAliveClientM
   @override
   Widget build(BuildContext context) {
     super.build(context);
+
+    //double width = MediaQuery.of(context).size.width;
+    //log("width: $width, pixelRatio: ${View.of(context).display.devicePixelRatio * 160}");
+    double imageWidth = MediaQuery.of(context).size.width * 1.2;
+
     return Stack(children: [
       ContainerGradient(
           colors: AppColors.gradientSky,
@@ -251,7 +256,7 @@ class TabHomePageState extends State<TabHomePage> with AutomaticKeepAliveClientM
           child: Column(mainAxisSize: MainAxisSize.max, mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             const SizedBox(),
             Column(mainAxisSize: MainAxisSize.min, children: [
-              Container(transform: Matrix4.translationValues(0, 2, 0), child: const ImageTransitionScroller(duration: Duration(seconds: 10), assets: "assets/images/minimal_forest.png", width: 493, height: 222)),
+              Container(transform: Matrix4.translationValues(0, 2, 0), child: ImageTransitionScroller(duration: const Duration(seconds: 10), assets: "assets/images/minimal_forest.png", width: 493, height: imageWidth / 2.243)),
               Container(height: MediaQuery.of(context).size.height * 0.2, color: AppColors.appBackground)
             ])
           ])),

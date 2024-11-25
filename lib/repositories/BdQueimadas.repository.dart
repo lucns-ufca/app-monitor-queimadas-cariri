@@ -5,9 +5,9 @@ import 'dart:developer';
 import 'dart:io';
 import 'dart:math' as math;
 
-import 'package:app_monitor_queimadas/api/Api.dart';
-import 'package:app_monitor_queimadas/api/Controller.api.dart';
-import 'package:app_monitor_queimadas/models/FireOccurrence.model.dart';
+import 'package:monitor_queimadas_cariri/api/Api.dart';
+import 'package:monitor_queimadas_cariri/api/Controller.api.dart';
+import 'package:monitor_queimadas_cariri/models/FireOccurrence.model.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 //import 'package:path_provider/path_provider.dart';
@@ -18,7 +18,7 @@ class BdQueimadasRepository {
   Map<String, dynamic> cities = {};
   String csrf = "ySRCjAhp-E3o9U06aJioHbX3SZKczvFNN7hE";
   String cookie = "_csrf=OUAZnDlWF34ND-ZzHLylZNpw";
-  void Function()? onUpdateConcluded, onUpdate;
+  void Function()? onUpdateConcluded, onUpdate, onFailure;
   int updateCounter = 0;
   Map<String, dynamic> CITIES_IDS = {
     'Salitre': '033232311959',
@@ -58,13 +58,17 @@ class BdQueimadasRepository {
     controllerApi = ControllerApi(api);
   }
 
-  void setOnUpdateListener(void Function()? onUpdate, void Function()? onUpdateConcluded) {
+  void setOnUpdateListener(void Function()? onUpdate, void Function()? onUpdateConcluded, void Function()? onFailure) {
     this.onUpdate = onUpdate;
     this.onUpdateConcluded = onUpdateConcluded;
+    this.onFailure = onFailure;
   }
 
   Future<void> update() async {
-    if (!await requestCookies()) return;
+    if (!await requestCookies()) {
+      if (onFailure != null) onFailure!();
+      return;
+    }
 
     DateTime now = DateTime.now().toLocal();
     //DateTime before = DateTime.now();

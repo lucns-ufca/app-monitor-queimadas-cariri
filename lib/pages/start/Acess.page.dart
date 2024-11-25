@@ -1,16 +1,16 @@
 // Developed by @lucns
-
 import 'dart:ui';
 
-import 'package:app_monitor_queimadas/models/User.model.dart';
-import 'package:app_monitor_queimadas/pages/content/MainScreen.page.dart';
-import 'package:app_monitor_queimadas/pages/start/tabs/Login.tab.dart';
-import 'package:app_monitor_queimadas/pages/start/tabs/NewAccount.tab.dart';
-import 'package:app_monitor_queimadas/utils/AppColors.dart';
-import 'package:app_monitor_queimadas/widgets/AppLogos.widget.dart';
-import 'package:app_monitor_queimadas/widgets/ContainerGradient.widget.dart';
-import 'package:app_monitor_queimadas/widgets/ExpandablePageView.widget.dart';
-import 'package:app_monitor_queimadas/widgets/ImageTransitionScroller.widget.dart';
+import 'package:flutter/services.dart';
+import 'package:monitor_queimadas_cariri/models/User.model.dart';
+import 'package:monitor_queimadas_cariri/pages/content/MainScreen.page.dart';
+import 'package:monitor_queimadas_cariri/pages/start/tabs/Login.tab.dart';
+import 'package:monitor_queimadas_cariri/pages/start/tabs/NewAccount.tab.dart';
+import 'package:monitor_queimadas_cariri/utils/AppColors.dart';
+import 'package:monitor_queimadas_cariri/widgets/AppLogos.widget.dart';
+import 'package:monitor_queimadas_cariri/widgets/ContainerGradient.widget.dart';
+import 'package:monitor_queimadas_cariri/widgets/ExpandablePageView.widget.dart';
+import 'package:monitor_queimadas_cariri/widgets/ImageTransitionScroller.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -27,8 +27,19 @@ class AccessPageState extends State<AccessPage> with WidgetsBindingObserver {
   bool loading = false;
 
   @override
+  void initState() {
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      systemNavigationBarColor: AppColors.appBackground,
+      systemNavigationBarIconBrightness: Brightness.light,
+      statusBarIconBrightness: Brightness.light,
+    ));
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return const Scaffold(resizeToAvoidBottomInset: false, body: ContainerGradient(colors: AppColors.gradientSky, duration: Duration(seconds: 30), child: LoginForm()));
+    return const Scaffold(body: ContainerGradient(colors: AppColors.gradientSky, duration: Duration(seconds: 30), child: LoginForm()));
   }
 }
 
@@ -83,22 +94,26 @@ class LoginFormState extends State<LoginForm> {
     openTabsPage();
   }
 
-  void openTabsPage() {
-    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainScreenPage()));
+  void openTabsPage() async {
+    await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainScreenPage()));
   }
 
   @override
   Widget build(BuildContext context) {
+    double imageWidth = MediaQuery.of(context).size.width * 1.55;
     return PopScope(
         canPop: page == 0,
-        onPopInvoked: (a) {
-          if (page == 1) pageController.animateToPage(0, duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
+        onPopInvoked: (a) async {
+          if (page == 1) {
+            pageController.animateToPage(0, duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
+            return;
+          }
         },
         child: Stack(children: [
           Column(mainAxisSize: MainAxisSize.max, mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             const SizedBox(),
             Column(mainAxisSize: MainAxisSize.min, children: [
-              Container(transform: Matrix4.translationValues(0, 2, 0), child: const ImageTransitionScroller(duration: Duration(seconds: 20), assets: "assets/images/minimal_forest2.png", width: 637, height: 223)),
+              Container(transform: Matrix4.translationValues(0, 2, 0), child: ImageTransitionScroller(duration: const Duration(seconds: 20), assets: "assets/images/minimal_forest2.png", width: imageWidth, height: imageWidth / 2.87)),
               Container(height: MediaQuery.of(context).size.height * 0.2, width: double.maxFinite, color: AppColors.appBackground, child: const Align(alignment: Alignment.bottomCenter, child: AppLogos(showAppLogo: true)))
             ])
           ]),

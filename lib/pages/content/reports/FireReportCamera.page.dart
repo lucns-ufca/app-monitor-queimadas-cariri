@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:app_monitor_queimadas/utils/AppColors.dart';
-import 'package:app_monitor_queimadas/utils/Utils.dart';
+import 'package:monitor_queimadas_cariri/utils/AppColors.dart';
+import 'package:monitor_queimadas_cariri/utils/Utils.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 
@@ -81,55 +81,55 @@ class _CameraExampleHomeState extends State<FireReportCameraPage> with WidgetsBi
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        resizeToAvoidBottomInset: false,
         backgroundColor: AppColors.appBackground,
-        body: SizedBox(
-            width: double.maxFinite,
-            height: double.maxFinite,
-            child: Stack(children: [
-              _cameraPreviewWidget(),
-              Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Container(
-                      height: (MediaQuery.of(context).size.height - MediaQuery.of(context).size.width * 1.777) + roundBorder,
-                      width: double.maxFinite,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.only(topLeft: Radius.circular(roundBorder), topRight: Radius.circular(roundBorder)),
-                        color: AppColors.fragmentBackground,
-                        boxShadow: [
-                          BoxShadow(color: Colors.black.withOpacity(0.3), spreadRadius: 4, blurRadius: 8),
-                        ],
-                      ),
-                      child: Column(children: [
-                        Container(padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24), child: const Text("Foto da queimada", style: TextStyle(color: Colors.white, fontSize: 24))),
-                        SizedBox(
-                          width: 85,
-                          height: 85,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              Utils.vibrate();
-                              if (cameraController != null && cameraController!.value.isInitialized && !cameraController!.value.isRecordingVideo) {
-                                onTakePictureButtonPressed();
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(shape: const CircleBorder(), backgroundColor: Colors.white.withOpacity(0.75), elevation: 0, shadowColor: Colors.transparent, foregroundColor: AppColors.accent),
-                            child: const SizedBox(),
+        body: SafeArea(
+            top: false,
+            child: SizedBox(
+                width: double.maxFinite,
+                height: double.maxFinite,
+                child: Stack(children: [
+                  _cameraPreviewWidget(),
+                  Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Container(
+                          height: 200,
+                          width: double.maxFinite,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.only(topLeft: Radius.circular(roundBorder), topRight: Radius.circular(roundBorder)),
+                            color: AppColors.fragmentBackground,
+                            boxShadow: [
+                              BoxShadow(color: Colors.black.withOpacity(0.3), spreadRadius: 4, blurRadius: 8),
+                            ],
                           ),
-                        )
-                      ])))
-            ])));
+                          child: Column(children: [
+                            Container(padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24), child: const Text("Foto da queimada", style: TextStyle(color: Colors.white, fontSize: 24))),
+                            SizedBox(
+                              width: 85,
+                              height: 85,
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  Utils.vibrate();
+                                  if (cameraController != null && cameraController!.value.isInitialized && !cameraController!.value.isRecordingVideo) {
+                                    onTakePictureButtonPressed();
+                                  }
+                                },
+                                style: ElevatedButton.styleFrom(shape: const CircleBorder(), backgroundColor: Colors.white.withOpacity(0.75), elevation: 0, shadowColor: Colors.transparent, foregroundColor: AppColors.accent),
+                                child: const SizedBox(),
+                              ),
+                            )
+                          ])))
+                ]))));
   }
 
   Widget _cameraPreviewWidget() {
     if (cameraController == null || !cameraController!.value.isInitialized) {
-      return Container(height: (MediaQuery.of(context).size.width * 1.777), width: double.maxFinite, color: Colors.black);
+      return Container(height: MediaQuery.of(context).size.width, width: double.maxFinite, color: Colors.black);
     } else {
       return Listener(
         onPointerDown: (_) => _pointers++,
         onPointerUp: (_) => _pointers--,
         child: SizedBox(
             width: double.maxFinite,
-            height: MediaQuery.of(context).size.width * 1.777,
             child: CameraPreview(
               cameraController!,
               child: LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
@@ -179,6 +179,7 @@ class _CameraExampleHomeState extends State<FireReportCameraPage> with WidgetsBi
       enableAudio: false,
       imageFormatGroup: ImageFormatGroup.jpeg,
     );
+
     cameraController!.addListener(() {
       if (cameraController!.value.hasError) {
         showInSnackBar('Camera error ${cameraController!.value.errorDescription}');
@@ -243,7 +244,6 @@ class _CameraExampleHomeState extends State<FireReportCameraPage> with WidgetsBi
     }
 
     try {
-      cameraController!.setFlashMode(FlashMode.off);
       final XFile file = await cameraController!.takePicture();
       return file;
     } on CameraException catch (e) {

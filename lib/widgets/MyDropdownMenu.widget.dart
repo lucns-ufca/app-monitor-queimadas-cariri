@@ -1,7 +1,7 @@
 // @developed by @lucns
 
-import 'package:app_monitor_queimadas/utils/AppColors.dart';
-import 'package:app_monitor_queimadas/utils/Constants.dart';
+import 'package:monitor_queimadas_cariri/utils/AppColors.dart';
+import 'package:monitor_queimadas_cariri/utils/Constants.dart';
 import 'package:flutter/material.dart';
 
 class MyDropdownMenu extends StatefulWidget {
@@ -30,7 +30,7 @@ class MyDropdownMenuState extends State<MyDropdownMenu> {
   Widget build(BuildContext context) {
     return AnimatedContainer(
         curve: Curves.ease,
-        height: expanded ? MediaQuery.of(context).size.height * 0.75 : 64,
+        height: expanded ? MediaQuery.of(context).size.height * 0.75 : 72,
         //color: AppColors.fragmentBackground,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(36),

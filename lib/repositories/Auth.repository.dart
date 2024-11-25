@@ -1,8 +1,8 @@
 // @developes by @lucns
 
-import 'package:app_monitor_queimadas/api/Api.dart';
-import 'package:app_monitor_queimadas/api/Controller.api.dart';
-import 'package:app_monitor_queimadas/models/User.model.dart';
+import 'package:monitor_queimadas_cariri/api/Api.dart';
+import 'package:monitor_queimadas_cariri/api/Controller.api.dart';
+import 'package:monitor_queimadas_cariri/models/User.model.dart';
 import 'package:dio/dio.dart';
 
 class AuthRepository {

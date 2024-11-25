@@ -1,6 +1,6 @@
 {
-    "name": "app_monitor_queimadas",
-    "short_name": "app_monitor_queimadas",
+    "name": "monitor_queimadas_cariri",
+    "short_name": "monitor_queimadas_cariri",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

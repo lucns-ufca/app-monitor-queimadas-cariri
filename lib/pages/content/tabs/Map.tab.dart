@@ -2,12 +2,12 @@
 
 import 'dart:async';
 import 'dart:developer';
-import 'package:app_monitor_queimadas/models/FireOccurrence.model.dart';
-import 'package:app_monitor_queimadas/repositories/BdQueimadas.repository.dart';
-import 'package:app_monitor_queimadas/utils/AppColors.dart';
-import 'package:app_monitor_queimadas/utils/Notify.dart';
-import 'package:app_monitor_queimadas/utils/Utils.dart';
-import 'package:app_monitor_queimadas/widgets/MyDropdownMenu.widget.dart';
+import 'package:monitor_queimadas_cariri/models/FireOccurrence.model.dart';
+import 'package:monitor_queimadas_cariri/repositories/BdQueimadas.repository.dart';
+import 'package:monitor_queimadas_cariri/utils/AppColors.dart';
+import 'package:monitor_queimadas_cariri/utils/Notify.dart';
+import 'package:monitor_queimadas_cariri/utils/Utils.dart';
+import 'package:monitor_queimadas_cariri/widgets/MyDropdownMenu.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -70,6 +70,9 @@ class TabMapPageState extends State<TabMapPage> with AutomaticKeepAliveClientMix
         updated = true;
         Utils.vibrate();
         Notify.showToast("Dados atualizados");
+      }, () {
+        Utils.vibrate();
+        Notify.showToast("Sistema fora do ar!");
       });
       Notify.showToast("Atualizando...");
       await bdq.update();

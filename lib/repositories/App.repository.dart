@@ -3,11 +3,12 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:app_monitor_queimadas/api/Api.dart';
-import 'package:app_monitor_queimadas/api/Controller.api.dart';
-import 'package:app_monitor_queimadas/models/PredictionCity.model.dart';
-import 'package:app_monitor_queimadas/models/ForecastCity.model.dart';
-import 'package:app_monitor_queimadas/models/WeatherCity.model.dart';
+import 'package:monitor_queimadas_cariri/api/Api.dart';
+import 'package:monitor_queimadas_cariri/api/Controller.api.dart';
+import 'package:monitor_queimadas_cariri/models/PredictionCity.model.dart';
+import 'package:monitor_queimadas_cariri/models/ForecastCity.model.dart';
+import 'package:monitor_queimadas_cariri/models/WeatherCity.model.dart';
+import 'package:monitor_queimadas_cariri/utils/Log.out.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
@@ -163,10 +164,11 @@ class AppRepository {
   Future<ApiResponse> reportFireFormData(FormData formData) async {
     String ip = preferences.getString("ip") ?? "";
     String port = preferences.getString("port") ?? "";
-    String baseUrl = ip.isNotEmpty && port.isNotEmpty ? "'http://$ip:$port/'" : 'https://monitorqueimadas.duckdns.org/';
+    Log.d("lucas", "ip:$ip port:$port");
+    String baseUrl = ip.isNotEmpty && port.isNotEmpty ? 'http://$ip:$port/' : 'https://monitorqueimadas.duckdns.org/';
     Dio api = Dio(BaseOptions(baseUrl: baseUrl));
     try {
-      Response response = await api.post('warnings/create', data: formData);
+      Response response = await api.post('warnings', data: formData);
       return ApiResponse(code: response.statusCode, data: response.data);
     } on DioException catch (e) {
       return _getDefaultErrorResponse(e);
@@ -188,7 +190,7 @@ class AppRepository {
     String baseUrl = useLocal && ip.isNotEmpty && port.isNotEmpty ? 'http://$ip:$port/' : 'https://lucns.io/apps/monitor_queimadas_cariri/';
     Dio api = Dio(BaseOptions(baseUrl: baseUrl));
     try {
-      Response response = await api.post('warnings/create', data: json);
+      Response response = await api.post('warnings', data: json);
       return ApiResponse(code: response.statusCode, data: response.data);
     } on DioException catch (e) {
       return _getDefaultErrorResponse(e);

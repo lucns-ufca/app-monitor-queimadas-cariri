@@ -1,8 +1,8 @@
 // @developed by @lucns
 
-import 'package:app_monitor_queimadas/utils/Constants.dart';
+import 'package:monitor_queimadas_cariri/utils/Constants.dart';
 import 'package:flutter/material.dart';
-import 'package:app_monitor_queimadas/utils/AppColors.dart';
+import 'package:monitor_queimadas_cariri/utils/AppColors.dart';
 
 class MyButtonTransparent extends StatefulWidget {
   final String text;
