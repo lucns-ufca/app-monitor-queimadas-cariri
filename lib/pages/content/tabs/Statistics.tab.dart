@@ -1,13 +1,13 @@
-import 'package:app_monitor_queimadas/models/PredictionCity.model.dart';
-import 'package:app_monitor_queimadas/models/PredictionMonthly.model.dart';
-import 'package:app_monitor_queimadas/pages/content/BaseWidgets.dart';
-import 'package:app_monitor_queimadas/repositories/App.repository.dart';
-import 'package:app_monitor_queimadas/utils/AppColors.dart';
-import 'package:app_monitor_queimadas/utils/Utils.dart';
-import 'package:app_monitor_queimadas/widgets/ContainerGradient.widget.dart';
-import 'package:app_monitor_queimadas/widgets/GaugeChart.widget.dart';
-import 'package:app_monitor_queimadas/widgets/charts/ChartGrid.widget.dart';
-import 'package:app_monitor_queimadas/widgets/charts/PieChart.widget.dart';
+import 'package:monitor_queimadas_cariri/models/PredictionCity.model.dart';
+import 'package:monitor_queimadas_cariri/models/PredictionMonthly.model.dart';
+import 'package:monitor_queimadas_cariri/pages/content/BaseWidgets.dart';
+import 'package:monitor_queimadas_cariri/repositories/App.repository.dart';
+import 'package:monitor_queimadas_cariri/utils/AppColors.dart';
+import 'package:monitor_queimadas_cariri/utils/Utils.dart';
+import 'package:monitor_queimadas_cariri/widgets/ContainerGradient.widget.dart';
+import 'package:monitor_queimadas_cariri/widgets/GaugeChart.widget.dart';
+import 'package:monitor_queimadas_cariri/widgets/charts/ChartGrid.widget.dart';
+import 'package:monitor_queimadas_cariri/widgets/charts/PieChart.widget.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -20,7 +20,7 @@ class TabStatisticsPage extends StatefulWidget {
   State<StatefulWidget> createState() => TabStatisticsPageState();
 }
 
-class TabStatisticsPageState extends State<TabStatisticsPage> {
+class TabStatisticsPageState extends State<TabStatisticsPage> with AutomaticKeepAliveClientMixin<TabStatisticsPage> {
   bool connected = true;
   final appRepository = GetIt.I.get<AppRepository>();
   List<PredictionCityModel>? predictionCities;
@@ -97,6 +97,7 @@ class TabStatisticsPageState extends State<TabStatisticsPage> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Stack(children: [
       const ContainerGradient(colors: AppColors.gradientDark, duration: Duration(seconds: 30), child: Column(mainAxisSize: MainAxisSize.max, mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [])),
       Column(children: [
@@ -208,4 +209,7 @@ class TabStatisticsPageState extends State<TabStatisticsPage> {
     }
     return BaseWidgets().getCenteredError("Sem conexão!");
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

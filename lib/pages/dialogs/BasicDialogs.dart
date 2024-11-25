@@ -1,11 +1,11 @@
 // @Developed by @lucns
 
-import 'package:app_monitor_queimadas/widgets/TransparentButton.widget.dart';
+import 'package:monitor_queimadas_cariri/widgets/TransparentButton.widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'package:app_monitor_queimadas/utils/AppColors.dart';
-import 'package:app_monitor_queimadas/widgets/CustomText.dart';
+import 'package:monitor_queimadas_cariri/utils/AppColors.dart';
+import 'package:monitor_queimadas_cariri/widgets/CustomText.dart';
 
 class Dialogs {
   late BuildContext context;

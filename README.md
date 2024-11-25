@@ -1,5 +1,5 @@
 <<<<<<< HEAD
-# app_monitor_queimadas
+# monitor_queimadas_cariri
 
 A new Flutter project.
 

@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:app_monitor_queimadas/api/Api.dart';
-import 'package:app_monitor_queimadas/api/Controller.api.dart';
-import 'package:app_monitor_queimadas/utils/Annotator.dart';
+import 'package:monitor_queimadas_cariri/api/Api.dart';
+import 'package:monitor_queimadas_cariri/api/Controller.api.dart';
+import 'package:monitor_queimadas_cariri/utils/Annotator.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:path_provider/path_provider.dart';

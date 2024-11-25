@@ -1,8 +1,7 @@
-import 'dart:developer';
 import 'dart:math' as math;
 
-import 'package:app_monitor_queimadas/models/PredictionCity.model.dart';
-import 'package:app_monitor_queimadas/utils/AppColors.dart';
+import 'package:monitor_queimadas_cariri/models/PredictionCity.model.dart';
+import 'package:monitor_queimadas_cariri/utils/AppColors.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
@@ -92,42 +91,7 @@ class _LineChartSample2State extends State<ChartGrid> {
   }
 
   Widget leftTitleWidgets(double value, TitleMeta meta) {
-    String text;
-    switch (value.toInt()) {
-      case 0:
-        text = '0';
-        break;
-      case 1:
-        text = '100';
-        break;
-      case 2:
-        text = '200';
-        break;
-      case 3:
-        text = '300';
-        break;
-      case 4:
-        text = '400';
-        break;
-      case 5:
-        text = '500';
-        break;
-      case 6:
-        text = '600';
-        break;
-      case 7:
-        text = '700';
-        break;
-      case 8:
-        text = '800';
-        break;
-      case 9:
-        text = '900';
-        break;
-      default:
-        return const SizedBox();
-    }
-
+    String text = "${value.toInt() * 100}";
     return Padding(padding: const EdgeInsets.only(right: 8), child: Text(text, style: const TextStyle(fontWeight: FontWeight.w300, fontSize: 12, color: AppColors.textNormal), textAlign: TextAlign.right));
   }
 
@@ -144,7 +108,6 @@ class _LineChartSample2State extends State<ChartGrid> {
       if (d > b) b = d;
     }
     double maximumY = (math.max(a, b).toDouble() / 100).roundToDouble() + 1;
-    log("max: $maximumY");
     return LineChartData(
       gridData: FlGridData(
         show: true,

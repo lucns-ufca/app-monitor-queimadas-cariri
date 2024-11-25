@@ -1,5 +1,5 @@
-import 'package:app_monitor_queimadas/utils/Constants.dart';
-import 'package:app_monitor_queimadas/widgets/DynamicWidgetOpacity.widget.dart';
+import 'package:monitor_queimadas_cariri/utils/Constants.dart';
+import 'package:monitor_queimadas_cariri/widgets/DynamicWidgetOpacity.widget.dart';
 import 'package:flutter/material.dart';
 
 class AppLogos extends StatelessWidget {
@@ -29,7 +29,7 @@ class AppLogos extends StatelessWidget {
       ),
       const Text("MONITOR DE QUEIMADAS VERSAO ${Constants.APP_VERSION}", style: TextStyle(color: Colors.white, fontSize: 12, fontFamily: "MontBlancLight")),
       const SizedBox(
-        height: 32,
+        height: 72,
       )
     ]);
   }

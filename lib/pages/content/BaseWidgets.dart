@@ -1,4 +1,4 @@
-import 'package:app_monitor_queimadas/utils/AppColors.dart';
+import 'package:monitor_queimadas_cariri/utils/AppColors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 

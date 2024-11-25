@@ -1,20 +1,20 @@
 // Developed by @lucns
 
+import 'dart:convert';
 import 'dart:io';
 
-import 'package:app_monitor_queimadas/api/Controller.api.dart';
-import 'package:app_monitor_queimadas/pages/content/MainScreen.page.dart';
-import 'package:app_monitor_queimadas/pages/content/reports/FireReportPages.page.dart';
-import 'package:app_monitor_queimadas/pages/dialogs/BasicDialogs.dart';
-import 'package:app_monitor_queimadas/repositories/App.repository.dart';
-import 'package:app_monitor_queimadas/utils/AppColors.dart';
-import 'package:app_monitor_queimadas/utils/Log.out.dart';
-import 'package:app_monitor_queimadas/utils/Notify.dart';
-import 'package:app_monitor_queimadas/utils/Utils.dart';
-import 'package:app_monitor_queimadas/widgets/Button.dart';
-import 'package:app_monitor_queimadas/widgets/ButtonLoading.widget.dart';
-import 'package:app_monitor_queimadas/widgets/CustomText.dart';
-import 'package:app_monitor_queimadas/widgets/TextField.dart';
+import 'package:monitor_queimadas_cariri/api/Controller.api.dart';
+import 'package:monitor_queimadas_cariri/pages/content/MainScreen.page.dart';
+import 'package:monitor_queimadas_cariri/pages/content/reports/FireReportPages.page.dart';
+import 'package:monitor_queimadas_cariri/pages/dialogs/BasicDialogs.dart';
+import 'package:monitor_queimadas_cariri/repositories/App.repository.dart';
+import 'package:monitor_queimadas_cariri/utils/AppColors.dart';
+import 'package:monitor_queimadas_cariri/utils/Notify.dart';
+import 'package:monitor_queimadas_cariri/utils/Utils.dart';
+import 'package:monitor_queimadas_cariri/widgets/Button.dart';
+import 'package:monitor_queimadas_cariri/widgets/ButtonLoading.widget.dart';
+import 'package:monitor_queimadas_cariri/widgets/CustomText.dart';
+import 'package:monitor_queimadas_cariri/widgets/TextField.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -109,26 +109,25 @@ class FireReportSenderPageState extends State<FireReportSenderPage> {
   }
 
   Future<int> sendData() async {
-    bool useLocal = preferences.getBool("use_local") ?? false;
     int sentType = preferences.getInt("sent_type") ?? 0;
     buttonLoadingController.setLoading(true);
 
     ApiResponse response;
     if (sentType == 0) {
       FormData formData = FormData();
-      if (!useLocal) formData.fields.add(MapEntry("city", cityName ?? "(Não foi possível obter o nome da cidade. GPS sem precisão!)"));
+      //formData.fields.add(MapEntry("city", cityName ?? "(Não foi possível obter o nome da cidade. GPS sem precisão!)"));
       formData.fields.add(MapEntry("latitude", latitude.toString()));
       formData.fields.add(MapEntry("longitude", longitude.toString()));
-      if (useLocal) formData.fields.add(const MapEntry("imgUrl", "teste"));
-      if (!useLocal) formData.fields.add(MapEntry("timestamp", DateTime.now().toLocal().millisecondsSinceEpoch.toString()));
-      if (!useLocal) formData.fields.add(MapEntry("date_time", getDateTime()));
+      //formData.fields.add(MapEntry("timestamp", DateTime.now().toLocal().millisecondsSinceEpoch.toString()));
+      //formData.fields.add(MapEntry("date_time", getDateTime()));
       formData.fields.add(MapEntry("description", description ?? getInitialText()));
-      if (!useLocal) formData.files.add(MapEntry("image", MultipartFile.fromFileSync(imageFile!.path)));
+      formData.files.add(MapEntry("image", await MultipartFile.fromFile(imageFile!.path, contentType: DioMediaType.parse("image/jpg"))));
       response = await appRepository.reportFireFormData(formData);
     } else {
-      response = await appRepository.reportFireJson({"imgUrl": "https://url.io/image.jpg", "latitude": latitude, "longitude": longitude, "description": description ?? getInitialText()});
+      Uint8List imageBytes = await imageFile!.readAsBytes();
+      response = await appRepository.reportFireJson({"image": base64Encode(imageBytes), "latitude": latitude, "longitude": longitude, "description": description ?? getInitialText()});
     }
-    Log.d("Lucas", "Response code: ${response.code}");
+    //Log.d("Lucas", "Response code: ${response.code}");
     switch (response.code) {
       case ApiResponseCodes.OK:
         return 3;
@@ -218,105 +217,107 @@ class FireReportSenderPageState extends State<FireReportSenderPage> {
           //await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const DashboardPage()));
           await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainScreenPage()));
         },
-        child: Container(
-          width: MediaQuery.of(context).size.width,
-          height: double.maxFinite,
-          color: AppColors.fragmentBackground,
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              Expanded(
-                  child: SingleChildScrollView(
-                      child: Column(children: [
-                Container(
-                  width: double.maxFinite,
-                  height: MediaQuery.of(context).size.height * 0.6,
-                  decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(36), bottomRight: Radius.circular(36)),
-                      image: DecorationImage(
-                        fit: BoxFit.fitWidth,
-                        alignment: FractionalOffset.topCenter,
-                        image: Image.file(imageFile!).image,
-                      )),
-                ),
-                Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text("Alerta de Queimada", style: TextStyle(height: 1.0, color: AppColors.textNormal, fontSize: 36, fontWeight: FontWeight.w400)),
-                        const SizedBox(height: 8),
-                        Row(
-                          children: [
-                            SvgPicture.asset("assets/icons/marker_alert.svg", width: 24, height: 24, colorFilter: const ColorFilter.mode(AppColors.accent, BlendMode.srcIn)),
-                            const SizedBox(width: 8),
-                            MyText(
-                                text: cityName ?? "Carregando...",
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  color: AppColors.accent,
-                                ))
-                          ],
-                        ),
-                        const SizedBox(height: 20),
-                        MyFieldText(
-                          textAlignVertical: TextAlignVertical.top,
-                          isEnabled: !buttonsChanged,
-                          height: 150,
-                          maximumLines: 10,
-                          hintText: "Escreva um relato aqui...",
-                          text: getInitialText(),
-                          action: TextInputAction.newline,
-                          inputType: TextInputType.multiline,
-                          textCapitalization: TextCapitalization.sentences,
-                          onInput: (text) {
-                            description = text;
-                            if (description!.isEmpty) description = getInitialText();
-                          },
-                        ),
-                        //SizedBox(height: MediaQuery.of(context).viewInsets.bottom / 1.5)
-                      ],
-                    )),
-              ]))),
-              Padding(
-                  padding: const EdgeInsets.only(left: 24, right: 24, bottom: 24),
-                  child: AnimatedSwitcher(
-                      duration: const Duration(seconds: 1),
-                      child: buttonsChanged
-                          ? ButtonLoading(
-                              text: hasError ? "Tentar novamente" : (sent ? "Enviado" : "Enviar Alerta"),
-                              icon: Icon(!sent || hasError ? Icons.send : Icons.done_outline),
-                              controller: buttonLoadingController,
-                              onPressed: () {
-                                if (isValidForm()) {
-                                  attemptSendData();
-                                  return;
-                                }
-                                Notify.showToast("Espere um pouco.\nAguardando dados da localização...");
-                              })
-                          : Row(
-                              children: [
-                                Expanded(
-                                    child: MyButton(
-                                  colorBackground: AppColors.accent,
-                                  textButton: "Voltar",
-                                  onClick: () => widget.callbackController.onPreviousStep(),
-                                )),
-                                const SizedBox(width: 16),
-                                Expanded(
-                                    child: MyButton(
-                                  textButton: "Avançar",
-                                  onClick: () {
-                                    setState(() {
-                                      buttonsChanged = true;
-                                    });
-                                  },
-                                ))
-                              ],
-                            ))),
-            ],
-          ),
-        ));
+        child: SafeArea(
+            top: false,
+            child: Container(
+              width: MediaQuery.of(context).size.width,
+              height: double.maxFinite,
+              color: AppColors.fragmentBackground,
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Expanded(
+                      child: Container(
+                    //height: MediaQuery.of(context).size.height * 0.6,
+                    decoration: BoxDecoration(
+                        borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(36), bottomRight: Radius.circular(36)),
+                        image: DecorationImage(
+                          fit: BoxFit.fitWidth,
+                          image: Image.file(imageFile!).image,
+                        )),
+                  )),
+                  Expanded(
+                      child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                          child: Column(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                            Column(children: [
+                              const Align(alignment: Alignment.topLeft, child: Text("Alerta de Queimada", style: TextStyle(height: 1.0, color: AppColors.textNormal, fontSize: 36, fontWeight: FontWeight.w400))),
+                              const SizedBox(height: 8),
+                              Row(
+                                children: [
+                                  SvgPicture.asset("assets/icons/marker_alert.svg", width: 24, height: 24, colorFilter: const ColorFilter.mode(AppColors.accent, BlendMode.srcIn)),
+                                  const SizedBox(width: 8),
+                                  MyText(
+                                      text: cityName ?? "Carregando...",
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        color: AppColors.accent,
+                                      ))
+                                ],
+                              ),
+                              const SizedBox(height: 20),
+                              MyFieldText(
+                                textAlignVertical: TextAlignVertical.top,
+                                isEnabled: !buttonsChanged,
+                                height: 200,
+                                maximumLines: 10,
+                                hintText: "Escreva um relato aqui...",
+                                text: getInitialText(),
+                                action: TextInputAction.newline,
+                                inputType: TextInputType.multiline,
+                                textCapitalization: TextCapitalization.sentences,
+                                onInput: (text) {
+                                  description = text;
+                                  if (description!.isEmpty) description = getInitialText();
+                                },
+                              )
+                            ]),
+                            Column(mainAxisSize: MainAxisSize.max, mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                              const SizedBox(height: 24),
+                              Padding(
+                                  padding: const EdgeInsets.only(bottom: 16),
+                                  child: AnimatedSwitcher(
+                                      duration: const Duration(seconds: 1),
+                                      child: buttonsChanged
+                                          ? ButtonLoading(
+                                              text: hasError ? "Tentar novamente" : (sent ? "Enviado" : "Enviar Alerta"),
+                                              icon: Icon(!sent || hasError ? Icons.send : Icons.done_outline),
+                                              controller: buttonLoadingController,
+                                              onPressed: () async {
+                                                if (isValidForm()) {
+                                                  attemptSendData();
+                                                  //List<int> imageBytes = await !.readAsBytes();
+                                                  //ui.Image decodedImage = await decodeImageFromList(await imageFile!.readAsBytes());
+                                                  //Log.d("lucas", "${decodedImage.width}x${decodedImage.height}");
+                                                  return;
+                                                }
+                                                Notify.showToast("Espere um pouco.\nAguardando dados da localização...");
+                                              })
+                                          : Row(
+                                              children: [
+                                                Expanded(
+                                                    child: MyButton(
+                                                  colorBackground: AppColors.buttonNegative,
+                                                  textButton: "Voltar",
+                                                  onClick: () => widget.callbackController.onPreviousStep(),
+                                                )),
+                                                const SizedBox(width: 16),
+                                                Expanded(
+                                                    child: MyButton(
+                                                  textButton: "Avançar",
+                                                  onClick: () {
+                                                    setState(() {
+                                                      buttonsChanged = true;
+                                                    });
+                                                  },
+                                                ))
+                                              ],
+                                            )))
+                            ])
+                          ])))
+                ],
+              ),
+            )));
   }
 
   String getInitialText() {

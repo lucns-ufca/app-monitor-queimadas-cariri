@@ -1,4 +1,4 @@
-package com.example.app_monitor_queimadas
+package lucns.monitor_queimadas_cariri
 
 import io.flutter.embedding.android.FlutterActivity
 

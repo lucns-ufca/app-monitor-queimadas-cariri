@@ -1,11 +1,11 @@
 // Developed by @lucns
 
-import 'package:app_monitor_queimadas/models/User.model.dart';
-import 'package:app_monitor_queimadas/pages/content/MainScreen.page.dart';
-import 'package:app_monitor_queimadas/pages/start/First.page.dart';
-import 'package:app_monitor_queimadas/repositories/App.repository.dart';
+import 'package:monitor_queimadas_cariri/models/User.model.dart';
+import 'package:monitor_queimadas_cariri/pages/content/MainScreen.page.dart';
+import 'package:monitor_queimadas_cariri/pages/start/First.page.dart';
+import 'package:monitor_queimadas_cariri/repositories/App.repository.dart';
 import 'package:flutter/material.dart';
-import 'package:app_monitor_queimadas/utils/AppColors.dart';
+import 'package:monitor_queimadas_cariri/utils/AppColors.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

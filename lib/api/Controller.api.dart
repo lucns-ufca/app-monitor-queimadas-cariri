@@ -2,7 +2,7 @@
 
 import 'dart:io';
 
-import 'package:app_monitor_queimadas/api/Api.dart';
+import 'package:monitor_queimadas_cariri/api/Api.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 

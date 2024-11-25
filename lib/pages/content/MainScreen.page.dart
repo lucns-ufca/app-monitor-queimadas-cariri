@@ -1,12 +1,13 @@
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
-import 'package:app_monitor_queimadas/models/User.model.dart';
-import 'package:app_monitor_queimadas/pages/content/reports/FireReportPages.page.dart';
-import 'package:app_monitor_queimadas/pages/content/tabs/Home.tab.dart';
-import 'package:app_monitor_queimadas/pages/content/tabs/Map.tab.dart';
-import 'package:app_monitor_queimadas/pages/content/tabs/Nature.tab.dart';
-import 'package:app_monitor_queimadas/pages/content/tabs/Statistics.tab.dart';
-import 'package:app_monitor_queimadas/utils/AppColors.dart';
-import 'package:app_monitor_queimadas/utils/PermissionData.dart';
+import 'package:focus_detector/focus_detector.dart';
+import 'package:monitor_queimadas_cariri/models/User.model.dart';
+import 'package:monitor_queimadas_cariri/pages/content/reports/FireReportPages.page.dart';
+import 'package:monitor_queimadas_cariri/pages/content/tabs/Home.tab.dart';
+import 'package:monitor_queimadas_cariri/pages/content/tabs/Map.tab.dart';
+import 'package:monitor_queimadas_cariri/pages/content/tabs/Nature.tab.dart';
+import 'package:monitor_queimadas_cariri/pages/content/tabs/Statistics.tab.dart';
+import 'package:monitor_queimadas_cariri/utils/AppColors.dart';
+import 'package:monitor_queimadas_cariri/utils/PermissionData.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
@@ -27,34 +28,51 @@ class MainScreenPage extends StatelessWidget {
           if (user.hasAccess()) {
             SystemNavigator.pop();
           } else {
+            SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+            SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+              statusBarColor: Colors.transparent,
+              systemNavigationBarColor: Colors.transparent,
+              systemNavigationBarIconBrightness: Brightness.light,
+              statusBarIconBrightness: Brightness.light,
+            ));
             //await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const FirstPage()));
           }
         },
-        child: Scaffold(
-            extendBody: true,
-            backgroundColor: AppColors.appBackground,
-            body: PageView(physics: const NeverScrollableScrollPhysics(), controller: pageController, children: const [TabHomePage(), TabStatisticsPage(), TabMapPage(), TabNaturePage()]),
-            floatingActionButton: SizedBox(
-                width: 56,
-                height: 56,
-                child: ElevatedButton(
-                    style: ButtonStyle(
-                        //foregroundColor: colorsStateText,
-                        padding: WidgetStateProperty.all<EdgeInsetsGeometry>(EdgeInsetsDirectional.zero),
-                        elevation: WidgetStateProperty.all<double>(4),
-                        overlayColor: WidgetStateProperty.resolveWith((states) => Colors.white.withOpacity(0.5)),
-                        backgroundColor: WidgetStateProperty.all<Color>(AppColors.accent),
-                        shape: WidgetStateProperty.all<OvalBorder>(const OvalBorder())),
-                    onPressed: () async {
-                      await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => FireReportPages(permissions: permissions)));
-                    },
-                    child: const Icon(Icons.local_fire_department))),
-            floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-            bottomNavigationBar: NavigationBar(
-              onTabSelected: (index) {
-                pageController.animateToPage(index, duration: const Duration(milliseconds: 300), curve: Curves.ease);
-              },
-            )));
+        child: FocusDetector(
+            onVisibilityGained: () {
+              SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+              SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+                statusBarColor: Colors.transparent,
+                systemNavigationBarColor: AppColors.fragmentBackground,
+                systemNavigationBarIconBrightness: Brightness.light,
+                statusBarIconBrightness: Brightness.light,
+              ));
+            },
+            child: Scaffold(
+                extendBody: true,
+                backgroundColor: AppColors.appBackground,
+                body: PageView(physics: const NeverScrollableScrollPhysics(), controller: pageController, children: const [TabHomePage(), TabStatisticsPage(), TabMapPage(), TabNaturePage()]),
+                floatingActionButton: SizedBox(
+                    width: 56,
+                    height: 56,
+                    child: ElevatedButton(
+                        style: ButtonStyle(
+                            //foregroundColor: colorsStateText,
+                            padding: WidgetStateProperty.all<EdgeInsetsGeometry>(EdgeInsetsDirectional.zero),
+                            elevation: WidgetStateProperty.all<double>(4),
+                            overlayColor: WidgetStateProperty.resolveWith((states) => Colors.white.withOpacity(0.5)),
+                            backgroundColor: WidgetStateProperty.all<Color>(AppColors.accent),
+                            shape: WidgetStateProperty.all<OvalBorder>(const OvalBorder())),
+                        onPressed: () async {
+                          await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => FireReportPages(permissions: permissions)));
+                        },
+                        child: const Icon(Icons.local_fire_department))),
+                floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+                bottomNavigationBar: NavigationBar(
+                  onTabSelected: (index) {
+                    pageController.animateToPage(index, duration: const Duration(milliseconds: 300), curve: Curves.ease);
+                  },
+                ))));
   }
 }
 
@@ -75,7 +93,7 @@ class NavigationBarState extends State<NavigationBar> {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
-      systemNavigationBarColor: Colors.transparent,
+      systemNavigationBarColor: AppColors.fragmentBackground,
       systemNavigationBarIconBrightness: Brightness.light,
       statusBarIconBrightness: Brightness.light,
     ));

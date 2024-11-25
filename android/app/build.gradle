@@ -22,8 +22,17 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
 
+
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file('keystore.properties')
+if (keystorePropertiesFile.exists()) {
+    keystorePropertiesFile.withReader('UTF-8') { reader ->
+        keystoreProperties.load(reader)
+    }
+}
+
 android {
-    namespace "com.example.app_monitor_queimadas"
+    namespace "lucns.monitor_queimadas_cariri"
     compileSdk flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion
 
@@ -42,13 +51,14 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId "com.example.app_monitor_queimadas"
+        applicationId "lucns.monitor_queimadas_cariri"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
         minSdkVersion 29
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+        multiDexEnabled true
     }
 
     buildTypes {
@@ -58,7 +68,22 @@ android {
             signingConfig signingConfigs.debug
         }
     }
+
+    signingConfigs {
+       release {
+           keyAlias keystoreProperties['keyAlias']
+           keyPassword keystoreProperties['keyPassword']
+           storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
+           storePassword keystoreProperties['storePassword']
+       }
+   }
+   buildTypes {
+       release {
+           signingConfig signingConfigs.release
+       }
+   }
     
+    /*
     signingConfigs {
         debug {
             storeFile file("debug.keystore")
@@ -73,6 +98,7 @@ android {
             storePassword 'lucas321'
         }
     }
+    */
 }
 
 flutter {

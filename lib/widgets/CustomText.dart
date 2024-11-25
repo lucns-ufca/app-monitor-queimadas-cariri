@@ -1,7 +1,7 @@
 // @developed by @lucns
 
 import 'package:flutter/material.dart';
-import 'package:app_monitor_queimadas/utils/AppColors.dart';
+import 'package:monitor_queimadas_cariri/utils/AppColors.dart';
 
 class MyText extends StatefulWidget {
   final String text;

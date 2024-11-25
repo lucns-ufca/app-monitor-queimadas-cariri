@@ -1,12 +1,13 @@
 // @developes by @lucns
 
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 import 'dart:math' as math;
 
-import 'package:app_monitor_queimadas/api/Api.dart';
-import 'package:app_monitor_queimadas/api/Controller.api.dart';
-import 'package:app_monitor_queimadas/models/FireOccurrence.model.dart';
+import 'package:monitor_queimadas_cariri/api/Api.dart';
+import 'package:monitor_queimadas_cariri/api/Controller.api.dart';
+import 'package:monitor_queimadas_cariri/models/FireOccurrence.model.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 //import 'package:path_provider/path_provider.dart';
@@ -17,7 +18,8 @@ class BdQueimadasRepository {
   Map<String, dynamic> cities = {};
   String csrf = "ySRCjAhp-E3o9U06aJioHbX3SZKczvFNN7hE";
   String cookie = "_csrf=OUAZnDlWF34ND-ZzHLylZNpw";
-  void Function()? onUpdateConcluded;
+  void Function()? onUpdateConcluded, onUpdate, onFailure;
+  int updateCounter = 0;
   Map<String, dynamic> CITIES_IDS = {
     'Salitre': '033232311959',
     'Campos Sales': '033232302701',
@@ -50,21 +52,27 @@ class BdQueimadasRepository {
     'Baixio': '033232301802',
     'Umari': '033232313708'
   };
-  List<FireOccurrenceModel> occurrences = [];
+  Map<String, dynamic> occurrences = {};
 
   BdQueimadasRepository() {
     controllerApi = ControllerApi(api);
   }
 
-  void setOnUpdateConcluded(void Function()? onUpdateConcluded) {
+  void setOnUpdateListener(void Function()? onUpdate, void Function()? onUpdateConcluded, void Function()? onFailure) {
+    this.onUpdate = onUpdate;
     this.onUpdateConcluded = onUpdateConcluded;
+    this.onFailure = onFailure;
   }
 
   Future<void> update() async {
-    if (!await requestCookies()) return;
+    if (!await requestCookies()) {
+      if (onFailure != null) onFailure!();
+      return;
+    }
 
     DateTime now = DateTime.now().toLocal();
-    DateTime before = DateTime.now(); //now.subtract(const Duration(days: 1));
+    //DateTime before = DateTime.now();
+    DateTime before = now.subtract(const Duration(days: 1));
     String fromMonth, fromDay, toMonth, toDay;
     if (before.day < 10) {
       fromDay = '0${before.day}';
@@ -89,31 +97,13 @@ class BdQueimadasRepository {
 
     String from = "${before.year}-$fromMonth-$fromDay";
     String to = "${now.year}-$toMonth-$toDay";
+    log("from: $from to $to");
     occurrences.clear();
-    for (String cityId in CITIES_IDS.values) {
-      Map<String, dynamic>? map = await requestOccurrences(cityId, from, to);
-      Map<String, dynamic>? o = {};
-      for (List<dynamic> list in map!['data']) {
-        String dateTime = list[0];
-        o[dateTime] = FireOccurrenceModel(dateTime: dateTime, latitude: list[9], longitude: list[10]);
-      }
-      List<FireOccurrenceModel> list = [];
-      List<FireOccurrenceModel> list2 = [];
-      o.forEach((k, v) => list.add(v));
-      for (FireOccurrenceModel model in list) {
-        bool found = false;
-        for (FireOccurrenceModel model2 in list2) {
-          if ((model.latitude! == model2.latitude! && model.longitude == model2.longitude) || isNearest(model.latitude!, model.longitude!, model2.latitude!, model2.longitude!)) {
-            found = true;
-            break;
-          }
-        }
-        if (!found) list2.add(model);
-      }
-
-      occurrences.addAll(list2);
-      if (onUpdateConcluded != null) onUpdateConcluded!();
-    }
+    updateCounter = 0;
+    CITIES_IDS.forEach((key, value) async {
+      generateRequest(value, key, from, to);
+      await Future.delayed(const Duration(milliseconds: 100));
+    });
   }
 
   Future<bool> requestCookies() async {
@@ -145,7 +135,38 @@ class BdQueimadasRepository {
   }
 
   String getData(String city, String dateFrom, String dateTo) {
-    return "draw=2&columns%5B0%5D%5Bdata%5D=0&columns%5B0%5D%5Bname%5D=&columns%5B0%5D%5Bsearchable%5D=true&columns%5B0%5D%5Borderable%5D=true&columns%5B0%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B0%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B1%5D%5Bdata%5D=1&columns%5B1%5D%5Bname%5D=&columns%5B1%5D%5Bsearchable%5D=true&columns%5B1%5D%5Borderable%5D=true&columns%5B1%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B1%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B2%5D%5Bdata%5D=2&columns%5B2%5D%5Bname%5D=&columns%5B2%5D%5Bsearchable%5D=true&columns%5B2%5D%5Borderable%5D=true&columns%5B2%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B2%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B3%5D%5Bdata%5D=3&columns%5B3%5D%5Bname%5D=&columns%5B3%5D%5Bsearchable%5D=true&columns%5B3%5D%5Borderable%5D=true&columns%5B3%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B3%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B4%5D%5Bdata%5D=4&columns%5B4%5D%5Bname%5D=&columns%5B4%5D%5Bsearchable%5D=true&columns%5B4%5D%5Borderable%5D=true&columns%5B4%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B4%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B5%5D%5Bdata%5D=5&columns%5B5%5D%5Bname%5D=&columns%5B5%5D%5Bsearchable%5D=true&columns%5B5%5D%5Borderable%5D=true&columns%5B5%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B5%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B6%5D%5Bdata%5D=6&columns%5B6%5D%5Bname%5D=&columns%5B6%5D%5Bsearchable%5D=true&columns%5B6%5D%5Borderable%5D=true&columns%5B6%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B6%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B7%5D%5Bdata%5D=7&columns%5B7%5D%5Bname%5D=&columns%5B7%5D%5Bsearchable%5D=true&columns%5B7%5D%5Borderable%5D=true&columns%5B7%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B7%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B8%5D%5Bdata%5D=8&columns%5B8%5D%5Bname%5D=&columns%5B8%5D%5Bsearchable%5D=true&columns%5B8%5D%5Borderable%5D=true&columns%5B8%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B8%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B9%5D%5Bdata%5D=9&columns%5B9%5D%5Bname%5D=&columns%5B9%5D%5Bsearchable%5D=true&columns%5B9%5D%5Borderable%5D=true&columns%5B9%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B9%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B10%5D%5Bdata%5D=10&columns%5B10%5D%5Bname%5D=&columns%5B10%5D%5Bsearchable%5D=true&columns%5B10%5D%5Borderable%5D=true&columns%5B10%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B10%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B11%5D%5Bdata%5D=11&columns%5B11%5D%5Bname%5D=&columns%5B11%5D%5Bsearchable%5D=true&columns%5B11%5D%5Borderable%5D=true&columns%5B11%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B11%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B12%5D%5Bdata%5D=12&columns%5B12%5D%5Bname%5D=&columns%5B12%5D%5Bsearchable%5D=true&columns%5B12%5D%5Borderable%5D=true&columns%5B12%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B12%5D%5Bsearch%5D%5Bregex%5D=false&order%5B0%5D%5Bcolumn%5D=0&order%5B0%5D%5Bdir%5D=desc&start=0&length=100&search%5Bvalue%5D=&search%5Bregex%5D=false&dateTimeFrom=$dateFrom+00%3A00%3A00&dateTimeTo=$dateTo+23%3A59%3A59&satellites=&biomes=&continent=8&countries=33&states=03323&cities=$city&specialRegions=&protectedArea=&industrialFires=false";
+    return "draw=2&columns%5B0%5D%5Bdata%5D=0&columns%5B0%5D%5Bname%5D=&columns%5B0%5D%5Bsearchable%5D=true&columns%5B0%5D%5Borderable%5D=true&columns%5B0%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B0%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B1%5D%5Bdata%5D=1&columns%5B1%5D%5Bname%5D=&columns%5B1%5D%5Bsearchable%5D=true&columns%5B1%5D%5Borderable%5D=true&columns%5B1%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B1%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B2%5D%5Bdata%5D=2&columns%5B2%5D%5Bname%5D=&columns%5B2%5D%5Bsearchable%5D=true&columns%5B2%5D%5Borderable%5D=true&columns%5B2%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B2%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B3%5D%5Bdata%5D=3&columns%5B3%5D%5Bname%5D=&columns%5B3%5D%5Bsearchable%5D=true&columns%5B3%5D%5Borderable%5D=true&columns%5B3%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B3%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B4%5D%5Bdata%5D=4&columns%5B4%5D%5Bname%5D=&columns%5B4%5D%5Bsearchable%5D=true&columns%5B4%5D%5Borderable%5D=true&columns%5B4%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B4%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B5%5D%5Bdata%5D=5&columns%5B5%5D%5Bname%5D=&columns%5B5%5D%5Bsearchable%5D=true&columns%5B5%5D%5Borderable%5D=true&columns%5B5%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B5%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B6%5D%5Bdata%5D=6&columns%5B6%5D%5Bname%5D=&columns%5B6%5D%5Bsearchable%5D=true&columns%5B6%5D%5Borderable%5D=true&columns%5B6%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B6%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B7%5D%5Bdata%5D=7&columns%5B7%5D%5Bname%5D=&columns%5B7%5D%5Bsearchable%5D=true&columns%5B7%5D%5Borderable%5D=true&columns%5B7%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B7%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B8%5D%5Bdata%5D=8&columns%5B8%5D%5Bname%5D=&columns%5B8%5D%5Bsearchable%5D=true&columns%5B8%5D%5Borderable%5D=true&columns%5B8%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B8%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B9%5D%5Bdata%5D=9&columns%5B9%5D%5Bname%5D=&columns%5B9%5D%5Bsearchable%5D=true&columns%5B9%5D%5Borderable%5D=true&columns%5B9%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B9%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B10%5D%5Bdata%5D=10&columns%5B10%5D%5Bname%5D=&columns%5B10%5D%5Bsearchable%5D=true&columns%5B10%5D%5Borderable%5D=true&columns%5B10%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B10%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B11%5D%5Bdata%5D=11&columns%5B11%5D%5Bname%5D=&columns%5B11%5D%5Bsearchable%5D=true&columns%5B11%5D%5Borderable%5D=true&columns%5B11%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B11%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B12%5D%5Bdata%5D=12&columns%5B12%5D%5Bname%5D=&columns%5B12%5D%5Bsearchable%5D=true&columns%5B12%5D%5Borderable%5D=true&columns%5B12%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B12%5D%5Bsearch%5D%5Bregex%5D=false&order%5B0%5D%5Bcolumn%5D=0&order%5B0%5D%5Bdir%5D=desc&start=0&length=100&search%5Bvalue%5D=&search%5Bregex%5D=false&dateTimeFrom=$dateFrom+00%3A00%3A00&dateTimeTo=$dateTo+23%3A59%3A59&satellites=AQUA_M-T&biomes=&continent=8&countries=33&states=03323&cities=$city&specialRegions=&protectedArea=&industrialFires=false";
+  }
+
+  void generateRequest(String cityId, String city, String from, String to) async {
+    Map<String, dynamic>? map = await requestOccurrences(cityId, from, to);
+    Map<String, dynamic> o = {};
+    if (map != null) {
+      for (List<dynamic> list in map['data']) {
+        String dateTime = list[0];
+        o[dateTime] = FireOccurrenceModel(dateTime: dateTime, latitude: list[9], longitude: list[10]);
+      }
+    }
+    List<FireOccurrenceModel> list = [];
+    o.forEach((k, v) => list.add(v));
+    /*
+    List<FireOccurrenceModel> list2 = [];    
+    for (FireOccurrenceModel model in list) {
+      bool found = false;
+      for (FireOccurrenceModel model2 in list2) {
+        if ((model.latitude! == model2.latitude! && model.longitude == model2.longitude) || isNearest(model.latitude!, model.longitude!, model2.latitude!, model2.longitude!)) {
+          found = true;
+          break;
+        }
+      }
+      if (!found) list2.add(model);
+    }
+    occurrences[city] = list2;
+    */
+    occurrences[city] = list;
+    updateCounter++;
+    if (onUpdateConcluded != null) onUpdate!();
+    if (updateCounter == CITIES_IDS.length) onUpdateConcluded!();
   }
 
   Future<void> saveOccurrences() async {

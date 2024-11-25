@@ -1,11 +1,11 @@
 import 'dart:async';
 
-import 'package:app_monitor_queimadas/pages/content/MainScreen.page.dart';
-import 'package:app_monitor_queimadas/pages/content/reports/FireReportCamera.page.dart';
-import 'package:app_monitor_queimadas/pages/content/reports/FireReportIntroduction.page.dart';
-import 'package:app_monitor_queimadas/pages/content/reports/FireReportSender.page.dart';
-import 'package:app_monitor_queimadas/utils/AppColors.dart';
-import 'package:app_monitor_queimadas/utils/PermissionData.dart';
+import 'package:monitor_queimadas_cariri/pages/content/MainScreen.page.dart';
+import 'package:monitor_queimadas_cariri/pages/content/reports/FireReportCamera.page.dart';
+import 'package:monitor_queimadas_cariri/pages/content/reports/FireReportIntroduction.page.dart';
+import 'package:monitor_queimadas_cariri/pages/content/reports/FireReportSender.page.dart';
+import 'package:monitor_queimadas_cariri/utils/AppColors.dart';
+import 'package:monitor_queimadas_cariri/utils/PermissionData.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
