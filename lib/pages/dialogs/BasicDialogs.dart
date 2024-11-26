@@ -125,4 +125,28 @@ class Dialogs {
                 ]))),
         false);
   }
+
+  void showBlackLoading({String text = ""}) {
+    showDialogWindow(
+        PopScope(
+            canPop: false,
+            child: IntrinsicHeight(
+                child: Container(
+                    decoration: const BoxDecoration(color: AppColors.shadow, borderRadius: BorderRadius.all(Radius.circular(24))),
+                    padding: const EdgeInsets.all(24),
+                    child: Row(mainAxisSize: MainAxisSize.min, mainAxisAlignment: MainAxisAlignment.start, children: [
+                      const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: AppColors.accent)),
+                      if (text.isNotEmpty) const SizedBox(width: 16),
+                      if (text.isNotEmpty)
+                        Flexible(
+                            child: Text(
+                          text,
+                          maxLines: 10,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.start,
+                          style: const TextStyle(color: AppColors.textNormal, fontSize: 20, fontWeight: FontWeight.w500),
+                        ))
+                    ])))),
+        false);
+  }
 }

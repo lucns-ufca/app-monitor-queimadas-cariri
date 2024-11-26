@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:flutter/services.dart';
 import 'package:monitor_queimadas_cariri/models/User.model.dart';
 import 'package:monitor_queimadas_cariri/pages/content/MainScreen.page.dart';
+import 'package:monitor_queimadas_cariri/pages/dialogs/BasicDialogs.dart';
 import 'package:monitor_queimadas_cariri/pages/start/tabs/Login.tab.dart';
 import 'package:monitor_queimadas_cariri/pages/start/tabs/NewAccount.tab.dart';
 import 'package:monitor_queimadas_cariri/utils/AppColors.dart';
@@ -63,14 +64,20 @@ class LoginFormState extends State<LoginForm> {
   }
 
   void signInWithGoogle() async {
+    Dialogs dialogs = Dialogs(context);
+    dialogs.showBlackLoading();
     GoogleSignIn googleSignIn = GoogleSignIn();
     final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
-    if (googleUser == null) return;
+    if (googleUser == null) {
+      dialogs.dismiss();
+      return;
+    }
     User user = User();
     user.name = googleUser.displayName ?? "";
     user.email = googleUser.email;
     user.id = googleUser.id;
     user.photoUrl = googleUser.photoUrl ?? "";
+
     /*
     try { // dando problema no firebase
       GoogleSignInAuthentication? googleAuth = await googleUser.authentication;
@@ -91,6 +98,7 @@ class LoginFormState extends State<LoginForm> {
       */
 
     await user.storeData();
+    dialogs.dismiss();
     openTabsPage();
   }
 
