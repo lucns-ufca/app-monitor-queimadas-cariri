@@ -38,7 +38,8 @@ if (keystorePropertiesFile.exists()) {
 android {
     namespace "lucns.monitor_queimadas_cariri"
     compileSdk flutter.compileSdkVersion
-    ndkVersion flutter.ndkVersion
+    ndkVersion '25.1.8937393'
+    // ndkVersion flutter.ndkVersion
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8

@@ -11,12 +11,10 @@ import 'package:monitor_queimadas_cariri/models/WeatherCity.model.dart';
 import 'package:monitor_queimadas_cariri/utils/Log.out.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:get_it/get_it.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AppRepository {
-  var preferences = GetIt.I.get<SharedPreferences>();
   final ControllerApi api = ControllerApi(Api(baseUrl: 'https://monitorqueimadas.duckdns.org/'));
   void Function()? onUpdateConcluded;
 
@@ -162,6 +160,7 @@ class AppRepository {
   }
 
   Future<ApiResponse> reportFireFormData(FormData formData) async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
     String ip = preferences.getString("ip") ?? "";
     String port = preferences.getString("port") ?? "";
     Log.d("lucas", "ip:$ip port:$port");
@@ -184,6 +183,7 @@ class AppRepository {
   }
 
   Future<ApiResponse> reportFireJson(Map<String, dynamic> json) async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
     String ip = preferences.getString("ip") ?? "";
     String port = preferences.getString("port") ?? "";
     bool useLocal = preferences.getBool("use_local") ?? false;

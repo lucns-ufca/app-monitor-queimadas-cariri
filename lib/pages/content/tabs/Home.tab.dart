@@ -53,7 +53,8 @@ class TabHomePageState extends State<TabHomePage> with AutomaticKeepAliveClientM
 
   void showMenuWindow() {
     PopupMenu popupMenu = PopupMenu(context: context);
-    List<String> titles = ["Definir IP", if (!user.hasAccess()) "Login", if (user.hasAccess()) "Validação de queimadas", "Sobre o Projeto", if (user.hasAccess()) "Logout"];
+    //List<String> titles = ["Definir IP", if (!user.hasAccess()) "Login", if (user.hasAccess()) "Validação de queimadas", "Sobre o Projeto", if (user.hasAccess()) "Logout"];
+    List<String> titles = [if (!user.hasAccess()) "Login", if (user.hasAccess()) "Validação de queimadas", "Sobre o Projeto", if (user.hasAccess()) "Logout"];
     var items = popupMenu.generateIds(titles);
     popupMenu.showMenu(items, (index) async {
       switch (items[index].text) {
@@ -519,7 +520,7 @@ class TabHomePageState extends State<TabHomePage> with AutomaticKeepAliveClientM
     }
     return Expanded(
         child: Container(
-      height: 110,
+      height: 115,
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(color: AppColors.ticketColor, borderRadius: BorderRadius.circular(16)),
       child: Column(mainAxisAlignment: MainAxisAlignment.spaceBetween, crossAxisAlignment: CrossAxisAlignment.start, children: [

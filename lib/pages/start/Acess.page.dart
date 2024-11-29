@@ -2,6 +2,7 @@
 import 'dart:ui';
 
 import 'package:flutter/services.dart';
+import 'package:get_it/get_it.dart';
 import 'package:monitor_queimadas_cariri/models/User.model.dart';
 import 'package:monitor_queimadas_cariri/pages/content/MainScreen.page.dart';
 import 'package:monitor_queimadas_cariri/pages/dialogs/BasicDialogs.dart';
@@ -13,8 +14,8 @@ import 'package:monitor_queimadas_cariri/widgets/ContainerGradient.widget.dart';
 import 'package:monitor_queimadas_cariri/widgets/ExpandablePageView.widget.dart';
 import 'package:monitor_queimadas_cariri/widgets/ImageTransitionScroller.widget.dart';
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AccessPage extends StatefulWidget {
@@ -52,14 +53,19 @@ class LoginForm extends StatefulWidget {
 }
 
 class LoginFormState extends State<LoginForm> {
-  var preferences = GetIt.I.get<SharedPreferences>();
+  final packageInfo = GetIt.I.get<PackageInfo>();
   String? textUser, textPassword;
   PageController pageController = PageController();
   int page = 0;
 
+  void initializePreferences() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    textUser = preferences.getString("user") ?? "";
+  }
+
   @override
   void initState() {
-    textUser = preferences.getString("user") ?? "";
+    initializePreferences();
     super.initState();
   }
 
@@ -122,7 +128,7 @@ class LoginFormState extends State<LoginForm> {
             const SizedBox(),
             Column(mainAxisSize: MainAxisSize.min, children: [
               Container(transform: Matrix4.translationValues(0, 2, 0), child: ImageTransitionScroller(duration: const Duration(seconds: 20), assets: "assets/images/minimal_forest2.png", width: imageWidth, height: imageWidth / 2.87)),
-              Container(height: MediaQuery.of(context).size.height * 0.2, width: double.maxFinite, color: AppColors.appBackground, child: const Align(alignment: Alignment.bottomCenter, child: AppLogos(showAppLogo: true)))
+              Container(height: MediaQuery.of(context).size.height * 0.2, width: double.maxFinite, color: AppColors.appBackground, child: Align(alignment: Alignment.bottomCenter, child: AppLogos(showAppLogo: true)))
             ])
           ]),
           Column(mainAxisSize: MainAxisSize.min, children: [

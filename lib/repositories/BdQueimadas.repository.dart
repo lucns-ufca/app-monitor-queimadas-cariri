@@ -1,7 +1,6 @@
 // @developes by @lucns
 
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 import 'dart:math' as math;
 
@@ -97,7 +96,7 @@ class BdQueimadasRepository {
 
     String from = "${before.year}-$fromMonth-$fromDay";
     String to = "${now.year}-$toMonth-$toDay";
-    log("from: $from to $to");
+    //log("from: $from to $to");
     occurrences.clear();
     updateCounter = 0;
     CITIES_IDS.forEach((key, value) async {

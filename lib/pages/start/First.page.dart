@@ -153,7 +153,7 @@ class FirstPageState extends State<FirstPage> with SingleTickerProviderStateMixi
                           const SizedBox(
                             height: 64,
                           ),
-                          const AppLogos()
+                          AppLogos()
                         ]))),
               ],
             ),

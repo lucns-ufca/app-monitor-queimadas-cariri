@@ -3,7 +3,6 @@ import 'package:monitor_queimadas_cariri/utils/Notify.dart';
 import 'package:monitor_queimadas_cariri/widgets/RadioGroup.widget.dart';
 import 'package:monitor_queimadas_cariri/widgets/TextField.dart';
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class IpDefinitionPage extends StatefulWidget {
@@ -14,7 +13,7 @@ class IpDefinitionPage extends StatefulWidget {
 }
 
 class IpDefinitionPageState extends State<IpDefinitionPage> {
-  var preferences = GetIt.I.get<SharedPreferences>();
+  SharedPreferences? preferences;
   String? ip, port;
   bool? useLocal;
   int sentType = 0;
@@ -23,12 +22,17 @@ class IpDefinitionPageState extends State<IpDefinitionPage> {
     Notify.showSnackbarSucess(context, "Salvo", duration: const Duration(seconds: 1));
   }
 
+  void initializePreferences() async {
+    preferences = await SharedPreferences.getInstance();
+    ip = preferences!.getString("ip");
+    port = preferences!.getString("port");
+    useLocal = preferences!.getBool("use_local");
+    sentType = preferences!.getInt("sent_type") ?? 0;
+  }
+
   @override
   void initState() {
-    ip = preferences.getString("ip");
-    port = preferences.getString("port");
-    useLocal = preferences.getBool("use_local");
-    sentType = preferences.getInt("sent_type") ?? 0;
+    initializePreferences();
     super.initState();
   }
 
@@ -37,11 +41,11 @@ class IpDefinitionPageState extends State<IpDefinitionPage> {
     return PopScope(
         onPopInvoked: (didPop) async {
           if (ip == null || ip!.isEmpty) {
-            await preferences.remove("ip");
-            await preferences.remove("port");
+            await preferences!.remove("ip");
+            await preferences!.remove("port");
           } else {
-            await preferences.setString("ip", ip!);
-            await preferences.setString("port", port!);
+            await preferences!.setString("ip", ip!);
+            await preferences!.setString("port", port!);
           }
           //FocusManager.instance.primaryFocus?.unfocus(); // hide keyboard
           showSnackBar();
@@ -111,7 +115,7 @@ class IpDefinitionPageState extends State<IpDefinitionPage> {
                           padding: const EdgeInsets.all(24),
                           child: RadioGroup(
                               onCheckChanged: (selectedRadioButton) {
-                                preferences.setInt("sent_type", selectedRadioButton.title == 'Usar Form-Data' ? 0 : 1);
+                                preferences!.setInt("sent_type", selectedRadioButton.title == 'Usar Form-Data' ? 0 : 1);
                               },
                               radios: [RadioButton(title: "Usar Form-Data", checked: sentType == 0, enabled: true), RadioButton(title: "Usar JSON", checked: sentType == 1, enabled: true)])),
                     ])))));

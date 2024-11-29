@@ -1,6 +1,5 @@
 // @Developed by @lucns
 
-import 'package:monitor_queimadas_cariri/pages/content/Dashboard.page.dart';
 import 'package:monitor_queimadas_cariri/pages/content/MainScreen.page.dart';
 import 'package:monitor_queimadas_cariri/utils/Constants.dart';
 import 'package:flutter/material.dart';
@@ -52,7 +51,7 @@ class AboutPageState extends State<AboutPage> {
                 MyToolbar(
                     title: "Sobre o Projeto",
                     onBackPressed: () async {
-                      await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const DashboardPage()));
+                      //await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const DashboardPage()));
                     })
               ]),
             ),

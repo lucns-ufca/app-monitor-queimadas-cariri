@@ -1,10 +1,12 @@
-import 'package:monitor_queimadas_cariri/utils/Constants.dart';
+import 'package:get_it/get_it.dart';
 import 'package:monitor_queimadas_cariri/widgets/DynamicWidgetOpacity.widget.dart';
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 class AppLogos extends StatelessWidget {
+  final packageInfo = GetIt.I.get<PackageInfo>();
   final bool showAppLogo;
-  const AppLogos({this.showAppLogo = false, super.key});
+  AppLogos({this.showAppLogo = false, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +29,7 @@ class AppLogos extends StatelessWidget {
       const SizedBox(
         height: 16,
       ),
-      const Text("MONITOR DE QUEIMADAS VERSAO ${Constants.APP_VERSION}", style: TextStyle(color: Colors.white, fontSize: 12, fontFamily: "MontBlancLight")),
+      Text("MONITOR DE QUEIMADAS VERSAO ${packageInfo.version}", style: const TextStyle(color: Colors.white, fontSize: 12, fontFamily: "MontBlancLight")),
       const SizedBox(
         height: 72,
       )

@@ -10,7 +10,6 @@ import 'package:monitor_queimadas_cariri/widgets/Button.dart';
 import 'package:monitor_queimadas_cariri/widgets/TextField.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class NewAccountTab extends StatefulWidget {
@@ -22,7 +21,6 @@ class NewAccountTab extends StatefulWidget {
 }
 
 class NewAccountTabState extends State<NewAccountTab> {
-  var preferences = GetIt.I.get<SharedPreferences>();
   String? textName, textUser, textPassword;
   NavigatorState? navigator;
 
@@ -89,6 +87,7 @@ class NewAccountTabState extends State<NewAccountTab> {
               onClick: !isNameValid() || !isPasswordValid() || !isUserValid()
                   ? null
                   : () async {
+                      SharedPreferences preferences = await SharedPreferences.getInstance();
                       preferences.setString("user", textUser!);
                       FocusManager.instance.primaryFocus?.unfocus(); // hide keyboard
 

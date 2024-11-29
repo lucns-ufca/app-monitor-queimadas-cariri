@@ -11,7 +11,6 @@ import 'package:monitor_queimadas_cariri/widgets/ButtonTransparent.dart';
 import 'package:monitor_queimadas_cariri/widgets/TextField.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginTab extends StatefulWidget {
@@ -23,13 +22,18 @@ class LoginTab extends StatefulWidget {
 }
 
 class LoginTabState extends State<LoginTab> {
-  var preferences = GetIt.I.get<SharedPreferences>();
+  SharedPreferences? preferences;
   String? textUser, textPassword;
   NavigatorState? navigator;
 
+  void initializePreferences() async {
+    preferences = await SharedPreferences.getInstance();
+    textUser = preferences!.getString("user") ?? "";
+  }
+
   @override
   void initState() {
-    textUser = preferences.getString("user") ?? "";
+    initializePreferences();
     navigator = Navigator.of(context);
     super.initState();
   }
@@ -102,7 +106,7 @@ class LoginTabState extends State<LoginTab> {
           MyButton(
             onClick: isUserValid() && isPasswordValid()
                 ? () async {
-                    preferences.setString("user", textUser!);
+                    preferences!.setString("user", textUser!);
                     FocusManager.instance.primaryFocus?.unfocus(); // hide keyboard
 
                     Dialogs dialogs = Dialogs(context);

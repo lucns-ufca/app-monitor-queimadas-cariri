@@ -22,7 +22,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:get_it/get_it.dart';
 import 'package:platform_device_id/platform_device_id.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -50,7 +49,6 @@ class FireReportSenderPageState extends State<FireReportSenderPage> {
   Dialogs? dialogs;
   ButtonLoadingController buttonLoadingController = ButtonLoadingController();
   AppRepository appRepository = AppRepository();
-  var preferences = GetIt.I.get<SharedPreferences>();
 
   void attemptSendData() async {
     setState(() {
@@ -109,6 +107,7 @@ class FireReportSenderPageState extends State<FireReportSenderPage> {
   }
 
   Future<int> sendData() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
     int sentType = preferences.getInt("sent_type") ?? 0;
     buttonLoadingController.setLoading(true);
 

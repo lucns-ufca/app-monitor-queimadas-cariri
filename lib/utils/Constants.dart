@@ -1,5 +1,4 @@
 class Constants {
-  static const String APP_VERSION = "1.0.1-teste-interno";
   static const double DEFAULT_ROUND_BORDER = 56;
   static const double DEFAULT_WIDGET_HEIGHT = 40;
   static const Map<String, String> CITIES_COORDINATES = {

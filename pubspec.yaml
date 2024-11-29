@@ -58,7 +58,11 @@ dependencies:
   camera:
   platform_device_id:
   google_maps_flutter:
-  focus_detector: ^2.0.1
+  focus_detector: 
+  firebase_messaging: 
+  firebase_core: 
+  googleapis_auth: 
+  package_info_plus: 
 
 dev_dependencies:
   flutter_test:
@@ -99,6 +103,7 @@ flutter:
     - assets/images/cards_background/
     - assets/icons/weather/
     - assets/icons/
+    - assets/files/
     
   fonts:
   - family: MontBlancBold
