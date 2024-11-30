@@ -31,30 +31,37 @@ class CardsCitiesState extends State<CardsCities> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-        height: MediaQuery.of(context).size.width / 1.87,
+    return Flexible(
         child: PageView.builder(
             physics: const ClampingScrollPhysics(),
             controller: pageController,
             itemCount: Constants.CITIES_COORDINATES.length,
             onPageChanged: (index) {},
             itemBuilder: (context, index) {
-              double alignmentX = -(dx - index) * 10;
+              double alignmentX = -(dx - index) * 8;
               return Container(
-                padding: const EdgeInsets.only(right: 16, top: 8, bottom: 8),
-                child: Container(
-                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(36), boxShadow: const [BoxShadow(color: AppColors.shadow, blurRadius: 4, spreadRadius: 4, offset: Offset(0, 4))]),
-                    child: ClipRRect(
-                        borderRadius: BorderRadius.circular(36),
+                  padding: const EdgeInsets.only(right: 16, top: 8, bottom: 8),
+                  child: Column(children: [
+                    Align(
+                        alignment: Alignment.topCenter,
                         child: Container(
+                            height: MediaQuery.of(context).size.width / 1.87,
                             width: double.maxFinite,
                             decoration: BoxDecoration(
-                              image: DecorationImage(
-                                image: AssetImage("assets/images/cards_background/${numbers[index]}.jpg"),
-                                fit: BoxFit.cover,
-                                alignment: Alignment(alignmentX, 0),
-                              ),
-                            ),
+                                boxShadow: const [
+                                  BoxShadow(
+                                    color: AppColors.shadow,
+                                    spreadRadius: 4,
+                                    blurRadius: 4,
+                                    offset: Offset(0, 0),
+                                  ),
+                                ],
+                                image: DecorationImage(
+                                  image: AssetImage("assets/images/cards_background/${numbers[index]}.jpg"),
+                                  fit: BoxFit.cover,
+                                  alignment: Alignment(alignmentX, 0),
+                                ),
+                                borderRadius: const BorderRadius.only(topLeft: Radius.circular(36), topRight: Radius.circular(36))),
                             child: Stack(children: [
                               Positioned.fill(
                                 child: DecoratedBox(
@@ -73,10 +80,37 @@ class CardsCitiesState extends State<CardsCities> {
                                   left: 24,
                                   child: Text(
                                     cityNames[index],
-                                    style: const TextStyle(color: AppColors.textNormal, fontSize: 24, fontWeight: FontWeight.w300),
+                                    style: const TextStyle(color: AppColors.textNormal, fontSize: 24, fontWeight: FontWeight.w400),
                                   ))
-                            ])))
-                    /*
+                            ]))),
+                    Expanded(
+                        child: Container(
+                            width: double.maxFinite,
+                            decoration: const BoxDecoration(boxShadow: const [
+                              BoxShadow(
+                                color: AppColors.shadow,
+                                spreadRadius: 4,
+                                blurRadius: 4,
+                                offset: Offset(0, 0),
+                              ),
+                            ], color: Color.fromARGB(255, 255, 216, 171), borderRadius: BorderRadius.only(bottomRight: Radius.circular(36), bottomLeft: Radius.circular(36))),
+                            child: const Padding(
+                                padding: EdgeInsets.all(16),
+                                child: SingleChildScrollView(
+                                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                  Text(
+                                    "Em Desenvolvimento...",
+                                    style: TextStyle(color: AppColors.appBackground, fontSize: 20),
+                                  ),
+                                  SizedBox(height: 16),
+                                  Text(
+                                      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Quis ipsum suspendisse ultrices gravida. Risus commodo viverra maecenas accumsan lacus vel facilisis. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Quis ipsum suspendisse ultrices gravida. Risus commodo viverra maecenas accumsan lacus vel facilisis.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Quis ipsum suspendisse ultrices gravida. Risus commodo viverra maecenas accumsan lacus vel facilisis.",
+                                      textAlign: TextAlign.justify,
+                                      style: TextStyle(color: AppColors.appBackground, fontSize: 16)),
+                                ]))))),
+                    const SizedBox(height: 96)
+                  ])
+                  /*
                 child: ClipRRect(
                     borderRadius: BorderRadius.circular(36),
                     child: Positioned.fill(
@@ -91,8 +125,7 @@ class CardsCitiesState extends State<CardsCities> {
                         ),
                       ),
                     ))*/
-                    ),
-              );
+                  );
             }));
   }
 }
