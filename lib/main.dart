@@ -38,6 +38,12 @@ void initializeFirebaseCloudMessaging() async {
 
 void main() async {
   runApp(const SplashScreen());
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    statusBarColor: AppColors.appBackground,
+    systemNavigationBarColor: AppColors.appBackground,
+    systemNavigationBarIconBrightness: Brightness.light,
+    statusBarIconBrightness: Brightness.light,
+  ));
 
   SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
   PackageInfo packageInfo = await PackageInfo.fromPlatform();

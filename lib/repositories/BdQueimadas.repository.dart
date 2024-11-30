@@ -70,8 +70,8 @@ class BdQueimadasRepository {
     }
 
     DateTime now = DateTime.now().toLocal();
-    //DateTime before = DateTime.now();
-    DateTime before = now.subtract(const Duration(days: 1));
+    //DateTime before = DateTime.now().toLocal();
+    DateTime before = now.subtract(const Duration(hours: 24)).toLocal();
     String fromMonth, fromDay, toMonth, toDay;
     if (before.day < 10) {
       fromDay = '0${before.day}';

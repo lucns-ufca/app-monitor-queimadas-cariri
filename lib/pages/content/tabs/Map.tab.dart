@@ -25,8 +25,10 @@ class TabMapPageState extends State<TabMapPage> with AutomaticKeepAliveClientMix
   bool updated = false;
   String? selectedCity;
   bool expanded = false;
+  bool repositioned = false;
 
   void reposition() async {
+    repositioned = true;
     await Future.delayed(const Duration(milliseconds: 500));
     double latitude = -7.269365;
     double longitude = -39.598603;
@@ -62,8 +64,6 @@ class TabMapPageState extends State<TabMapPage> with AutomaticKeepAliveClientMix
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      reposition();
-
       bdq.setOnUpdateListener(() async {
         await updateMarkers();
       }, () {
@@ -100,8 +100,11 @@ class TabMapPageState extends State<TabMapPage> with AutomaticKeepAliveClientMix
             myLocationEnabled: false,
             myLocationButtonEnabled: false,
             zoomControlsEnabled: false,
-            onMapCreated: (GoogleMapController controller) {
+            onMapCreated: (GoogleMapController controller) async {
               googleMapController = controller;
+              if (repositioned) return;
+              await Future.delayed(const Duration(seconds: 1));
+              reposition();
             },
             onTap: (ll) {}),
         Align(
