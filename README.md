@@ -1,7 +1,7 @@
 Este é um app desenvolvido para o projeto de extensão da Universidade Federal do Cariri (UFCA).<BR>
 Seu principal propósito é a divulgação, educação e concientização de seus usuarios sobre formas de preservação do meio ambiente. O mesmo atua mostrando dados referente a queimadas, por meio de historicos, alertas de tempo real e dados de predição baseados em metodos de regressão e machine learn.<BR>
 
-Conclusão do desenvolvido e postagem na Play Store foram feitas no final de 2024.<BR>
+Conclusão do desenvolvimento e postagem na Play Store foram feitas no final de 2024.<BR>
 Desenvolvedor @lucns.<BR>
 
 Screenshots:<BR>
