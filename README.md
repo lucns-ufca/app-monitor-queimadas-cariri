@@ -1,20 +1,12 @@
-<<<<<<< HEAD
-# monitor_queimadas_cariri
+Este é um app desenvolvido para o projeto de extensão da Universidade Federal do Cariri (UFCA).
+Seu principal propósito é a divulgação, educação e concientização de seus usuarios sobre formas de preservação do meio ambiente. O mesmo atua mostrando dados referente a queimadas, por meio de historicos, alertas de tempo real e dados de predição baseados em metodos de regressão e machine learn.
 
-A new Flutter project.
+Conclusão do desenvolvido e postagem na Play Store foram feitas no final de 2024.
+Desenvolvedor @lucns.
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-=======
-# app-monitor-queimadas-cariri
->>>>>>> cc8c96b4602372c1e2f11a7767d46e73a4984b60
+Screenshots:
+![Screenshot_20241123_143823](https://github.com/user-attachments/assets/94449e60-bbec-41a1-a223-846b41453c71)
+![Screenshot_20241123_143829](https://github.com/user-attachments/assets/fb8a93fd-3f9c-4abb-ad6a-64c15c558515)
+![Screenshot_20241123_143844](https://github.com/user-attachments/assets/32c2abe0-71e7-4753-891f-433f22000c83)
+![Screenshot_20241123_143806](https://github.com/user-attachments/assets/8cf004ed-25c0-479f-9574-3e0285213c0c)
+![Screenshot_1733181224](https://github.com/user-attachments/assets/c58043f5-6d2b-4926-b9c4-2e9b8405ae32)
