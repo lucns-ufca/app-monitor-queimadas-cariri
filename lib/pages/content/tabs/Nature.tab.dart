@@ -48,7 +48,6 @@ class TabNaturePageState extends State<TabNaturePage> with AutomaticKeepAliveCli
               const SizedBox(width: 8),
               Expanded(child: Container(height: 1, color: Colors.white))
             ])),
-        const SizedBox(height: 24),
         const CardsCities()
       ]),
     );

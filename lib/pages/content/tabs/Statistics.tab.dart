@@ -135,35 +135,34 @@ class TabStatisticsPageState extends State<TabStatisticsPage> with AutomaticKeep
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  SizedBox(
-                      width: size,
-                      height: size,
-                      child: Stack(children: [
-                        SizedBox(width: size, height: size, child: GaugeChart(progress: percentage)),
-                        Center(
-                            child: Column(mainAxisSize: MainAxisSize.min, children: [
-                          Text("$occurredTotal/$predictionTotal", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w400, fontSize: 24)),
-                          const Text("Previsto anual", style: TextStyle(fontWeight: FontWeight.w300, color: AppColors.white_2)),
-                          const SizedBox(height: 2),
-                          Text("Restando ${Utils.getRemainderDays()} dias", style: const TextStyle(fontWeight: FontWeight.w400, color: AppColors.accentLight, fontSize: 12)),
-                          const SizedBox(height: 16)
-                        ]))
-                      ])),
+                  GaugeChart(
+                    size: size,
+                    progress: percentage,
+                    child: Column(mainAxisSize: MainAxisSize.min, children: [
+                      Text("$occurredTotal/$predictionTotal", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w400, fontSize: 24)),
+                      const Text("Previsto anual", style: TextStyle(fontWeight: FontWeight.w300, color: AppColors.white_2)),
+                      const SizedBox(height: 2),
+                      Text("Restando ${Utils.getRemainderDays()} dias", style: const TextStyle(fontWeight: FontWeight.w400, color: AppColors.accentLight, fontSize: 12)),
+                      const SizedBox(height: 16)
+                    ]),
+                  ),
                   SizedBox(width: space),
                   Expanded(
                       child: Column(children: [
                     SizedBox(
-                        width: size2,
-                        height: size2,
-                        child: Stack(children: [
-                          SizedBox(width: size2, height: size2, child: GaugeChart(progress: percentage2)),
-                          Center(
+                      width: size2,
+                      height: size2,
+                      child: SizedBox(
+                          width: size2,
+                          height: size2,
+                          child: GaugeChart(
+                              progress: percentage2,
                               child: Column(mainAxisSize: MainAxisSize.min, children: [
-                            Text("$ocurrencesForCurrentMonth/$predictedForCurrentMonth", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w300, fontSize: 14)),
-                            Text(Utils.getMonthName(), style: const TextStyle(fontWeight: FontWeight.w300, color: AppColors.white_2, fontSize: 12)),
-                            const SizedBox(height: 8)
-                          ]))
-                        ])),
+                                Text("$ocurrencesForCurrentMonth/$predictedForCurrentMonth", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w300, fontSize: 14)),
+                                Text(Utils.getMonthName(), style: const TextStyle(fontWeight: FontWeight.w300, color: AppColors.white_2, fontSize: 12)),
+                                const SizedBox(height: 8)
+                              ]))),
+                    ),
                     const SizedBox(
                       height: 24,
                     )

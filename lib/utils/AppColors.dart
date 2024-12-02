@@ -24,6 +24,7 @@ class AppColors {
   static const yellowSky = Color.fromARGB(255, 230, 162, 36);
   static const ripple = Color.fromARGB(188, 255, 255, 255);
   static const shadow = Color.fromARGB(75, 0, 0, 0);
+  static const dialogBlack = Color.fromARGB(150, 0, 0, 0);
   static const dialogBackground = Color.fromARGB(208, 208, 154, 74);
 
   static const appBackground = Color.fromARGB(255, 45, 32, 15);

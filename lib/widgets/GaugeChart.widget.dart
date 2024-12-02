@@ -8,7 +8,9 @@ import 'dart:math' as math;
 class GaugeChart extends StatefulWidget {
   final double progress;
   final ProgressController? progressController;
-  const GaugeChart({super.key, this.progress = 0, this.progressController});
+  final double? size;
+  final Widget child;
+  const GaugeChart({super.key, required this.child, this.size, this.progress = 0, this.progressController});
 
   @override
   GaugeChartState createState() => GaugeChartState();
@@ -22,6 +24,7 @@ class GaugeChartState extends State<GaugeChart> with TickerProviderStateMixin {
 
   @override
   void initState() {
+    if (widget.size != null) size = Size(widget.size!, widget.size!);
     if (widget.progressController != null) widget.progressController!.setProgress = setProgress;
     controller = AnimationController(
       vsync: this,
@@ -61,7 +64,7 @@ class GaugeChartState extends State<GaugeChart> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    if (size == null) {
+    if (widget.size == null && size == null) {
       return MeasureSize(
           onChange: (s) {
             setState(() {
@@ -71,7 +74,8 @@ class GaugeChartState extends State<GaugeChart> with TickerProviderStateMixin {
           child: const SizedBox(width: double.maxFinite, height: double.maxFinite));
     }
     double value = size!.width > size!.height ? size!.height : size!.width;
-    return CustomPaint(painter: CustomCircularProgress(width: value, height: value, value: animation!.value / 100));
+    return SizedBox(width: value, height: value, child: Stack(children: [SizedBox(width: value, height: value, child: CustomPaint(painter: CustomCircularProgress(width: value, height: value, value: animation!.value / 100))), Center(child: widget.child)]));
+    //return CustomPaint(painter: CustomCircularProgress(width: value, height: value, value: animation!.value / 100));
   }
 }
 

@@ -26,6 +26,7 @@ class TabMapPageState extends State<TabMapPage> with AutomaticKeepAliveClientMix
   String? selectedCity;
   bool expanded = false;
   bool repositioned = false;
+  bool loading = true;
 
   void reposition() async {
     repositioned = true;
@@ -70,9 +71,15 @@ class TabMapPageState extends State<TabMapPage> with AutomaticKeepAliveClientMix
         updated = true;
         Utils.vibrate();
         Notify.showToast("Dados atualizados");
+        setState(() {
+          loading = false;
+        });
       }, () {
         Utils.vibrate();
         Notify.showToast("Sistema fora do ar!");
+        setState(() {
+          loading = false;
+        });
       });
       Notify.showToast("Atualizando...");
       await bdq.update();
@@ -149,7 +156,26 @@ class TabMapPageState extends State<TabMapPage> with AutomaticKeepAliveClientMix
                                   }),
                             ),
                           ))
-                    ]))))
+                    ])))),
+        Center(
+            child: IntrinsicHeight(
+                child: Visibility(
+                    visible: loading,
+                    child: Container(
+                        decoration: const BoxDecoration(color: AppColors.dialogBlack, borderRadius: BorderRadius.all(Radius.circular(24))),
+                        padding: const EdgeInsets.all(24),
+                        child: const Row(mainAxisSize: MainAxisSize.min, mainAxisAlignment: MainAxisAlignment.start, children: [
+                          SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: AppColors.accent)),
+                          SizedBox(width: 16),
+                          Flexible(
+                              child: Text(
+                            "Carregando pontos de focos...",
+                            maxLines: 10,
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.start,
+                            style: TextStyle(color: AppColors.textNormal, fontSize: 16, fontWeight: FontWeight.w500),
+                          ))
+                        ])))))
       ],
     );
   }
