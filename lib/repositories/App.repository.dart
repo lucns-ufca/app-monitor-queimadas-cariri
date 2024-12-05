@@ -21,6 +21,9 @@ class AppRepository {
   List<PredictionCityModel> predictionCities = [];
   List<WeatherCityModel> weatherCities = [];
   List<ForecastCityModel> forecastCities = [];
+  bool updatingPrediction = false;
+  bool updatingWeather = false;
+  bool updatingForecast = false;
 
   AppRepository();
 
@@ -70,6 +73,7 @@ class AppRepository {
     await addToPredictionCities("${directory.path}/data/prediction/AllCitiesPrediction.json");
     await addToWeatherCities("${directory.path}/data/weather/AllCitiesWeather.json");
     //await addToforecastCities("${directory.path}/data/weather/AllCitiesForecast.json");
+    if (onUpdateConcluded != null) onUpdateConcluded!();
   }
 
   bool allowUpdatePrediction() {
@@ -96,6 +100,58 @@ class AppRepository {
     return false;
   }
 
+  Future<void> updatePrediction(int year) async {
+    updatingPrediction = true;
+    Directory directory = await getApplicationDocumentsDirectory();
+    String? data = await downloadData('predictions?page=1&limit=30&year=$year', "${directory.path}/data/prediction/AllCitiesPrediction.json");
+    if (data == null) {
+      updatingPrediction = false;
+      return;
+    }
+    List<dynamic> jsonArray = jsonDecode(data);
+    predictionCities.clear();
+    for (dynamic json in jsonArray) {
+      predictionCities.add(PredictionCityModel.fromJson(json));
+    }
+    updatingPrediction = false;
+    if (!updatingForecast && !updatingWeather && onUpdateConcluded != null) onUpdateConcluded!();
+  }
+
+  Future<void> updateWeather() async {
+    updatingWeather = true;
+    Directory directory = await getApplicationDocumentsDirectory();
+    String? data = await downloadData('fire-weather-data/search?page=1&limit=30', "${directory.path}/data/weather/AllCitiesWeather.json");
+    if (data == null) {
+      updatingWeather = false;
+      return;
+    }
+    List<dynamic> jsonArray = jsonDecode(data);
+    weatherCities.clear();
+    for (Map<String, dynamic> json in jsonArray) {
+      weatherCities.add(WeatherCityModel.fromJson(json));
+    }
+    updatingWeather = false;
+    if (!updatingForecast && !updatingPrediction && onUpdateConcluded != null) onUpdateConcluded!();
+  }
+
+  Future<void> updateforecast() async {
+    updatingForecast = true;
+    Directory directory = await getApplicationDocumentsDirectory();
+    String? data = await downloadData('weather/forecast.php', "${directory.path}/data/weather/AllCitiesForecast.json");
+
+    if (data == null) {
+      updatingForecast = false;
+      return;
+    }
+    List<dynamic> jsonArray = jsonDecode(data);
+    forecastCities.clear();
+    for (Map<String, dynamic> json in jsonArray) {
+      forecastCities.add(ForecastCityModel.fromJson(json));
+    }
+    updatingForecast = false;
+    if (!updatingWeather && !updatingPrediction && onUpdateConcluded != null) onUpdateConcluded!();
+  }
+
   Future<String?> downloadData(String url, String path) async {
     try {
       Response response = await api.get(url);
@@ -110,40 +166,6 @@ class AppRepository {
       debugPrintStack(stackTrace: stacktrace);
     }
     return null;
-  }
-
-  Future<void> updatePrediction(int year) async {
-    Directory directory = await getApplicationDocumentsDirectory();
-    String? data = await downloadData('predictions?page=1&limit=30&year=$year', "${directory.path}/data/prediction/AllCitiesPrediction.json");
-    if (data == null) return;
-    List<dynamic> jsonArray = jsonDecode(data);
-    predictionCities.clear();
-    for (dynamic json in jsonArray) {
-      predictionCities.add(PredictionCityModel.fromJson(json));
-    }
-  }
-
-  Future<void> updateWeather() async {
-    Directory directory = await getApplicationDocumentsDirectory();
-    String? data = await downloadData('fire-weather-data/search?page=1&limit=30', "${directory.path}/data/weather/AllCitiesWeather.json");
-    if (data == null) return;
-    List<dynamic> jsonArray = jsonDecode(data);
-    weatherCities.clear();
-    for (Map<String, dynamic> json in jsonArray) {
-      weatherCities.add(WeatherCityModel.fromJson(json));
-    }
-  }
-
-  Future<void> updateforecast() async {
-    Directory directory = await getApplicationDocumentsDirectory();
-    String? data = await downloadData('weather/forecast.php', "${directory.path}/data/weather/AllCitiesForecast.json");
-
-    if (data == null) return;
-    List<dynamic> jsonArray = jsonDecode(data);
-    forecastCities.clear();
-    for (Map<String, dynamic> json in jsonArray) {
-      forecastCities.add(ForecastCityModel.fromJson(json));
-    }
   }
 
   Future<ApiResponse> getPredictionValues({String? city}) async {

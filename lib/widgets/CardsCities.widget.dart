@@ -1,3 +1,8 @@
+import 'dart:developer';
+
+import 'package:get_it/get_it.dart';
+import 'package:monitor_queimadas_cariri/models/WeatherCity.model.dart';
+import 'package:monitor_queimadas_cariri/repositories/App.repository.dart';
 import 'package:monitor_queimadas_cariri/utils/AppColors.dart';
 import 'package:monitor_queimadas_cariri/utils/Constants.dart';
 import 'package:flutter/material.dart';
@@ -15,9 +20,17 @@ class CardsCitiesState extends State<CardsCities> {
   double dx = 0;
   final List<int> numbers = [];
   final List<String> cityNames = Constants.CITIES_COORDINATES.keys.toList();
+  final Map<String, dynamic> gaugeControllers = {};
+  final AppRepository appRepository = GetIt.I.get<AppRepository>();
 
   @override
   void initState() {
+    appRepository.setOnUpdateConcluded(() {
+      setState(() {});
+    });
+    for (String city in cityNames) {
+      gaugeControllers[city] = ProgressController();
+    }
     super.initState();
     for (int i = 1; i < 31; i++) {
       numbers.add(i);
@@ -88,7 +101,7 @@ class CardsCitiesState extends State<CardsCities> {
                         Expanded(
                             child: Container(
                                 width: double.maxFinite,
-                                decoration: const BoxDecoration(boxShadow: const [
+                                decoration: const BoxDecoration(boxShadow: [
                                   BoxShadow(
                                     color: AppColors.shadow,
                                     spreadRadius: 4,
@@ -114,7 +127,7 @@ class CardsCitiesState extends State<CardsCities> {
                                             style: TextStyle(color: AppColors.appBackground, fontSize: 16)),
                                       ]))),
                                       const SizedBox(height: 16),
-                                      Container(
+                                      SizedBox(
                                           height: 130,
                                           width: double.maxFinite,
                                           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -124,49 +137,77 @@ class CardsCitiesState extends State<CardsCities> {
                                             ),
                                             Row(
                                               crossAxisAlignment: CrossAxisAlignment.start,
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                               children: [
-                                                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                                  const Text("Temperatura:", style: TextStyle(color: AppColors.appBackground)),
-                                                  const Text("Humidade:", style: TextStyle(color: AppColors.appBackground)),
-                                                  const Text("Nivel de CO²:", style: TextStyle(color: AppColors.appBackground)),
-                                                  const Text("Índice UV:", style: TextStyle(color: AppColors.appBackground)),
+                                                const Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                                  Text("Temperatura:", style: TextStyle(color: AppColors.appBackground)),
+                                                  Text("Humidade:", style: TextStyle(color: AppColors.appBackground)),
+                                                  Text("Nivel de CO²:", style: TextStyle(color: AppColors.appBackground)),
+                                                  Text("Índice UV:", style: TextStyle(color: AppColors.appBackground)),
                                                 ]),
-                                                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                                  const Text("36.3º", style: TextStyle(color: AppColors.appBackground, fontWeight: FontWeight.bold)),
-                                                  const Text("42%", style: TextStyle(color: AppColors.appBackground, fontWeight: FontWeight.bold)),
-                                                  const Text("256ppm", style: TextStyle(color: AppColors.appBackground, fontWeight: FontWeight.bold)),
-                                                  const Text("11", style: TextStyle(color: AppColors.appBackground, fontWeight: FontWeight.bold)),
-                                                ]),
-                                                Padding(
-                                                    padding: EdgeInsets.only(top: 5),
-                                                    child: GaugeChart(
-                                                      size: 96,
-                                                      progress: 75,
-                                                      child: Text("75%", style: TextStyle(color: AppColors.appBackground, fontSize: 24, fontWeight: FontWeight.w800)),
-                                                    ))
+                                                getValuesWidget(appRepository.updatingWeather, weather: getCityModel(cityNames[index]))
                                               ],
                                             )
                                           ]))
                                     ])))),
                         const SizedBox(height: 24)
-                      ])
-                      /*
-                child: ClipRRect(
-                    borderRadius: BorderRadius.circular(36),
-                    child: Positioned.fill(
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [Colors.transparent, Colors.black.withOpacity(0.7)],
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            stops: const [0.6, 0.95],
-                          ),
-                        ),
-                      ),
-                    ))*/
-                      );
+                      ]));
                 })));
+  }
+
+  WeatherCityModel? getCityModel(String city) {
+    try {
+      return appRepository.getWeatherCities.firstWhere((item) => item.city == city);
+    } catch (_) {}
+    log("null for $city");
+    return null;
+  }
+
+  Widget getValuesWidget(bool loading, {WeatherCityModel? weather}) {
+    return Expanded(
+        child: Padding(
+            padding: const EdgeInsets.only(left: 8),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Visibility(
+                    visible: !loading && weather == null,
+                    child: const Expanded(
+                        child: SizedBox(
+                            height: 100,
+                            child: Center(
+                                child: Text(
+                              "Falha na conexão!",
+                              style: TextStyle(color: AppColors.red, fontSize: 12),
+                            ))))),
+                if (!loading && weather != null)
+                  Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Text("${weather.temperature}º", style: const TextStyle(color: AppColors.appBackground, fontWeight: FontWeight.bold)),
+                    Text("${weather.humidity}%", style: const TextStyle(color: AppColors.appBackground, fontWeight: FontWeight.bold)),
+                    Text("${weather.carbonMonoxide!.toInt()}ppm", style: const TextStyle(color: AppColors.appBackground, fontWeight: FontWeight.bold)),
+                    Text("${weather.uvIndex}", style: const TextStyle(color: AppColors.appBackground, fontWeight: FontWeight.bold)),
+                  ]),
+                if (loading)
+                  const Expanded(
+                      child: SizedBox(
+                          height: 100,
+                          child: Center(
+                              child: SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(
+                                    color: AppColors.appBackground,
+                                    strokeWidth: 3,
+                                  ))))),
+                Padding(
+                    padding: const EdgeInsets.only(top: 5),
+                    child: GaugeChart(
+                      progressController: weather == null ? null : gaugeControllers[weather.city],
+                      size: 96,
+                      progress: weather == null ? 0 : weather.fireRisk!.toDouble(),
+                      child: loading || weather == null ? const SizedBox() : Text("${weather.fireRisk}%", style: const TextStyle(color: AppColors.appBackground, fontWeight: FontWeight.w800, fontSize: 24)),
+                    ))
+              ],
+            )));
   }
 }

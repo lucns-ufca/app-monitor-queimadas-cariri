@@ -98,8 +98,9 @@ abstract class FirebaseMessagingSenderBase {
     Map<String, dynamic> headers = {"Authorization": "Bearer $bearerToken", "Content-Type": "application/json; UTF-8"};
     api.addHeaders(headers);
     try {
-      Response response = await api.dio.post("$projectId/messages:send", data: json.encode(jsonObject));
-      log("response code->${response.statusCode}");
+      await api.dio.post("$projectId/messages:send", data: json.encode(jsonObject));
+      //Response response = await api.dio.post("$projectId/messages:send", data: json.encode(jsonObject));
+      //log("response code->${response.statusCode}");
     } on DioException catch (e) {
       //e.response!.statusCode
       if (e.response != null) {

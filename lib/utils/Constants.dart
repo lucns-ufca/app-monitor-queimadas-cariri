@@ -3,11 +3,11 @@ class Constants {
   static const double DEFAULT_WIDGET_HEIGHT = 40;
   static const Map<String, String> CITIES_COORDINATES = {
     'Salitre': '-7.285748,-40.457514',
-    'Campo Sales': '-7.075103,-40.372339',
+    'Campos Sales': '-7.075103,-40.372339',
     'Araripe': '-7.211309,-40.138323',
     'Potengi': '-7.091934,-40.027603',
     'Assaré': '-6.870889,-39.871030',
-    'Antonia do Norte': '-6.775348,-39.988188',
+    'Antonina do Norte': '-6.775348,-39.988188',
     'Tarrafas': '-6.684036,-39.758108',
     'Altaneira': '-6.998939,-39.738878',
     'Nova Olinda': '-7.092372,-39.678686',
