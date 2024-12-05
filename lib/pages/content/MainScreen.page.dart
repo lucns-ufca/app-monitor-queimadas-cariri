@@ -24,7 +24,7 @@ class MainScreenPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return PopScope(
         canPop: !user.hasAccess(),
-        onPopInvoked: (didPop) async {
+        onPopInvokedWithResult: (bool didPop, Object? result) async {
           if (user.hasAccess()) {
             SystemNavigator.pop();
           } else {

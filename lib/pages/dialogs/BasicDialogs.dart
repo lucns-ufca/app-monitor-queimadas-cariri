@@ -18,7 +18,7 @@ class Dialogs {
         barrierDismissible: isCancelable,
         context: context,
         builder: (BuildContext context) {
-          return PopScope(canPop: false, onPopInvoked: (didPop) => Future.value(false), child: CupertinoDialogAction(child: content));
+          return PopScope(canPop: false, onPopInvokedWithResult: (bool didPop, Object? result) => Future.value(false), child: CupertinoDialogAction(child: content));
         });
   }
 

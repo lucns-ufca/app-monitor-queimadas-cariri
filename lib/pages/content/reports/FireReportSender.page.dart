@@ -208,7 +208,7 @@ class FireReportSenderPageState extends State<FireReportSenderPage> {
   Widget build(BuildContext context) {
     return PopScope(
         canPop: false,
-        onPopInvoked: (didPop) async {
+        onPopInvokedWithResult: (bool didPop, Object? result) async {
           if (sending) {
             Notify.showToast("Envio em andamento...");
             return;

@@ -39,7 +39,7 @@ class IpDefinitionPageState extends State<IpDefinitionPage> {
   @override
   Widget build(BuildContext context) {
     return PopScope(
-        onPopInvoked: (didPop) async {
+        onPopInvokedWithResult: (bool didPop, Object? result) async {
           if (ip == null || ip!.isEmpty) {
             await preferences!.remove("ip");
             await preferences!.remove("port");

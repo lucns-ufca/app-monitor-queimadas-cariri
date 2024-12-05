@@ -8,10 +8,7 @@ class WeatherRepository {
   final controllerApi = ControllerApi(Api(baseUrl: 'https://api.weatherapi.com/'));
 
   Future<WeatherApiModel?> updateWeather(String city) async {
-    String? coordinates = Constants.CITIES_COORDINATES[city];
-    if (coordinates == null) {
-      return null;
-    }
+    String coordinates = "${Constants.CITIES_DATA[city].latitude},${Constants.CITIES_DATA[city].longitude}";
     try {
       Response response = await controllerApi.get('v1/current.json?key=a8856d705d3b4b17b25151225240605&q=$coordinates&aqi=yes');
       return WeatherApiModel().fromJson(response.data);

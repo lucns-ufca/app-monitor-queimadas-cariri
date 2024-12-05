@@ -70,7 +70,7 @@ class FireReportPagesState extends State<FireReportPages> {
     //final navigator = Navigator.of(context);
     return PopScope(
         canPop: false,
-        onPopInvoked: (didPop) async {
+        onPopInvokedWithResult: (bool didPop, Object? result) async {
           await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainScreenPage()));
         },
         child: Scaffold(

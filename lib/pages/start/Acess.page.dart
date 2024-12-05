@@ -117,7 +117,7 @@ class LoginFormState extends State<LoginForm> {
     double imageWidth = MediaQuery.of(context).size.width * 1.55;
     return PopScope(
         canPop: page == 0,
-        onPopInvoked: (a) async {
+        onPopInvokedWithResult: (bool didPop, Object? result) async {
           if (page == 1) {
             pageController.animateToPage(0, duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
             return;

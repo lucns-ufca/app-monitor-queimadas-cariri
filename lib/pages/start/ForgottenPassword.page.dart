@@ -30,7 +30,7 @@ class ForgottenPasswordPageState extends State<ForgottenPasswordPage> {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) async {
+      onPopInvokedWithResult: (bool didPop, Object? result) async {
         Navigator.pop(context);
         //await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage()));
       },

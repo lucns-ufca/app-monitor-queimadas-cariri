@@ -1,4 +1,4 @@
-import 'dart:developer';
+import 'dart:math' as math;
 
 import 'package:get_it/get_it.dart';
 import 'package:monitor_queimadas_cariri/models/WeatherCity.model.dart';
@@ -19,8 +19,9 @@ class CardsCitiesState extends State<CardsCities> {
   PageController pageController = PageController(initialPage: 0, viewportFraction: 0.9);
   double dx = 0;
   final List<int> numbers = [];
-  final List<String> cityNames = Constants.CITIES_COORDINATES.keys.toList();
+  final List<String> cityNames = Constants.CITIES_DATA.keys.toList();
   final Map<String, dynamic> gaugeControllers = {};
+  final Map<String, dynamic> descriptions = {};
   final AppRepository appRepository = GetIt.I.get<AppRepository>();
 
   @override
@@ -30,6 +31,7 @@ class CardsCitiesState extends State<CardsCities> {
     });
     for (String city in cityNames) {
       gaugeControllers[city] = ProgressController();
+      descriptions[city] = generageCardDescription(Constants.CITIES_DATA[city]);
     }
     super.initState();
     for (int i = 1; i < 31; i++) {
@@ -50,7 +52,7 @@ class CardsCitiesState extends State<CardsCities> {
             child: PageView.builder(
                 physics: const ClampingScrollPhysics(),
                 controller: pageController,
-                itemCount: Constants.CITIES_COORDINATES.length,
+                itemCount: Constants.CITIES_DATA.length,
                 onPageChanged: (index) {},
                 itemBuilder: (context, index) {
                   double alignmentX = -(dx - index) * 8;
@@ -121,10 +123,7 @@ class CardsCitiesState extends State<CardsCities> {
                                           "Detalhes",
                                           style: TextStyle(color: AppColors.appBackground, fontSize: 18, fontWeight: FontWeight.w800),
                                         ),
-                                        const Text(
-                                            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Quis ipsum suspendisse ultrices gravida. Risus commodo viverra maecenas accumsan lacus vel facilisis. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Quis ipsum suspendisse ultrices gravida. Risus commodo viverra maecenas accumsan lacus vel facilisis.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Quis ipsum suspendisse ultrices gravida. Risus commodo viverra maecenas accumsan lacus vel facilisis.",
-                                            textAlign: TextAlign.justify,
-                                            style: TextStyle(color: AppColors.appBackground, fontSize: 16)),
+                                        Text(descriptions[cityNames[index]], textAlign: TextAlign.justify, style: TextStyle(color: AppColors.appBackground, fontSize: 16)),
                                       ]))),
                                       const SizedBox(height: 16),
                                       SizedBox(
@@ -158,7 +157,6 @@ class CardsCitiesState extends State<CardsCities> {
     try {
       return appRepository.getWeatherCities.firstWhere((item) => item.city == city);
     } catch (_) {}
-    log("null for $city");
     return null;
   }
 
@@ -209,5 +207,59 @@ class CardsCitiesState extends State<CardsCities> {
                     ))
               ],
             )));
+  }
+
+  String generageCardDescription(CityData cityData) {
+    String description = "";
+    Tuple geograficalArea = cityData.geographicalArea;
+    Tuple urbanizedArea = cityData.urbanizedArea;
+    Tuple population = cityData.population;
+
+    math.Random random = math.Random();
+    for (int i = 0; i < 3; i++) {
+      int position = random.nextInt(3);
+      switch (i) {
+        case 0:
+          switch (position) {
+            case 0:
+              description = "No censo ${population.key}, foi registrado ${population.value} habitantes.";
+              break;
+            case 1:
+              description = "Foi registrado ${population.value} habitantes no censo ${population.key}.";
+              break;
+            default:
+              description = "Em ${population.key} havia um registro de ${population.value} habitantes.";
+              break;
+          }
+          break;
+        case 1:
+          switch (position) {
+            case 0:
+              description = "$description A área urbanizada da cidade estava em torno de ${urbanizedArea.value}. Sendo o total em quilometros quadrados de área era de ${geograficalArea.value}.";
+              break;
+            case 1:
+              description = "$description O total em quilometros quadrados de ária era de ${geograficalArea.value}. E a área urbanizada da cidade estava em torno de ${urbanizedArea.value}.";
+              break;
+            default:
+              description = "$description A cidade possui uma média de ${urbanizedArea.value}km² de área urbanizada. E possui em torno de ${geograficalArea.value}km² de área geografica.";
+              break;
+          }
+          break;
+        default:
+          switch (position) {
+            case 0:
+              description = "$description Abaixo está um pouco sobre o clima da região verde que rodeia a cidade.";
+              break;
+            case 1:
+              description = "$description Mais em baixo contém dados climaticos referente a área verde da região.";
+              break;
+            default:
+              description = "$description Há informações logo abaixo, sobre o clima da região florestal da área.";
+              break;
+          }
+          break;
+      }
+    }
+    return description;
   }
 }

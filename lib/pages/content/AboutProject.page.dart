@@ -30,7 +30,7 @@ class AboutPageState extends State<AboutPage> {
     //final navigator = Navigator.of(context);
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) async {
+      onPopInvokedWithResult: (bool didPop, Object? result) async {
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainScreenPage()));
       },
       child: Scaffold(
