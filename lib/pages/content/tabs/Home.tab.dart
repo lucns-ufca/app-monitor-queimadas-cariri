@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 
+import 'package:monitor_queimadas_cariri/firebase/MessagingSender.firebase.dart';
 import 'package:monitor_queimadas_cariri/models/PredictionCity.model.dart';
 import 'package:monitor_queimadas_cariri/models/ForecastCity.model.dart';
 import 'package:monitor_queimadas_cariri/models/User.model.dart';
@@ -14,6 +16,7 @@ import 'package:monitor_queimadas_cariri/pages/start/Acess.page.dart';
 import 'package:monitor_queimadas_cariri/pages/start/First.page.dart';
 import 'package:monitor_queimadas_cariri/repositories/App.repository.dart';
 import 'package:monitor_queimadas_cariri/utils/AppColors.dart';
+import 'package:monitor_queimadas_cariri/utils/Constants.dart';
 import 'package:monitor_queimadas_cariri/utils/Utils.dart';
 import 'package:monitor_queimadas_cariri/widgets/ContainerGradient.widget.dart';
 import 'package:monitor_queimadas_cariri/widgets/ImageTransitionScroller.widget.dart';
@@ -53,11 +56,15 @@ class TabHomePageState extends State<TabHomePage> with AutomaticKeepAliveClientM
 
   void showMenuWindow() {
     PopupMenu popupMenu = PopupMenu(context: context);
-    //List<String> titles = ["Definir IP", if (!user.hasAccess()) "Login", if (user.hasAccess()) "Validação de queimadas", "Sobre o Projeto", if (user.hasAccess()) "Logout"];
     List<String> titles = [if (!user.hasAccess()) "Login", if (user.hasAccess()) "Validação de queimadas", "Sobre o Projeto", if (user.hasAccess()) "Logout"];
     var items = popupMenu.generateIds(titles);
     popupMenu.showMenu(items, (index) async {
       switch (items[index].text) {
+        case "Validação de queimadas":
+          log("click");
+          FirebaseMessagingSender sender = FirebaseMessagingSender();
+          sender.putNotificationToTopic(topic: Constants.FCM_TOPIC_ALERT_FIRE, ticker: "ticker here...", title: "This is a title", content: "This is a content");
+          break;
         case "Definir IP":
           await Navigator.push(context, MaterialPageRoute(builder: (context) => const IpDefinitionPage()));
           break;

@@ -9,10 +9,11 @@ import 'package:monitor_queimadas_cariri/api/Api.dart';
 import 'package:monitor_queimadas_cariri/utils/Annotator.dart';
 
 class FirebaseMessagingSender extends FirebaseMessagingSenderBase {
-  final Queue<Map<String, dynamic>> queue = Queue<Map<String, dynamic>>();
+  final Queue<FirebaseMessagingPayload> queue = Queue<FirebaseMessagingPayload>();
   AccessToken? accessToken;
   bool requestingToken = false;
   Annotator annotator = Annotator("firebase_cloud_messaging_data.json");
+  String? topic;
 
   FirebaseMessagingSender() {
     projectId = "monitor-de-queimadas-afd8a";
@@ -33,9 +34,14 @@ class FirebaseMessagingSender extends FirebaseMessagingSenderBase {
     destineToken = token;
   }
 
+  void putNotificationToTopic({required String topic, required String ticker, required String title, required String content}) {
+    this.topic = topic;
+    queue.add(FirebaseMessagingPayload(ticker: ticker, title: title, content: content));
+  }
+
   void put(Map<String, dynamic> data) async {
     bool isEmpty = queue.isEmpty;
-    queue.add(data);
+    queue.add(FirebaseMessagingPayload(data: json.encode(data)));
     if (isEmpty) dequeue();
   }
 
@@ -45,7 +51,14 @@ class FirebaseMessagingSender extends FirebaseMessagingSenderBase {
       return;
     }
     while (queue.isNotEmpty) {
-      if (await api.hasInternetConnection()) await sendMessaging(queue.removeFirst());
+      if (await api.hasInternetConnection()) {
+        FirebaseMessagingPayload messaging = queue.removeFirst();
+        if (messaging.data != null) {
+          await sendMessaging(messaging);
+        } else {
+          await sendTopicNotification(topic!, messaging);
+        }
+      }
       await Future.delayed(const Duration(seconds: 1));
     }
   }
@@ -88,10 +101,10 @@ abstract class FirebaseMessagingSenderBase {
 
   FirebaseMessagingSenderBase() : api = Api(baseUrl: "https://fcm.googleapis.com/v1/projects/");
 
-  Future<void> sendMessaging(Map<String, dynamic> jsonMessage) async {
+  Future<void> sendMessaging(FirebaseMessagingPayload messaging) async {
     Map<String, dynamic> message = {};
     message["token"] = destineToken;
-    message["data"] = jsonMessage;
+    message["data"] = messaging.toJson();
     Map<String, dynamic> jsonObject = {};
     jsonObject["message"] = message;
 
@@ -113,5 +126,18 @@ abstract class FirebaseMessagingSenderBase {
         log(e.message.toString());
       }
     }
+  }
+
+  Future<void> sendTopicNotification(String topic, FirebaseMessagingPayload messaging) async {}
+}
+
+class FirebaseMessagingPayload {
+  String? ticker, title, content, data;
+
+  FirebaseMessagingPayload({this.ticker, this.title, this.content, this.data});
+
+  Map<String, dynamic> toJson() {
+    if (data == null) return {'ticker': ticker, 'title': title, 'content': content};
+    return json.decode(data!);
   }
 }

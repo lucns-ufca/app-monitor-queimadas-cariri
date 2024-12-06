@@ -63,6 +63,7 @@ dependencies:
   firebase_core: 
   googleapis_auth: 
   package_info_plus: 
+  flutter_local_notifications:
 
 dev_dependencies:
   flutter_test:

@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:monitor_queimadas_cariri/utils/Annotator.dart';
+import 'package:monitor_queimadas_cariri/utils/Notification.provider.dart';
 
 class FirebaseMessagingController {
   static FirebaseMessagingController? _instance;
@@ -47,9 +48,18 @@ class FirebaseMessagingController {
   String? getToken() {
     return token;
   }
+
+  Future<void> subscribeTopic(String topic) async {
+    await FirebaseMessaging.instance.subscribeToTopic(topic);
+  }
+
+  Future<void> unSubscribeTopic(String topic) async {
+    await FirebaseMessaging.instance.unsubscribeFromTopic(topic);
+  }
 }
 
 class Messaging {
+  NotificationProvider notificationProvider = NotificationProvider.getInstance();
   Messaging._();
 
   Future<void> initializeFirebase(Function(String) onTokenAvailable, Function(String) onMessageReceived) async {
@@ -68,12 +78,31 @@ class Messaging {
     });
     FirebaseMessaging.instance.getInitialMessage().then((remoteMessage) {
       if (remoteMessage == null) return;
-      onMessageReceived(remoteMessage.data.toString());
+      if (remoteMessage.notification != null) {
+        showFlutterNotification(remoteMessage);
+      } else {
+        onMessageReceived(remoteMessage.data.toString());
+      }
     });
 
     FirebaseMessaging.onMessage.listen((remoteMessage) {
-      onMessageReceived(remoteMessage.data.toString());
+      if (remoteMessage.notification != null) {
+        showFlutterNotification(remoteMessage);
+      } else {
+        onMessageReceived(remoteMessage.data.toString());
+      }
     });
     //FirebaseMessaging.onBackgroundMessage(onMessageReceived);
+
+    notificationProvider.setChannel("fire_alerts", "Alerta de Queimadas", "Este canal é usado para criar notificações sobre alertas de queimadas reportados");
+    notificationProvider.setNotificationId(1234);
+  }
+
+  void showFlutterNotification(RemoteMessage message) async {
+    RemoteNotification? notification = message.notification;
+    AndroidNotification? android = message.notification?.android;
+    if (notification != null && android != null) {
+      notificationProvider.showNotification(ticker: android.ticker!, title: notification.title!, content: notification.body!);
+    }
   }
 }

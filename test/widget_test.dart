@@ -14,7 +14,7 @@ import 'package:monitor_queimadas_cariri/main.dart';
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(MyApp(User()));
+    await tester.pumpWidget(MainApp(User()));
 
     // Verify that our counter starts at 0.
     expect(find.text('0'), findsOneWidget);

@@ -7,18 +7,33 @@ import 'package:monitor_queimadas_cariri/pages/content/tabs/Map.tab.dart';
 import 'package:monitor_queimadas_cariri/pages/content/tabs/Nature.tab.dart';
 import 'package:monitor_queimadas_cariri/pages/content/tabs/Statistics.tab.dart';
 import 'package:monitor_queimadas_cariri/utils/AppColors.dart';
+import 'package:monitor_queimadas_cariri/utils/Notification.provider.dart';
 import 'package:monitor_queimadas_cariri/utils/PermissionData.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-class MainScreenPage extends StatelessWidget {
+class MainScreenPage extends StatefulWidget {
+  const MainScreenPage({super.key});
+
+  @override
+  State<StatefulWidget> createState() => MainScreenPageState();
+}
+
+class MainScreenPageState extends State<MainScreenPage> {
   final user = GetIt.I.get<User>();
   final List<PermissionData> permissions = [PermissionData(name: "Camera", permission: Permission.camera), PermissionData(name: "Localização", permission: Permission.locationWhenInUse)];
   final PageController pageController = PageController();
 
-  MainScreenPage({super.key});
+  MainScreenPageState();
+
+  @override
+  void initState() {
+    super.initState();
+    NotificationProvider notificationProvider = NotificationProvider.getInstance();
+    notificationProvider.requestPermission();
+  }
 
   @override
   Widget build(BuildContext context) {

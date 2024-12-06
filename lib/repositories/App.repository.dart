@@ -16,7 +16,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class AppRepository {
   final ControllerApi api = ControllerApi(Api(baseUrl: 'https://monitorqueimadas.duckdns.org/'));
-  void Function()? onUpdateConcluded;
+  void Function()? onUpdateConcluded, onError;
 
   List<PredictionCityModel> predictionCities = [];
   List<WeatherCityModel> weatherCities = [];
@@ -31,8 +31,12 @@ class AppRepository {
   List<WeatherCityModel> get getWeatherCities => weatherCities;
   List<ForecastCityModel> get getForecastCities => forecastCities;
 
-  void setOnUpdateConcluded(void Function()? onUpdateConcluded) {
+  void setOnUpdateConcluded(void Function() onUpdateConcluded) {
     this.onUpdateConcluded = onUpdateConcluded;
+  }
+
+  void setOnError(void Function() onError) {
+    this.onError = onError;
   }
 
   Future<void> addToPredictionCities(String path) async {
@@ -106,6 +110,7 @@ class AppRepository {
     String? data = await downloadData('predictions?page=1&limit=30&year=$year', "${directory.path}/data/prediction/AllCitiesPrediction.json");
     if (data == null) {
       updatingPrediction = false;
+      if (onError != null) onError!();
       return;
     }
     List<dynamic> jsonArray = jsonDecode(data);

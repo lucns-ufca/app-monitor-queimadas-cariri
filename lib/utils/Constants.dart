@@ -47,6 +47,8 @@ class Constants {
     'Tarrafas': CityData(name: 'Tarrafas', latitude: -6.684036, longitude: -39.758108, geographicalArea: const Tuple(key: '2022', value: '412,719'), urbanizedArea: const Tuple(key: '2019', value: '1,85'), population: const Tuple(key: '2022', value: '7.529')),
     'Umari': CityData(name: 'Umari', latitude: -6.644247, longitude: -38.699599, geographicalArea: const Tuple(key: '2022', value: '263,183'), urbanizedArea: const Tuple(key: '2019', value: '0,92'), population: const Tuple(key: '2022', value: '6.871')),
   };
+
+  static const String FCM_TOPIC_ALERT_FIRE = 'monitor_queimadas_cariri-alert_fire';
 }
 
 class CityData {

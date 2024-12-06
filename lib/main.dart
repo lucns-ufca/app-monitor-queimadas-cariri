@@ -13,6 +13,9 @@ import 'package:monitor_queimadas_cariri/repositories/App.repository.dart';
 import 'package:flutter/material.dart';
 import 'package:monitor_queimadas_cariri/utils/AppColors.dart';
 import 'package:get_it/get_it.dart';
+import 'package:monitor_queimadas_cariri/utils/Constants.dart';
+import 'package:monitor_queimadas_cariri/utils/Notification.provider.dart';
+import 'package:monitor_queimadas_cariri/utils/Notify.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -24,6 +27,8 @@ void initializeFirebaseCloudMessaging() async {
     log("Received->$message");
   });
   await messaging.initialize();
+  await messaging.subscribeTopic(Constants.FCM_TOPIC_ALERT_FIRE);
+
   final packageInfo = GetIt.I.get<PackageInfo>();
   Map<String, dynamic> message = {"app_name": packageInfo.appName, "app_version": packageInfo.version};
   String content = await rootBundle.loadString('assets/files/data.json');
@@ -57,14 +62,36 @@ void main() async {
   sl.registerLazySingleton<AppRepository>(() => AppRepository());
   sl.registerLazySingleton<User>(() => user);
 
+  NotificationProvider notificationProvider = NotificationProvider.getInstance();
+  await notificationProvider.setChannel("meu_canal_id", "Titulo do meu canal", "Descricao do meu canal");
+  notificationProvider.setOnNotificationClick((id) {
+    log("Notification click");
+  });
+
   initializeFirebaseCloudMessaging();
   await Future.delayed(const Duration(seconds: 1));
-  runApp(MyApp(user));
+  runApp(MainApp(user));
 }
 
-class MyApp extends StatelessWidget {
+class MainApp extends StatefulWidget {
   final User user;
-  const MyApp(this.user, {super.key});
+
+  const MainApp(this.user, {super.key});
+
+  @override
+  State<StatefulWidget> createState() => MainAppState();
+}
+
+class MainAppState extends State<MainApp> {
+  final appRepository = GetIt.I.get<AppRepository>();
+
+  @override
+  void initState() {
+    appRepository.setOnError(() {
+      Notify.showSnackbarError(context, "Falha ao tentar obter dados!");
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +103,7 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
         ),
         //home: user.hasAccess() ? const DashboardPage() : const FirstPage()
-        home: user.hasAccess() ? MainScreenPage() : const FirstPage()
+        home: widget.user.hasAccess() ? const MainScreenPage() : const FirstPage()
         /*
               if (preferences.getBool("second_execution") ?? false) {
                 return const MainScreen();
