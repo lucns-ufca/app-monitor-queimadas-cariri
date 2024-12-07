@@ -38,6 +38,10 @@ class NotificationProvider {
   void showNotification({required String ticker, required String title, required String content}) {
     _controller.show(ticker, title, content, notificationId);
   }
+
+  void removeAll() {
+    _controller.cancelAll();
+  }
 }
 
 class NotificationController {
@@ -89,5 +93,9 @@ class NotificationController {
               //icon: const FlutterBitmapAssetAndroidIcon('assets/icons/main_notification.png').data), // not working
               icon: notificationIcon)),
     );
+  }
+
+  Future<void> cancelAll() async {
+    await flutterLocalNotificationsPlugin.cancelAll();
   }
 }

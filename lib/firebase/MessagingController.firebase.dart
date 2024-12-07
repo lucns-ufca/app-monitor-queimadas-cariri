@@ -25,9 +25,6 @@ class FirebaseMessagingController {
         if (await retrieveToken(refreshToken)) onTokenAvailable(refreshToken);
       });
     });
-    FirebaseMessaging.instance.getInitialMessage().then(onMessageReceived);
-    FirebaseMessaging.onMessage.listen(onMessageReceived);
-    FirebaseMessaging.onBackgroundMessage(onBackgroundMessageReceived);
   }
 
   Future<bool> retrieveToken(String token) async {

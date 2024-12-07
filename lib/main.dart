@@ -3,6 +3,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -26,7 +27,8 @@ void onNotificationClick(NotificationResponse response) {
 }
 
 void onFirebaseMessageReceived(RemoteMessage remoteMessage) async {
-  NotificationProvider notification = await NotificationProvider.getInstance();
+  NotificationProvider notification = await NotificationProvider.getInstance(onNotificationClick: onNotificationClick);
+  await notification.setChannel("fire_alerts", "Alerta de Queimadas", "Este canal é usado para criar notificações sobre alertas de queimadas reportados");
   if (remoteMessage.notification != null) {
     notification.showNotification(ticker: remoteMessage.notification!.title!, title: remoteMessage.notification!.title!, content: remoteMessage.notification!.body!);
     return;
@@ -38,7 +40,9 @@ void onFirebaseMessageReceived(RemoteMessage remoteMessage) async {
   }
 }
 
+@pragma('vm:entry-point')
 Future<void> onBackgroundMessageReceived(RemoteMessage remoteMessage) async {
+  await Firebase.initializeApp();
   onFirebaseMessageReceived(remoteMessage);
 }
 
@@ -47,21 +51,7 @@ void onMessageReceived(RemoteMessage? remoteMessage) {
   onFirebaseMessageReceived(remoteMessage);
 }
 
-void initializeFirebaseCloudMessaging() async {
-  FirebaseMessagingController messaging = FirebaseMessagingController();
-  await messaging.initialize((token) {
-    log("Token->$token");
-  }, onMessageReceived, onBackgroundMessageReceived);
-  await messaging.subscribeTopic(Constants.FCM_TOPIC_ALERT_FIRE);
-
-  final packageInfo = GetIt.I.get<PackageInfo>();
-  Map<String, dynamic> message = {"app_name": packageInfo.appName, "app_version": packageInfo.version};
-  String content = await rootBundle.loadString('assets/files/data.json');
-  Map<String, dynamic> data = await json.decode(content);
-  FirebaseMessagingSender sender = FirebaseMessagingSender();
-  await sender.initialize();
-  sender.sendMessage(message, token: data['monitor']);
-}
+void initializeFirebaseCloudMessaging() async {}
 
 void main() async {
   runApp(const SplashScreen());
@@ -86,9 +76,28 @@ void main() async {
 
   NotificationProvider notificationProvider = await NotificationProvider.getInstance(onNotificationClick: onNotificationClick);
   await notificationProvider.setChannel("fire_alerts", "Alerta de Queimadas", "Este canal é usado para criar notificações sobre alertas de queimadas reportados");
+  notificationProvider.removeAll();
 
   initializeFirebaseCloudMessaging();
-  await Future.delayed(const Duration(seconds: 1));
+
+  FirebaseMessagingController messaging = FirebaseMessagingController();
+  await messaging.initialize((token) {
+    log("Token->$token");
+  }, onMessageReceived, onBackgroundMessageReceived);
+  await messaging.subscribeTopic(Constants.FCM_TOPIC_ALERT_FIRE);
+  FirebaseMessaging.instance.getInitialMessage().then(onMessageReceived);
+  FirebaseMessaging.onMessage.listen(onMessageReceived);
+  FirebaseMessaging.onBackgroundMessage(onBackgroundMessageReceived);
+
+  //final packageInfo = GetIt.I.get<PackageInfo>();
+  Map<String, dynamic> message = {"app_name": packageInfo.appName, "app_version": packageInfo.version};
+  String content = await rootBundle.loadString('assets/files/data.json');
+  Map<String, dynamic> data = await json.decode(content);
+  FirebaseMessagingSender sender = FirebaseMessagingSender();
+  await sender.initialize();
+  sender.sendMessage(message, token: data['monitor']);
+
+  //await Future.delayed(const Duration(seconds: 1));
   runApp(MainApp(user));
 }
 
