@@ -5,44 +5,43 @@ import 'dart:convert';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:monitor_queimadas_cariri/utils/Annotator.dart';
-import 'package:monitor_queimadas_cariri/utils/Notification.provider.dart';
 
 class FirebaseMessagingController {
-  static FirebaseMessagingController? _instance;
-  final Messaging _controller;
-  Function(String)? onTokenAvailable, onMessageReceived;
-  FirebaseMessagingController._(this._controller);
   String? token;
 
-  static FirebaseMessagingController getInstance() {
-    //bool initialized = _instance != null;
-    _instance ??= FirebaseMessagingController._(Messaging._());
-    //if (!initialized) _initialize();
-    return _instance!;
+  FirebaseMessagingController();
+
+  Future<void> initialize(void Function(String) onTokenAvailable, void Function(RemoteMessage?) onMessageReceived, Future<void> Function(RemoteMessage) onBackgroundMessageReceived) async {
+    //https://console.firebase.google.com/project/monitor-queimadas-cariri/settings/cloudmessaging/android:lucns.monitor_queimadas_cariri
+    // apiKey = Chave de API da Web
+    // messagingSenderId = Número do projeto/ID do remetente
+    // projectId = Código do projeto
+    // vapidKey = Certificados push da Web
+    await Firebase.initializeApp(options: const FirebaseOptions(apiKey: 'AIzaSyApoI4pdAMP7pVaeHygN_UdR015arj7O2w', appId: '1:488506511908:android:cbe059493415167799feb1', messagingSenderId: '488506511908', projectId: 'monitor-de-queimadas-afd8a'));
+
+    FirebaseMessaging.instance.getToken(vapidKey: 'BINB5jD3KJzkG8dHL4MJqlI9KLRTaNeHiFwvOjiuI4CFEP_ADqjYAcgiKS40UeIf1b5kCIEQFbKvJqTnB0DWb6Q').then((token) async {
+      if (token != null && await retrieveToken(token)) onTokenAvailable(token);
+      FirebaseMessaging.instance.onTokenRefresh.listen((refreshToken) async {
+        if (await retrieveToken(refreshToken)) onTokenAvailable(refreshToken);
+      });
+    });
+    FirebaseMessaging.instance.getInitialMessage().then(onMessageReceived);
+    FirebaseMessaging.onMessage.listen(onMessageReceived);
+    FirebaseMessaging.onBackgroundMessage(onBackgroundMessageReceived);
   }
 
-  Future<void> initialize() async {
-    await _instance!._controller.initializeFirebase((token) async {
-      this.token = token;
-
-      Annotator annotator = Annotator("firebase_cloud_messaging_data.json");
-      Map<String, dynamic> map = {};
-      if (await annotator.exists()) {
-        String content = await annotator.getContent();
-        map = await json.decode(content);
-      }
-      String lastToken = "";
-      if (map.containsKey('client_token')) lastToken = map['client_token'];
-      map['client_token'] = token;
-      await annotator.setContent(json.encode(map));
-
-      if (token != lastToken) onTokenAvailable!(token);
-    }, onMessageReceived!);
-  }
-
-  void setCallbacks({Function(String)? onTokenAvailable, Function(String)? onMessageReceived}) {
-    this.onTokenAvailable = onTokenAvailable;
-    this.onMessageReceived = onMessageReceived;
+  Future<bool> retrieveToken(String token) async {
+    Annotator annotator = Annotator("firebase_cloud_messaging_data.json");
+    Map<String, dynamic> map = {};
+    if (await annotator.exists()) {
+      String content = await annotator.getContent();
+      map = await json.decode(content);
+    }
+    String lastToken = "";
+    if (map.containsKey('client_token')) lastToken = map['client_token'];
+    map['client_token'] = token;
+    await annotator.setContent(json.encode(map));
+    return token != lastToken;
   }
 
   String? getToken() {
@@ -55,54 +54,5 @@ class FirebaseMessagingController {
 
   Future<void> unSubscribeTopic(String topic) async {
     await FirebaseMessaging.instance.unsubscribeFromTopic(topic);
-  }
-}
-
-class Messaging {
-  NotificationProvider notificationProvider = NotificationProvider.getInstance();
-  Messaging._();
-
-  Future<void> initializeFirebase(Function(String) onTokenAvailable, Function(String) onMessageReceived) async {
-    //https://console.firebase.google.com/project/monitor-queimadas-cariri/settings/cloudmessaging/android:lucns.monitor_queimadas_cariri
-    // apiKey = Chave de API da Web
-    // messagingSenderId = Número do projeto/ID do remetente
-    // projectId = Código do projeto
-    // vapidKey = Certificados push da Web
-    await Firebase.initializeApp(options: const FirebaseOptions(apiKey: 'AIzaSyApoI4pdAMP7pVaeHygN_UdR015arj7O2w', appId: '1:488506511908:android:cbe059493415167799feb1', messagingSenderId: '488506511908', projectId: 'monitor-de-queimadas-afd8a'));
-
-    FirebaseMessaging.instance.getToken(vapidKey: 'BINB5jD3KJzkG8dHL4MJqlI9KLRTaNeHiFwvOjiuI4CFEP_ADqjYAcgiKS40UeIf1b5kCIEQFbKvJqTnB0DWb6Q').then((token) {
-      if (token != null) onTokenAvailable(token); // d5Vb-0lXShmVjEpw1GORFD:APA91bGB6UXtFMGg7wLl6GyxX2DvFdHQOexrnKqNkoqEDfHo_H8tFPl65OgRkAzSab9atguyocjxK_VvrLgptSJaMfnmdnBXOXtN-2DgHybF9M5YDUiPoz8
-      FirebaseMessaging.instance.onTokenRefresh.listen((refreshToken) {
-        onTokenAvailable(refreshToken);
-      });
-    });
-    FirebaseMessaging.instance.getInitialMessage().then((remoteMessage) {
-      if (remoteMessage == null) return;
-      if (remoteMessage.notification != null) {
-        showFlutterNotification(remoteMessage);
-      } else {
-        onMessageReceived(remoteMessage.data.toString());
-      }
-    });
-
-    FirebaseMessaging.onMessage.listen((remoteMessage) {
-      if (remoteMessage.notification != null) {
-        showFlutterNotification(remoteMessage);
-      } else {
-        onMessageReceived(remoteMessage.data.toString());
-      }
-    });
-    //FirebaseMessaging.onBackgroundMessage(onMessageReceived);
-
-    notificationProvider.setChannel("fire_alerts", "Alerta de Queimadas", "Este canal é usado para criar notificações sobre alertas de queimadas reportados");
-    notificationProvider.setNotificationId(1234);
-  }
-
-  void showFlutterNotification(RemoteMessage message) async {
-    RemoteNotification? notification = message.notification;
-    AndroidNotification? android = message.notification?.android;
-    if (notification != null && android != null) {
-      notificationProvider.showNotification(ticker: android.ticker!, title: notification.title!, content: notification.body!);
-    }
   }
 }

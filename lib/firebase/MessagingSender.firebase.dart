@@ -13,7 +13,6 @@ class FirebaseMessagingSender extends FirebaseMessagingSenderBase {
   AccessToken? accessToken;
   bool requestingToken = false;
   Annotator annotator = Annotator("firebase_cloud_messaging_data.json");
-  String? topic;
 
   FirebaseMessagingSender() {
     projectId = "monitor-de-queimadas-afd8a";
@@ -30,18 +29,15 @@ class FirebaseMessagingSender extends FirebaseMessagingSenderBase {
     }
   }
 
-  void setDestineToken(String token) {
-    destineToken = token;
-  }
-
-  void putNotificationToTopic({required String topic, required String ticker, required String title, required String content}) {
-    this.topic = topic;
-    queue.add(FirebaseMessagingPayload(ticker: ticker, title: title, content: content));
-  }
-
-  void put(Map<String, dynamic> data) async {
+  void sendNotification(String title, String body, {String? topic, String? token}) {
     bool isEmpty = queue.isEmpty;
-    queue.add(FirebaseMessagingPayload(data: json.encode(data)));
+    queue.add(FirebaseMessagingPayload(title: title, body: body, topic: topic, token: token));
+    if (isEmpty) dequeue();
+  }
+
+  void sendMessage(Map<String, dynamic> message, {String? topic, String? token}) async {
+    bool isEmpty = queue.isEmpty;
+    queue.add(FirebaseMessagingPayload(data: message, topic: topic, token: token));
     if (isEmpty) dequeue();
   }
 
@@ -51,14 +47,7 @@ class FirebaseMessagingSender extends FirebaseMessagingSenderBase {
       return;
     }
     while (queue.isNotEmpty) {
-      if (await api.hasInternetConnection()) {
-        FirebaseMessagingPayload messaging = queue.removeFirst();
-        if (messaging.data != null) {
-          await sendMessaging(messaging);
-        } else {
-          await sendTopicNotification(topic!, messaging);
-        }
-      }
+      if (await api.hasInternetConnection()) send(queue.removeFirst());
       await Future.delayed(const Duration(seconds: 1));
     }
   }
@@ -97,21 +86,29 @@ class FirebaseMessagingSender extends FirebaseMessagingSenderBase {
 
 abstract class FirebaseMessagingSenderBase {
   Api api;
-  String? destineToken, bearerToken, projectId;
+  String? bearerToken, projectId;
 
   FirebaseMessagingSenderBase() : api = Api(baseUrl: "https://fcm.googleapis.com/v1/projects/");
 
-  Future<void> sendMessaging(FirebaseMessagingPayload messaging) async {
+  Future<void> send(FirebaseMessagingPayload messaging) async {
     Map<String, dynamic> message = {};
-    message["token"] = destineToken;
-    message["data"] = messaging.toJson();
-    Map<String, dynamic> jsonObject = {};
-    jsonObject["message"] = message;
+    if (messaging.token != null) {
+      message["token"] = messaging.token;
+    } else {
+      message["condition"] = "'${messaging.topic}' in topics";
+    }
+    if (messaging.data != null) {
+      message["data"] = messaging.toJson();
+    } else {
+      message["notification"] = messaging.toJson();
+    }
+    Map<String, dynamic> payload = {};
+    payload["message"] = message;
 
     Map<String, dynamic> headers = {"Authorization": "Bearer $bearerToken", "Content-Type": "application/json; UTF-8"};
     api.addHeaders(headers);
     try {
-      await api.dio.post("$projectId/messages:send", data: json.encode(jsonObject));
+      await api.dio.post("$projectId/messages:send", data: json.encode(payload));
       //Response response = await api.dio.post("$projectId/messages:send", data: json.encode(jsonObject));
       //log("response code->${response.statusCode}");
     } on DioException catch (e) {
@@ -127,17 +124,16 @@ abstract class FirebaseMessagingSenderBase {
       }
     }
   }
-
-  Future<void> sendTopicNotification(String topic, FirebaseMessagingPayload messaging) async {}
 }
 
 class FirebaseMessagingPayload {
-  String? ticker, title, content, data;
+  String? topic, token, title, body;
+  Map<String, dynamic>? data;
 
-  FirebaseMessagingPayload({this.ticker, this.title, this.content, this.data});
+  FirebaseMessagingPayload({this.topic, this.token, this.title, this.body, this.data});
 
   Map<String, dynamic> toJson() {
-    if (data == null) return {'ticker': ticker, 'title': title, 'content': content};
-    return json.decode(data!);
+    if (data == null) return {'title': title, 'body': body};
+    return data!;
   }
 }

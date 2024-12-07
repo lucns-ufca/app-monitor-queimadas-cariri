@@ -6,15 +6,19 @@ class NotificationProvider {
   NotificationProvider._(this._controller);
   int notificationId = 1234;
 
-  static NotificationProvider getInstance() {
-    //bool initialized = _instance != null;
+  static Future<NotificationProvider> getInstance({void Function(NotificationResponse)? onNotificationClick}) async {
+    bool initialized = _instance != null;
     _instance ??= NotificationProvider._(NotificationController._());
-    //if (!initialized) _initialize();
+    if (!initialized) await _instance!._controller.initialize(onNotificationClick: onNotificationClick!);
     return _instance!;
   }
 
-  Future<void> setChannel(String channelId, String channelTitle, String channelDescription) async {
-    await _controller.initialize(channelId, channelTitle, channelDescription);
+  Future<void> setChannel(
+    String channelId,
+    String channelTitle,
+    String channelDescription,
+  ) async {
+    await _controller.createChannel(channelId, channelTitle, channelDescription);
   }
 
   void setNotificationId(int id) {
@@ -31,10 +35,6 @@ class NotificationProvider {
     return await androidImplementation?.requestNotificationsPermission() ?? false;
   }
 
-  void setOnNotificationClick(Function(int) onClick) {
-    _controller.onNotificationClick = onClick;
-  }
-
   void showNotification({required String ticker, required String title, required String content}) {
     _controller.show(ticker, title, content, notificationId);
   }
@@ -46,21 +46,23 @@ class NotificationController {
   bool notificationProviderInitialized = false;
   String? channelId, channelTitle, channelDescription;
   String notificationIcon = const DrawableResourceAndroidIcon('main_notification').data;
-  void Function(int)? onNotificationClick;
 
-  Future<void> initialize(String channelId, String channelTitle, String channelDescription) async {
-    this.channelId = channelId;
-    this.channelTitle = channelTitle;
-    this.channelDescription = channelDescription;
+  Future<void> initialize({Function(NotificationResponse)? onNotificationClick}) async {
     if (notificationProviderInitialized) return;
     await flutterLocalNotificationsPlugin.initialize(
       InitializationSettings(
         android: AndroidInitializationSettings(notificationIcon),
       ),
-      onDidReceiveNotificationResponse: _onNotificationReceived,
-      //onDidReceiveBackgroundNotificationResponse: _onNotificationReceived,
+      onDidReceiveNotificationResponse: onNotificationClick,
+      onDidReceiveBackgroundNotificationResponse: onNotificationClick,
     );
+    notificationProviderInitialized = true;
+  }
 
+  Future<void> createChannel(String channelId, String channelTitle, String channelDescription) async {
+    this.channelId = channelId;
+    this.channelTitle = channelTitle;
+    this.channelDescription = channelDescription;
     AndroidNotificationChannel channel = AndroidNotificationChannel(
       channelId,
       channelTitle,
@@ -68,11 +70,6 @@ class NotificationController {
       importance: Importance.low,
     );
     await flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.createNotificationChannel(channel);
-    notificationProviderInitialized = true;
-  }
-
-  void _onNotificationReceived(NotificationResponse notification) {
-    if (onNotificationClick != null) onNotificationClick!(notification.id ?? 0);
   }
 
   void show(String ticker, String title, String content, int id) {

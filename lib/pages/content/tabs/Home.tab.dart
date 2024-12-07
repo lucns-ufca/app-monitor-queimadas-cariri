@@ -63,7 +63,9 @@ class TabHomePageState extends State<TabHomePage> with AutomaticKeepAliveClientM
         case "Validação de queimadas":
           log("click");
           FirebaseMessagingSender sender = FirebaseMessagingSender();
-          sender.putNotificationToTopic(topic: Constants.FCM_TOPIC_ALERT_FIRE, ticker: "ticker here...", title: "This is a title", content: "This is a content");
+          //sender.putNotificationToTopic(topic: Constants.FCM_TOPIC_ALERT_FIRE, ticker: "This is a ticker", title: "This is a title", content: "This is a content");
+          Map<String, dynamic> message = {'ticker': 'Alerta de Queimada', 'title': 'Alerta de Queimada', 'body': 'Um novo alerta de queimada foi realizado.'};
+          sender.sendMessage(message, topic: Constants.FCM_TOPIC_ALERT_FIRE);
           break;
         case "Definir IP":
           await Navigator.push(context, MaterialPageRoute(builder: (context) => const IpDefinitionPage()));

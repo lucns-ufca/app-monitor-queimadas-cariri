@@ -3,7 +3,9 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:monitor_queimadas_cariri/firebase/MessagingController.firebase.dart';
 import 'package:monitor_queimadas_cariri/firebase/MessagingSender.firebase.dart';
 import 'package:monitor_queimadas_cariri/models/User.model.dart';
@@ -19,14 +21,37 @@ import 'package:monitor_queimadas_cariri/utils/Notify.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+void onNotificationClick(NotificationResponse response) {
+  log("Notification click");
+}
+
+void onFirebaseMessageReceived(RemoteMessage remoteMessage) async {
+  NotificationProvider notification = await NotificationProvider.getInstance();
+  if (remoteMessage.notification != null) {
+    notification.showNotification(ticker: remoteMessage.notification!.title!, title: remoteMessage.notification!.title!, content: remoteMessage.notification!.body!);
+    return;
+  }
+  Map<String, dynamic> message = remoteMessage.data;
+  log("Received->${json.encode(message)}");
+  if (message.containsKey("ticker")) {
+    if (await notification.hasPermission()) notification.showNotification(ticker: message['ticker'], title: message['title'], content: message['body']);
+  }
+}
+
+Future<void> onBackgroundMessageReceived(RemoteMessage remoteMessage) async {
+  onFirebaseMessageReceived(remoteMessage);
+}
+
+void onMessageReceived(RemoteMessage? remoteMessage) {
+  if (remoteMessage == null) return;
+  onFirebaseMessageReceived(remoteMessage);
+}
+
 void initializeFirebaseCloudMessaging() async {
-  FirebaseMessagingController messaging = FirebaseMessagingController.getInstance();
-  messaging.setCallbacks(onTokenAvailable: (token) {
+  FirebaseMessagingController messaging = FirebaseMessagingController();
+  await messaging.initialize((token) {
     log("Token->$token");
-  }, onMessageReceived: (message) {
-    log("Received->$message");
-  });
-  await messaging.initialize();
+  }, onMessageReceived, onBackgroundMessageReceived);
   await messaging.subscribeTopic(Constants.FCM_TOPIC_ALERT_FIRE);
 
   final packageInfo = GetIt.I.get<PackageInfo>();
@@ -35,10 +60,7 @@ void initializeFirebaseCloudMessaging() async {
   Map<String, dynamic> data = await json.decode(content);
   FirebaseMessagingSender sender = FirebaseMessagingSender();
   await sender.initialize();
-  sender.setDestineToken(data['monitor']);
-  // Emulator token
-  //sender.setDestineToken('f4jKxi_hSl2vGx7bF-bMhu:APA91bFqor18Sypw0Auqi5NCu9KM7c05emSWTmkJT6cRtaNBkmADxjcj_NvGl-7oJFGYVsDLCc0gFEVIuYO-UuQW6HOmFcIAiwCAudGj685LS563gyuorzE');
-  sender.put(message);
+  sender.sendMessage(message, token: data['monitor']);
 }
 
 void main() async {
@@ -62,11 +84,8 @@ void main() async {
   sl.registerLazySingleton<AppRepository>(() => AppRepository());
   sl.registerLazySingleton<User>(() => user);
 
-  NotificationProvider notificationProvider = NotificationProvider.getInstance();
-  await notificationProvider.setChannel("meu_canal_id", "Titulo do meu canal", "Descricao do meu canal");
-  notificationProvider.setOnNotificationClick((id) {
-    log("Notification click");
-  });
+  NotificationProvider notificationProvider = await NotificationProvider.getInstance(onNotificationClick: onNotificationClick);
+  await notificationProvider.setChannel("fire_alerts", "Alerta de Queimadas", "Este canal é usado para criar notificações sobre alertas de queimadas reportados");
 
   initializeFirebaseCloudMessaging();
   await Future.delayed(const Duration(seconds: 1));

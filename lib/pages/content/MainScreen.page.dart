@@ -28,11 +28,15 @@ class MainScreenPageState extends State<MainScreenPage> {
 
   MainScreenPageState();
 
+  void requestNotificationPermission() async {
+    NotificationProvider notificationProvider = await NotificationProvider.getInstance();
+    notificationProvider.requestPermission();
+  }
+
   @override
   void initState() {
     super.initState();
-    NotificationProvider notificationProvider = NotificationProvider.getInstance();
-    notificationProvider.requestPermission();
+    requestNotificationPermission();
   }
 
   @override
