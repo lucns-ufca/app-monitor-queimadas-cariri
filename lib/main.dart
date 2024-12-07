@@ -42,11 +42,13 @@ void onFirebaseMessageReceived(RemoteMessage remoteMessage) async {
 
 @pragma('vm:entry-point')
 Future<void> onBackgroundMessageReceived(RemoteMessage remoteMessage) async {
+  log("onBackgroundMessageReceived");
   await Firebase.initializeApp();
   onFirebaseMessageReceived(remoteMessage);
 }
 
 void onMessageReceived(RemoteMessage? remoteMessage) {
+  log("onMessageReceived");
   if (remoteMessage == null) return;
   onFirebaseMessageReceived(remoteMessage);
 }
@@ -85,9 +87,6 @@ void main() async {
     log("Token->$token");
   }, onMessageReceived, onBackgroundMessageReceived);
   await messaging.subscribeTopic(Constants.FCM_TOPIC_ALERT_FIRE);
-  FirebaseMessaging.instance.getInitialMessage().then(onMessageReceived);
-  FirebaseMessaging.onMessage.listen(onMessageReceived);
-  FirebaseMessaging.onBackgroundMessage(onBackgroundMessageReceived);
 
   //final packageInfo = GetIt.I.get<PackageInfo>();
   Map<String, dynamic> message = {"app_name": packageInfo.appName, "app_version": packageInfo.version};

@@ -39,6 +39,10 @@ class NotificationProvider {
     _controller.show(ticker, title, content, notificationId);
   }
 
+  void removeCurrent() {
+    _controller.cancel(notificationId);
+  }
+
   void removeAll() {
     _controller.cancelAll();
   }
@@ -93,6 +97,10 @@ class NotificationController {
               //icon: const FlutterBitmapAssetAndroidIcon('assets/icons/main_notification.png').data), // not working
               icon: notificationIcon)),
     );
+  }
+
+  Future<void> cancel(int id) async {
+    await flutterLocalNotificationsPlugin.cancel(id);
   }
 
   Future<void> cancelAll() async {
