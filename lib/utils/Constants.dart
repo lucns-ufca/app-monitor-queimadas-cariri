@@ -1,6 +1,12 @@
 class Constants {
   static const double DEFAULT_ROUND_BORDER = 56;
   static const double DEFAULT_WIDGET_HEIGHT = 40;
+
+  static const String NOTIFICATION_CHANNEL_ID = "app_notifications";
+  static const String NOTIFICATION_CHANNEL_TITLE = "Alerta de Queimadas";
+  static const String NOTIFICATION_CHANNEL_DESCRIPTION = "Este canal é usado para criar notificações sobre alertas de queimadas reportados.";
+  static const int PAGE_TYPE_VALIDATION = 1;
+
   // Fonte IBGE: https://cidades.ibge.gov.br/brasil/ce/abaiara/panorama
   static final Map<String, dynamic> CITIES_DATA = {
     'Abaiara': CityData(name: 'Abaiara', latitude: -7.349389, longitude: -39.033383, geographicalArea: const Tuple(key: '2022', value: '180,833'), urbanizedArea: const Tuple(key: '2019', value: '3,19'), population: const Tuple(key: '2022', value: '10.038')),

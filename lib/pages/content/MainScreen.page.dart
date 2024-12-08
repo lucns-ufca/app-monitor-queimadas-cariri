@@ -1,6 +1,7 @@
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:focus_detector/focus_detector.dart';
 import 'package:monitor_queimadas_cariri/models/User.model.dart';
+import 'package:monitor_queimadas_cariri/pages/content/admins/FiresAlertValidation.page.dart';
 import 'package:monitor_queimadas_cariri/pages/content/reports/FireReportPages.page.dart';
 import 'package:monitor_queimadas_cariri/pages/content/tabs/Home.tab.dart';
 import 'package:monitor_queimadas_cariri/pages/content/tabs/Map.tab.dart';
@@ -15,7 +16,8 @@ import 'package:get_it/get_it.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class MainScreenPage extends StatefulWidget {
-  const MainScreenPage({super.key});
+  final bool fromNotification;
+  const MainScreenPage({this.fromNotification = false, super.key});
 
   @override
   State<StatefulWidget> createState() => MainScreenPageState();
@@ -28,15 +30,19 @@ class MainScreenPageState extends State<MainScreenPage> {
 
   MainScreenPageState();
 
-  void requestNotificationPermission() async {
+  void asyncronousInitialize() async {
     NotificationProvider notificationProvider = await NotificationProvider.getInstance();
-    notificationProvider.requestPermission();
+    if (widget.fromNotification) {
+      Navigator.push(context, MaterialPageRoute(builder: (context) => const FiresAlertValidationPage()));
+    } else {
+      await notificationProvider.requestPermission();
+    }
   }
 
   @override
   void initState() {
     super.initState();
-    requestNotificationPermission();
+    asyncronousInitialize();
   }
 
   @override

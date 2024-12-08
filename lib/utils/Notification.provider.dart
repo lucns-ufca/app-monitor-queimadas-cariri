@@ -35,6 +35,15 @@ class NotificationProvider {
     return await androidImplementation?.requestNotificationsPermission() ?? false;
   }
 
+  Future<NotificationResponse?> appInitializedByNotification() async {
+    final NotificationAppLaunchDetails? notificationAppLaunchDetails = await _controller.flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
+    if (notificationAppLaunchDetails != null) {
+      bool didNotificationLaunchApp = notificationAppLaunchDetails.didNotificationLaunchApp;
+      if (didNotificationLaunchApp) return notificationAppLaunchDetails.notificationResponse;
+    }
+    return null;
+  }
+
   void showNotification({required String ticker, required String title, required String content}) {
     _controller.show(ticker, title, content, notificationId);
   }
@@ -93,7 +102,7 @@ class NotificationController {
               channelDescription: channelDescription,
               ongoing: false,
               autoCancel: true,
-              sound: const RawResourceAndroidNotificationSound('unsure'),
+              sound: const RawResourceAndroidNotificationSound('@raw/unsure'),
               //icon: const FlutterBitmapAssetAndroidIcon('assets/icons/main_notification.png').data), // not working
               icon: notificationIcon)),
     );

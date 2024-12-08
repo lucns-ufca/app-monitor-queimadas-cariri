@@ -5,6 +5,7 @@ import 'package:focus_detector/focus_detector.dart';
 import 'package:monitor_queimadas_cariri/pages/content/MainScreen.page.dart';
 import 'package:monitor_queimadas_cariri/pages/start/Acess.page.dart';
 import 'package:monitor_queimadas_cariri/utils/AppColors.dart';
+import 'package:monitor_queimadas_cariri/utils/Notification.provider.dart';
 import 'package:monitor_queimadas_cariri/widgets/AppLogos.widget.dart';
 import 'package:flutter/material.dart';
 
@@ -19,8 +20,14 @@ class FirstPageState extends State<FirstPage> with SingleTickerProviderStateMixi
   AnimationController? animationController;
   Animation<double>? animation;
 
+  void clearNotifications() async {
+    NotificationProvider notificationProvider = await NotificationProvider.getInstance();
+    notificationProvider.removeAll();
+  }
+
   @override
   void initState() {
+    clearNotifications();
     animationController = AnimationController(vsync: this, duration: const Duration(seconds: 10));
     animation = Tween(begin: 0.0, end: 1.0).chain(CurveTween(curve: Curves.fastEaseInToSlowEaseOut)).animate(animationController!);
     animationController!.forward();

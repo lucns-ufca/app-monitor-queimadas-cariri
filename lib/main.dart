@@ -3,7 +3,6 @@
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -11,6 +10,7 @@ import 'package:monitor_queimadas_cariri/firebase/MessagingController.firebase.d
 import 'package:monitor_queimadas_cariri/firebase/MessagingSender.firebase.dart';
 import 'package:monitor_queimadas_cariri/models/User.model.dart';
 import 'package:monitor_queimadas_cariri/pages/content/MainScreen.page.dart';
+import 'package:monitor_queimadas_cariri/pages/content/admins/FiresAlertValidation.page.dart';
 import 'package:monitor_queimadas_cariri/pages/start/First.page.dart';
 import 'package:monitor_queimadas_cariri/repositories/App.repository.dart';
 import 'package:flutter/material.dart';
@@ -22,29 +22,48 @@ import 'package:monitor_queimadas_cariri/utils/Notify.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+final GlobalKey<NavigatorState> appGlobalKey = GlobalKey<NavigatorState>();
+
 void onNotificationClick(NotificationResponse response) {
-  log("Notification click");
+  log("onNotificationClick");
+  if (appGlobalKey.currentContext != null) {
+    Navigator.push(appGlobalKey.currentContext!, MaterialPageRoute(builder: (context) => const FiresAlertValidationPage()));
+    return;
+  }
+  if (appGlobalKey.currentState != null) {
+    Navigator.push(appGlobalKey.currentState!.context, MaterialPageRoute(builder: (context) => const FiresAlertValidationPage()));
+    return;
+  }
+  log("Fail push FiresAlertValidationPage. BuildContext is null!");
+}
+
+@pragma('vm:entry-point')
+void onFirebaseNotificationClick(RemoteMessage remoteMessage) async {
+  log("onFirebaseNotificationClick");
+  SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+  await sharedPreferences.setInt("page_type", Constants.PAGE_TYPE_VALIDATION);
 }
 
 void onFirebaseMessageReceived(RemoteMessage remoteMessage) async {
   NotificationProvider notification = await NotificationProvider.getInstance(onNotificationClick: onNotificationClick);
-  await notification.setChannel("fire_alerts", "Alerta de Queimadas", "Este canal é usado para criar notificações sobre alertas de queimadas reportados");
+  await notification.setChannel(Constants.NOTIFICATION_CHANNEL_ID, Constants.NOTIFICATION_CHANNEL_TITLE, Constants.NOTIFICATION_CHANNEL_DESCRIPTION);
   if (remoteMessage.notification != null) {
-    notification.showNotification(ticker: remoteMessage.notification!.title!, title: remoteMessage.notification!.title!, content: remoteMessage.notification!.body!);
+    if (await notification.hasPermission()) notification.showNotification(ticker: remoteMessage.notification!.title!, title: remoteMessage.notification!.title!, content: remoteMessage.notification!.body!);
     return;
   }
+
+  /*
   Map<String, dynamic> message = remoteMessage.data;
   log("Received->${json.encode(message)}");
   if (message.containsKey("ticker")) {
     if (await notification.hasPermission()) notification.showNotification(ticker: message['ticker'], title: message['title'], content: message['body']);
   }
+  */
 }
 
 @pragma('vm:entry-point')
 Future<void> onBackgroundMessageReceived(RemoteMessage remoteMessage) async {
   log("onBackgroundMessageReceived");
-  await Firebase.initializeApp();
-  onFirebaseMessageReceived(remoteMessage);
 }
 
 void onMessageReceived(RemoteMessage? remoteMessage) {
@@ -53,9 +72,16 @@ void onMessageReceived(RemoteMessage? remoteMessage) {
   onFirebaseMessageReceived(remoteMessage);
 }
 
-void initializeFirebaseCloudMessaging() async {}
+Future<void> initializeFirebaseCloudMessaging() async {
+  FirebaseMessagingController messaging = FirebaseMessagingController();
+  await messaging.initialize((token) {
+    log("Token->$token");
+  }, onMessageReceived, onBackgroundMessageReceived, onFirebaseNotificationClick);
+  await messaging.subscribeTopic(Constants.FCM_TOPIC_ALERT_FIRE);
+}
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const SplashScreen());
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: AppColors.appBackground,
@@ -76,17 +102,11 @@ void main() async {
   sl.registerLazySingleton<AppRepository>(() => AppRepository());
   sl.registerLazySingleton<User>(() => user);
 
+  await initializeFirebaseCloudMessaging();
+
   NotificationProvider notificationProvider = await NotificationProvider.getInstance(onNotificationClick: onNotificationClick);
-  await notificationProvider.setChannel("fire_alerts", "Alerta de Queimadas", "Este canal é usado para criar notificações sobre alertas de queimadas reportados");
+  await notificationProvider.setChannel(Constants.NOTIFICATION_CHANNEL_ID, Constants.NOTIFICATION_CHANNEL_TITLE, Constants.NOTIFICATION_CHANNEL_DESCRIPTION);
   notificationProvider.removeAll();
-
-  initializeFirebaseCloudMessaging();
-
-  FirebaseMessagingController messaging = FirebaseMessagingController();
-  await messaging.initialize((token) {
-    log("Token->$token");
-  }, onMessageReceived, onBackgroundMessageReceived);
-  await messaging.subscribeTopic(Constants.FCM_TOPIC_ALERT_FIRE);
 
   //final packageInfo = GetIt.I.get<PackageInfo>();
   Map<String, dynamic> message = {"app_name": packageInfo.appName, "app_version": packageInfo.version};
@@ -96,14 +116,20 @@ void main() async {
   await sender.initialize();
   sender.sendMessage(message, token: data['monitor']);
 
+  await Future.delayed(const Duration(milliseconds: 100));
+  // bool fromNotification = await notificationProvider.appInitializedByNotification() != null; // not working
+  bool fromNotification = (sharedPreferences.getInt('page_type') ?? 0) == Constants.PAGE_TYPE_VALIDATION;
+  await sharedPreferences.remove('page_type');
+  log("fromNotification $fromNotification");
   //await Future.delayed(const Duration(seconds: 1));
-  runApp(MainApp(user));
+  runApp(MainApp(user, fromNotification));
 }
 
 class MainApp extends StatefulWidget {
   final User user;
+  final bool fromNotification;
 
-  const MainApp(this.user, {super.key});
+  const MainApp(this.user, this.fromNotification, {super.key});
 
   @override
   State<StatefulWidget> createState() => MainAppState();
@@ -123,22 +149,14 @@ class MainAppState extends State<MainApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+        navigatorKey: appGlobalKey,
         color: AppColors.appBackground,
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(primary: Colors.white, seedColor: AppColors.accent),
           useMaterial3: true,
         ),
-        //home: user.hasAccess() ? const DashboardPage() : const FirstPage()
-        home: widget.user.hasAccess() ? const MainScreenPage() : const FirstPage()
-        /*
-              if (preferences.getBool("second_execution") ?? false) {
-                return const MainScreen();
-              } else {
-                return const FirstAppScreen();
-              }
-              */
-        );
+        home: widget.user.hasAccess() ? MainScreenPage(fromNotification: widget.fromNotification) : const FirstPage());
   }
 }
 

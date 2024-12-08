@@ -133,7 +133,9 @@ class FirebaseMessagingPayload {
   FirebaseMessagingPayload({this.topic, this.token, this.title, this.body, this.data});
 
   Map<String, dynamic> toJson() {
-    if (data == null) return {'title': title, 'body': body};
+    if (data == null) {
+      return {'title': title, 'body': body};
+    }
     return data!;
   }
 }

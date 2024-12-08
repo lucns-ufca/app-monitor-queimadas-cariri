@@ -11,7 +11,7 @@ class FirebaseMessagingController {
 
   FirebaseMessagingController();
 
-  Future<void> initialize(void Function(String) onTokenAvailable, void Function(RemoteMessage?) onMessageReceived, Future<void> Function(RemoteMessage) onBackgroundMessageReceived) async {
+  Future<void> initialize(void Function(String) onTokenAvailable, void Function(RemoteMessage?) onMessageReceived, Future<void> Function(RemoteMessage) onBackgroundMessageReceived, void Function(RemoteMessage) onFirebaseNotificationClick) async {
     //https://console.firebase.google.com/project/monitor-queimadas-cariri/settings/cloudmessaging/android:lucns.monitor_queimadas_cariri
     // apiKey = Chave de API da Web
     // messagingSenderId = Número do projeto/ID do remetente
@@ -28,6 +28,7 @@ class FirebaseMessagingController {
     //FirebaseMessaging.instance.getInitialMessage().then(onMessageReceived);
     FirebaseMessaging.onMessage.listen(onMessageReceived);
     FirebaseMessaging.onBackgroundMessage(onBackgroundMessageReceived);
+    FirebaseMessaging.onMessageOpenedApp.listen(onFirebaseNotificationClick);
   }
 
   Future<bool> retrieveToken(String token) async {
