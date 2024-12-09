@@ -16,7 +16,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class AppRepository {
   final ControllerApi api = ControllerApi(Api(baseUrl: 'https://monitorqueimadas.duckdns.org/'));
-  void Function()? onUpdateConcluded, onError;
+  void Function()? onUpdateConcluded;
+  void Function(int)? onError;
 
   List<PredictionCityModel> predictionCities = [];
   List<WeatherCityModel> weatherCities = [];
@@ -35,7 +36,7 @@ class AppRepository {
     this.onUpdateConcluded = onUpdateConcluded;
   }
 
-  void setOnError(void Function() onError) {
+  void setOnError(void Function(int) onError) {
     this.onError = onError;
   }
 
@@ -107,54 +108,68 @@ class AppRepository {
   Future<void> updatePrediction(int year) async {
     updatingPrediction = true;
     Directory directory = await getApplicationDocumentsDirectory();
-    String? data = await downloadData('predictions?page=1&limit=30&year=$year', "${directory.path}/data/prediction/AllCitiesPrediction.json");
-    if (data == null) {
+    try {
+      String? data = await downloadData('predictions?page=1&limit=30&year=$year', "${directory.path}/data/prediction/AllCitiesPrediction.json");
+      if (data == null) {
+        updatingPrediction = false;
+        if (onError != null) onError!(api.getResponseCode());
+        return;
+      }
+      List<dynamic> jsonArray = jsonDecode(data);
+      predictionCities.clear();
+      for (dynamic json in jsonArray) {
+        predictionCities.add(PredictionCityModel.fromJson(json));
+      }
       updatingPrediction = false;
-      if (onError != null) onError!();
-      return;
-    }
-    List<dynamic> jsonArray = jsonDecode(data);
-    predictionCities.clear();
-    for (dynamic json in jsonArray) {
-      predictionCities.add(PredictionCityModel.fromJson(json));
-    }
+      if (!updatingForecast && !updatingWeather && onUpdateConcluded != null) onUpdateConcluded!();
+    } catch (_) {}
     updatingPrediction = false;
-    if (!updatingForecast && !updatingWeather && onUpdateConcluded != null) onUpdateConcluded!();
+    if (onError != null) onError!(api.getResponseCode());
   }
 
   Future<void> updateWeather() async {
     updatingWeather = true;
     Directory directory = await getApplicationDocumentsDirectory();
-    String? data = await downloadData('fire-weather-data/search?page=1&limit=30', "${directory.path}/data/weather/AllCitiesWeather.json");
-    if (data == null) {
+    try {
+      String? data = await downloadData('fire-weather-data/search?page=1&limit=30', "${directory.path}/data/weather/AllCitiesWeather.json");
+      if (data == null) {
+        updatingWeather = false;
+        if (onError != null) onError!(api.getResponseCode());
+        return;
+      }
+      List<dynamic> jsonArray = jsonDecode(data);
+      weatherCities.clear();
+      for (Map<String, dynamic> json in jsonArray) {
+        weatherCities.add(WeatherCityModel.fromJson(json));
+      }
       updatingWeather = false;
-      return;
-    }
-    List<dynamic> jsonArray = jsonDecode(data);
-    weatherCities.clear();
-    for (Map<String, dynamic> json in jsonArray) {
-      weatherCities.add(WeatherCityModel.fromJson(json));
-    }
+      if (!updatingForecast && !updatingPrediction && onUpdateConcluded != null) onUpdateConcluded!();
+    } catch (_) {}
     updatingWeather = false;
-    if (!updatingForecast && !updatingPrediction && onUpdateConcluded != null) onUpdateConcluded!();
+    if (onError != null) onError!(api.getResponseCode());
   }
 
   Future<void> updateforecast() async {
     updatingForecast = true;
     Directory directory = await getApplicationDocumentsDirectory();
-    String? data = await downloadData('weather/forecast.php', "${directory.path}/data/weather/AllCitiesForecast.json");
+    try {
+      String? data = await downloadData('weather/forecast.php', "${directory.path}/data/weather/AllCitiesForecast.json");
 
-    if (data == null) {
+      if (data == null) {
+        updatingForecast = false;
+        if (onError != null) onError!(api.getResponseCode());
+        return;
+      }
+      List<dynamic> jsonArray = jsonDecode(data);
+      forecastCities.clear();
+      for (Map<String, dynamic> json in jsonArray) {
+        forecastCities.add(ForecastCityModel.fromJson(json));
+      }
       updatingForecast = false;
-      return;
-    }
-    List<dynamic> jsonArray = jsonDecode(data);
-    forecastCities.clear();
-    for (Map<String, dynamic> json in jsonArray) {
-      forecastCities.add(ForecastCityModel.fromJson(json));
-    }
+      if (!updatingWeather && !updatingPrediction && onUpdateConcluded != null) onUpdateConcluded!();
+    } catch (_) {}
     updatingForecast = false;
-    if (!updatingWeather && !updatingPrediction && onUpdateConcluded != null) onUpdateConcluded!();
+    if (onError != null) onError!(api.getResponseCode());
   }
 
   Future<String?> downloadData(String url, String path) async {

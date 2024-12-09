@@ -120,7 +120,6 @@ void main() async {
   // bool fromNotification = await notificationProvider.appInitializedByNotification() != null; // not working
   bool fromNotification = (sharedPreferences.getInt('page_type') ?? 0) == Constants.PAGE_TYPE_VALIDATION;
   await sharedPreferences.remove('page_type');
-  log("fromNotification $fromNotification");
   //await Future.delayed(const Duration(seconds: 1));
   runApp(MainApp(user, fromNotification));
 }
@@ -140,15 +139,20 @@ class MainAppState extends State<MainApp> {
 
   @override
   void initState() {
-    appRepository.setOnError(() {
-      Notify.showSnackbarError(context, "Falha ao tentar obter dados!");
-    });
     super.initState();
+    appRepository.setOnError((responseCode) {
+      if (responseCode == 0) {
+        Notify.showSnackbarError(context, "Falha ao tentar obter dados!");
+        return;
+      }
+      Notify.showSnackbarError(context, "Falha ao tentar obter dados!\nCodigo: $responseCode");
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+        scaffoldMessengerKey: Notify.key,
         navigatorKey: appGlobalKey,
         color: AppColors.appBackground,
         debugShowCheckedModeBanner: false,

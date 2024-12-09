@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class Notify {
+  static GlobalKey<ScaffoldMessengerState> key = GlobalKey<ScaffoldMessengerState>();
+
   static showToast(String text, {bool longTost = false}) {
     Fluttertoast.showToast(msg: text, toastLength: longTost ? Toast.LENGTH_LONG : Toast.LENGTH_SHORT, gravity: ToastGravity.BOTTOM, backgroundColor: Color.fromARGB(255, 46, 35, 24), textColor: const Color.fromARGB(255, 255, 148, 16), fontSize: 16);
   }
@@ -21,25 +23,28 @@ class Notify {
   }
 
   static showSnackbar(BuildContext context, Duration duration, Color colorBackground, Color colorText, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        //elevation: 0,
-        //behavior: SnackBarBehavior.fixed,
-        content: Text(message, style: TextStyle(color: colorText, fontSize: 16, fontWeight: FontWeight.bold)),
-        duration: duration,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(topLeft: Radius.circular(16), topRight: Radius.circular(16)),
-        ),
-        backgroundColor: colorBackground,
-        /*
+    //ScaffoldMessenger.of(context).showSnackBar(
+    key.currentState!
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          //elevation: 0,
+          //behavior: SnackBarBehavior.fixed,
+          content: Text(message, style: TextStyle(color: colorText, fontSize: 16, fontWeight: FontWeight.bold)),
+          duration: duration,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(topLeft: Radius.circular(16), topRight: Radius.circular(16)),
+          ),
+          backgroundColor: colorBackground,
+          /*
         action: SnackBarAction(
           textColor: Color(0xFFFAF2FB),
           label: 'OK',
           onPressed: () {},
         ),
         */
-      ),
-    );
+        ),
+      );
   }
 
   static Future<void> showDialogError(BuildContext context, String message) {

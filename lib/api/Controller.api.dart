@@ -25,6 +25,10 @@ class ControllerApi {
     }
   }
 
+  int getResponseCode() {
+    return api.getResponseCode();
+  }
+
   Future<Response> download(String url, File file) async {
     try {
       Response response = await api.dio.get(url, options: Options(responseType: ResponseType.bytes, followRedirects: false));
