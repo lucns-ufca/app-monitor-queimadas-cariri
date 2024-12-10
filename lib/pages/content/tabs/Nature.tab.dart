@@ -38,7 +38,7 @@ class TabNaturePageState extends State<TabNaturePage> with AutomaticKeepAliveCli
               const SizedBox(
                 width: 24,
               ),
-              const Text("Um pouco\ndo cariri", textAlign: TextAlign.end, style: TextStyle(height: 1.2, fontWeight: FontWeight.w300, color: Colors.white, fontSize: 24)),
+              const Text("Um pouco\ndo cariri", textAlign: TextAlign.end, style: TextStyle(height: 1.2, fontWeight: FontWeight.w300, color: Colors.white, fontSize: 22)),
             ])),
         const SizedBox(height: 24),
         Padding(

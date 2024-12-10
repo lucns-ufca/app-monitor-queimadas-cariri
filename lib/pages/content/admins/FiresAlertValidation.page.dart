@@ -56,26 +56,21 @@ class FiresAlertValidationPageState extends State<FiresAlertValidationPage> {
                             )));
                   }),
               Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 48),
+                      padding: const EdgeInsets.only(left: 24, right: 24, top: 48, bottom: 24),
                       child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                         Image.asset('assets/images/monitor_queimadas_cariri.png', width: 122, height: 48),
                         const SizedBox(
                           width: 24,
                         ),
-                        const Flexible(
-                            child: Padding(
-                                padding: EdgeInsets.only(right: 24),
-                                child: Text("Alertas de Queimadas", overflow: TextOverflow.ellipsis, maxLines: 4, textAlign: TextAlign.end, style: TextStyle(height: 1.2, fontWeight: FontWeight.w300, color: Colors.white, fontSize: 24)))),
+                        const Flexible(child: Text("Alertas de\nQueimadas", overflow: TextOverflow.ellipsis, maxLines: 4, textAlign: TextAlign.end, style: TextStyle(height: 1.2, fontWeight: FontWeight.w300, color: Colors.white, fontSize: 22))),
                       ])),
-                  const SizedBox(height: 24),
                   Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 24),
                       child: Row(
                           mainAxisSize: MainAxisSize.max,
-                          children: [const Text("Alertas", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)), const SizedBox(width: 8), Expanded(child: Container(height: 1, color: Colors.white))])),
+                          children: [const Text("Eventos por data", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)), const SizedBox(width: 8), Expanded(child: Container(height: 1, color: Colors.white))])),
                 ],
               )
             ])));
