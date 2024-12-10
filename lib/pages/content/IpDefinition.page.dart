@@ -19,7 +19,7 @@ class IpDefinitionPageState extends State<IpDefinitionPage> {
   int sentType = 0;
 
   void showSnackBar() {
-    Notify.showSnackbarSucess(context, "Salvo", duration: const Duration(seconds: 1));
+    Notify.showSnackbarSucess("Salvo", duration: const Duration(seconds: 1));
   }
 
   void initializePreferences() async {

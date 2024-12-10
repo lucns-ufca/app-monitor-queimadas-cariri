@@ -10,19 +10,19 @@ class Notify {
     Fluttertoast.showToast(msg: text, toastLength: longTost ? Toast.LENGTH_LONG : Toast.LENGTH_SHORT, gravity: ToastGravity.BOTTOM, backgroundColor: Color.fromARGB(255, 46, 35, 24), textColor: const Color.fromARGB(255, 255, 148, 16), fontSize: 16);
   }
 
-  static showSnackbarSucess(BuildContext context, String message, {Duration duration = const Duration(seconds: 5)}) {
-    showSnackbar(context, duration, AppColors.fragmentBackgroundSuccess, Colors.white, message);
+  static showSnackbarSucess(String message, {Duration duration = const Duration(seconds: 5)}) {
+    showSnackbar(duration, AppColors.fragmentBackgroundSuccess, Colors.white, message);
   }
 
-  static showSnackbarError(BuildContext context, String message, {Duration duration = const Duration(seconds: 5)}) {
-    showSnackbar(context, duration, AppColors.fragmentBackgroundError, Colors.white, message);
+  static showSnackbarError(String message, {Duration duration = const Duration(seconds: 5)}) {
+    showSnackbar(duration, AppColors.fragmentBackgroundError, Colors.white, message);
   }
 
-  static showSnackbarInfo(BuildContext context, String message, {Duration duration = const Duration(seconds: 5)}) {
-    showSnackbar(context, duration, AppColors.fragmentBackgroundInfo, AppColors.titleDark, message);
+  static showSnackbarInfo(String message, {Duration duration = const Duration(seconds: 5)}) {
+    showSnackbar(duration, AppColors.fragmentBackgroundInfo, AppColors.titleDark, message);
   }
 
-  static showSnackbar(BuildContext context, Duration duration, Color colorBackground, Color colorText, String message) {
+  static showSnackbar(Duration duration, Color colorBackground, Color colorText, String message) {
     //ScaffoldMessenger.of(context).showSnackBar(
     key.currentState!
       ..hideCurrentSnackBar()

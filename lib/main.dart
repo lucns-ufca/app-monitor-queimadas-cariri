@@ -1,7 +1,6 @@
 // Developed by @lucns
 
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/services.dart';
@@ -25,7 +24,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 final GlobalKey<NavigatorState> appGlobalKey = GlobalKey<NavigatorState>();
 
 void onNotificationClick(NotificationResponse response) {
-  log("onNotificationClick");
   if (appGlobalKey.currentContext != null) {
     Navigator.push(appGlobalKey.currentContext!, MaterialPageRoute(builder: (context) => const FiresAlertValidationPage()));
     return;
@@ -34,12 +32,9 @@ void onNotificationClick(NotificationResponse response) {
     Navigator.push(appGlobalKey.currentState!.context, MaterialPageRoute(builder: (context) => const FiresAlertValidationPage()));
     return;
   }
-  log("Fail push FiresAlertValidationPage. BuildContext is null!");
 }
 
-@pragma('vm:entry-point')
 void onFirebaseNotificationClick(RemoteMessage remoteMessage) async {
-  log("onFirebaseNotificationClick");
   SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
   await sharedPreferences.setInt("page_type", Constants.PAGE_TYPE_VALIDATION);
 }
@@ -63,21 +58,12 @@ void onFirebaseMessageReceived(RemoteMessage remoteMessage) async {
 
 @pragma('vm:entry-point')
 Future<void> onBackgroundMessageReceived(RemoteMessage remoteMessage) async {
-  log("onBackgroundMessageReceived");
+  //print("onBackgroundMessageReceived");
 }
 
 void onMessageReceived(RemoteMessage? remoteMessage) {
-  log("onMessageReceived");
   if (remoteMessage == null) return;
   onFirebaseMessageReceived(remoteMessage);
-}
-
-Future<void> initializeFirebaseCloudMessaging() async {
-  FirebaseMessagingController messaging = FirebaseMessagingController();
-  await messaging.initialize((token) {
-    log("Token->$token");
-  }, onMessageReceived, onBackgroundMessageReceived, onFirebaseNotificationClick);
-  await messaging.subscribeTopic(Constants.FCM_TOPIC_ALERT_FIRE);
 }
 
 void main() async {
@@ -102,11 +88,12 @@ void main() async {
   sl.registerLazySingleton<AppRepository>(() => AppRepository());
   sl.registerLazySingleton<User>(() => user);
 
-  await initializeFirebaseCloudMessaging();
-
   NotificationProvider notificationProvider = await NotificationProvider.getInstance(onNotificationClick: onNotificationClick);
   await notificationProvider.setChannel(Constants.NOTIFICATION_CHANNEL_ID, Constants.NOTIFICATION_CHANNEL_TITLE, Constants.NOTIFICATION_CHANNEL_DESCRIPTION);
   notificationProvider.removeAll();
+
+  FirebaseMessagingController messaging = FirebaseMessagingController();
+  await messaging.initialize((token) {}, onMessageReceived, onBackgroundMessageReceived, onFirebaseNotificationClick);
 
   //final packageInfo = GetIt.I.get<PackageInfo>();
   Map<String, dynamic> message = {"app_name": packageInfo.appName, "app_version": packageInfo.version};
@@ -142,10 +129,10 @@ class MainAppState extends State<MainApp> {
     super.initState();
     appRepository.setOnError((responseCode) {
       if (responseCode == 0) {
-        Notify.showSnackbarError(context, "Falha ao tentar obter dados!");
+        Notify.showSnackbarError("Falha ao tentar obter dados!");
         return;
       }
-      Notify.showSnackbarError(context, "Falha ao tentar obter dados!\nCodigo: $responseCode");
+      Notify.showSnackbarError("Falha ao tentar obter dados!\nCodigo: $responseCode");
     });
   }
 

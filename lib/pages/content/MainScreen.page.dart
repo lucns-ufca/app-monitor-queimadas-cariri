@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:focus_detector/focus_detector.dart';
 import 'package:monitor_queimadas_cariri/models/User.model.dart';
@@ -7,6 +9,7 @@ import 'package:monitor_queimadas_cariri/pages/content/tabs/Home.tab.dart';
 import 'package:monitor_queimadas_cariri/pages/content/tabs/Map.tab.dart';
 import 'package:monitor_queimadas_cariri/pages/content/tabs/Nature.tab.dart';
 import 'package:monitor_queimadas_cariri/pages/content/tabs/Statistics.tab.dart';
+import 'package:monitor_queimadas_cariri/pages/dialogs/BasicDialogs.dart';
 import 'package:monitor_queimadas_cariri/utils/AppColors.dart';
 import 'package:monitor_queimadas_cariri/utils/Notification.provider.dart';
 import 'package:monitor_queimadas_cariri/utils/PermissionData.dart';
@@ -35,7 +38,15 @@ class MainScreenPageState extends State<MainScreenPage> {
     if (widget.fromNotification) {
       Navigator.push(context, MaterialPageRoute(builder: (context) => const FiresAlertValidationPage()));
     } else {
-      await notificationProvider.requestPermission();
+      bool granted = await notificationProvider.requestPermission();
+      if (!granted) {
+        Dialogs dialogs = Dialogs(context);
+        dialogs.showDialogInfo("Permissão negada!",
+            "O Monitor de queimadas Cariri precisa de permissão para criar notificações. Só assim será possível gerar notificações sobre novos alertas de queimadas. Caso queira dar essa permissão, basta acessar a área de permissões do app, clicando abaixo.",
+            positiveText: "Abrir Permissões", onPositiveClick: () {
+          log("Abrir area de notificacoes");
+        }, negativeText: "Cancelar");
+      }
     }
   }
 

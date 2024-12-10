@@ -18,7 +18,7 @@ class TransparentButton extends StatelessWidget {
             style: ButtonStyle(
                 shape: WidgetStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.circular(height))),
                 backgroundColor: WidgetStateProperty.resolveWith((states) => Colors.transparent),
-                overlayColor: WidgetStateProperty.resolveWith((states) => disabled ? Colors.transparent : Colors.white.withOpacity(0.5))),
+                overlayColor: WidgetStateProperty.resolveWith((states) => disabled ? Colors.transparent : Colors.white.withOpacity(0.25))),
             onPressed: disabled ? null : () => onTap(),
             child: Text(text, style: TextStyle(fontSize: 18, color: disabled ? AppColors.buttonDisabled : AppColors.buttonNormal))));
   }

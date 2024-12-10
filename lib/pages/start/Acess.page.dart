@@ -3,12 +3,14 @@ import 'dart:ui';
 
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
+import 'package:monitor_queimadas_cariri/firebase/MessagingController.firebase.dart';
 import 'package:monitor_queimadas_cariri/models/User.model.dart';
 import 'package:monitor_queimadas_cariri/pages/content/MainScreen.page.dart';
 import 'package:monitor_queimadas_cariri/pages/dialogs/BasicDialogs.dart';
 import 'package:monitor_queimadas_cariri/pages/start/tabs/Login.tab.dart';
 import 'package:monitor_queimadas_cariri/pages/start/tabs/NewAccount.tab.dart';
 import 'package:monitor_queimadas_cariri/utils/AppColors.dart';
+import 'package:monitor_queimadas_cariri/utils/Constants.dart';
 import 'package:monitor_queimadas_cariri/widgets/AppLogos.widget.dart';
 import 'package:monitor_queimadas_cariri/widgets/ContainerGradient.widget.dart';
 import 'package:monitor_queimadas_cariri/widgets/ExpandablePageView.widget.dart';
@@ -83,15 +85,19 @@ class LoginFormState extends State<LoginForm> {
     user.email = googleUser.email;
     user.id = googleUser.id;
     user.photoUrl = googleUser.photoUrl ?? "";
+    user.type = UserType.NORMAL;
+    if (Constants.WHITE_LIST_EMAILS.any((email) => email == user.email)) {
+      user.type = UserType.ADMINISTRATOR;
+      FirebaseMessagingController messaging = FirebaseMessagingController();
+      await messaging.subscribeTopic(Constants.FCM_TOPIC_ALERT_FIRE);
+    }
 
-    /*
-    try { // dando problema no firebase
+    try {
       GoogleSignInAuthentication? googleAuth = await googleUser.authentication;
       user.accessToken = googleAuth.accessToken ?? "";
     } catch (e, stacktrace) {
-      print(stacktrace);
+      debugPrintStack(stackTrace: stacktrace);
     }
-    */
 
     /*
     if (user.email.isNotEmpty) {
@@ -105,6 +111,9 @@ class LoginFormState extends State<LoginForm> {
 
     await user.storeData();
     dialogs.dismiss();
+    if (user.type == UserType.ADMINISTRATOR) {
+      await dialogs.showDialogInfo("Você é um administrador do sistema.", "Com este privilégio você poderá acessar partes delicadas do app, como por exemplo, a área de validações de alertas de queimadas e outros futuros recursos.", positiveText: "Entendi");
+    }
     openTabsPage();
   }
 

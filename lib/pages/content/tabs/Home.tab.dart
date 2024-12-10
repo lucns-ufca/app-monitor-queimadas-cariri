@@ -1,8 +1,6 @@
 import 'dart:async';
-import 'dart:developer';
 import 'dart:io';
 
-import 'package:monitor_queimadas_cariri/firebase/MessagingSender.firebase.dart';
 import 'package:monitor_queimadas_cariri/models/PredictionCity.model.dart';
 import 'package:monitor_queimadas_cariri/models/ForecastCity.model.dart';
 import 'package:monitor_queimadas_cariri/models/User.model.dart';
@@ -11,12 +9,12 @@ import 'package:monitor_queimadas_cariri/models/content/News.model.dart';
 import 'package:monitor_queimadas_cariri/pages/content/AboutProject.page.dart';
 import 'package:monitor_queimadas_cariri/pages/content/BaseWidgets.dart';
 import 'package:monitor_queimadas_cariri/pages/content/IpDefinition.page.dart';
+import 'package:monitor_queimadas_cariri/pages/content/admins/FiresAlertValidation.page.dart';
 import 'package:monitor_queimadas_cariri/pages/dialogs/PopupMenu.dart';
 import 'package:monitor_queimadas_cariri/pages/start/Acess.page.dart';
 import 'package:monitor_queimadas_cariri/pages/start/First.page.dart';
 import 'package:monitor_queimadas_cariri/repositories/App.repository.dart';
 import 'package:monitor_queimadas_cariri/utils/AppColors.dart';
-import 'package:monitor_queimadas_cariri/utils/Constants.dart';
 import 'package:monitor_queimadas_cariri/utils/Utils.dart';
 import 'package:monitor_queimadas_cariri/widgets/ContainerGradient.widget.dart';
 import 'package:monitor_queimadas_cariri/widgets/ImageTransitionScroller.widget.dart';
@@ -61,9 +59,9 @@ class TabHomePageState extends State<TabHomePage> with AutomaticKeepAliveClientM
     popupMenu.showMenu(items, (index) async {
       switch (items[index].text) {
         case "Validação de queimadas":
-          log("click");
-          FirebaseMessagingSender sender = FirebaseMessagingSender();
-          sender.sendNotification("This is a title", "This is a content", topic: Constants.FCM_TOPIC_ALERT_FIRE);
+          await Navigator.push(context, MaterialPageRoute(builder: (context) => const FiresAlertValidationPage()));
+          //FirebaseMessagingSender sender = FirebaseMessagingSender();
+          //sender.sendNotification("This is a title", "This is a content", topic: Constants.FCM_TOPIC_ALERT_FIRE);
           //Map<String, dynamic> message = {'ticker': 'Alerta de Queimada', 'title': 'Alerta de Queimada', 'body': 'Um novo alerta de queimada foi realizado.'};
           //sender.sendMessage(message, topic: Constants.FCM_TOPIC_ALERT_FIRE);
           break;

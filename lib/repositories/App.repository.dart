@@ -8,7 +8,6 @@ import 'package:monitor_queimadas_cariri/api/Controller.api.dart';
 import 'package:monitor_queimadas_cariri/models/PredictionCity.model.dart';
 import 'package:monitor_queimadas_cariri/models/ForecastCity.model.dart';
 import 'package:monitor_queimadas_cariri/models/WeatherCity.model.dart';
-import 'package:monitor_queimadas_cariri/utils/Log.out.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
@@ -202,12 +201,7 @@ class AppRepository {
   }
 
   Future<ApiResponse> reportFireFormData(FormData formData) async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    String ip = preferences.getString("ip") ?? "";
-    String port = preferences.getString("port") ?? "";
-    Log.d("lucas", "ip:$ip port:$port");
-    String baseUrl = ip.isNotEmpty && port.isNotEmpty ? 'http://$ip:$port/' : 'https://monitorqueimadas.duckdns.org/';
-    Dio api = Dio(BaseOptions(baseUrl: baseUrl));
+    Dio api = Dio(BaseOptions(baseUrl: 'https://monitorqueimadas.duckdns.org/'));
     try {
       Response response = await api.post('warnings', data: formData);
       return ApiResponse(code: response.statusCode, data: response.data);

@@ -59,6 +59,7 @@ class ImageTransitionScrollerState extends State<ImageTransitionScroller> with T
   }
 
   void runAnimation() {
+    if (!scrollController.hasClients) return;
     if (scrollController.offset == 0) {
       scrollController.animateTo(sizeImageFitted!.width - MediaQuery.of(context).size.width, duration: widget.duration, curve: Curves.easeInOut);
     } else {

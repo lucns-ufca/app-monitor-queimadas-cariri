@@ -7,6 +7,21 @@ class Constants {
   static const String NOTIFICATION_CHANNEL_DESCRIPTION = "Este canal é usado para criar notificações sobre alertas de queimadas reportados.";
   static const int PAGE_TYPE_VALIDATION = 1;
 
+  static const List<String> WHITE_LIST_EMAILS = [
+    'lucns.dev@gmail.com',
+    'lucas.nascimento@aluno.ufca.edu.br',
+    'pedro.hugo@aluno.ufca.edu.br',
+    'fabricio.freitas@ufca.edu.br',
+    /*
+    'italo.fernandes@aluno.ufca.edu.br',
+    'livia.nunes@aluno.ufca.edu.br',
+    'rafael.talarico@aluno.ufca.edu.br',
+    'paulo.goncalo@ufca.edu.br',
+    'soares.osvaldo@aluno.ufca.edu.br',
+    'carla.souza@aluno.ufca.edu.br',
+    */
+  ];
+
   // Fonte IBGE: https://cidades.ibge.gov.br/brasil/ce/abaiara/panorama
   static final Map<String, dynamic> CITIES_DATA = {
     'Abaiara': CityData(name: 'Abaiara', latitude: -7.349389, longitude: -39.033383, geographicalArea: const Tuple(key: '2022', value: '180,833'), urbanizedArea: const Tuple(key: '2019', value: '3,19'), population: const Tuple(key: '2022', value: '10.038')),

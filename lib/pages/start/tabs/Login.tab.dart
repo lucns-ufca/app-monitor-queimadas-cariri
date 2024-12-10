@@ -116,10 +116,10 @@ class LoginTabState extends State<LoginTab> {
                     Utils.vibrate();
 
                     if (response.isOk()) {
-                      await navigator!.pushReplacement(MaterialPageRoute(builder: (context) => MainScreenPage()));
+                      await navigator!.pushReplacement(MaterialPageRoute(builder: (context) => const MainScreenPage()));
                       return;
                     }
-                    Notify.showSnackbarError(context, response.message!);
+                    Notify.showSnackbarError(response.message!);
                   }
                 : null,
             textButton: "Acessar",

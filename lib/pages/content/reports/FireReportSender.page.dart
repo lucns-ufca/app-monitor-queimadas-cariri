@@ -1,14 +1,15 @@
 // Developed by @lucns
 
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:monitor_queimadas_cariri/api/Controller.api.dart';
+import 'package:monitor_queimadas_cariri/firebase/MessagingSender.firebase.dart';
 import 'package:monitor_queimadas_cariri/pages/content/MainScreen.page.dart';
 import 'package:monitor_queimadas_cariri/pages/content/reports/FireReportPages.page.dart';
 import 'package:monitor_queimadas_cariri/pages/dialogs/BasicDialogs.dart';
 import 'package:monitor_queimadas_cariri/repositories/App.repository.dart';
 import 'package:monitor_queimadas_cariri/utils/AppColors.dart';
+import 'package:monitor_queimadas_cariri/utils/Constants.dart';
 import 'package:monitor_queimadas_cariri/utils/Notify.dart';
 import 'package:monitor_queimadas_cariri/utils/Utils.dart';
 import 'package:monitor_queimadas_cariri/widgets/Button.dart';
@@ -23,7 +24,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:platform_device_id/platform_device_id.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class FireReportSenderPage extends StatefulWidget {
   final CallbackController callbackController;
@@ -50,98 +50,34 @@ class FireReportSenderPageState extends State<FireReportSenderPage> {
   ButtonLoadingController buttonLoadingController = ButtonLoadingController();
   AppRepository appRepository = AppRepository();
 
-  void attemptSendData() async {
-    setState(() {
-      hasError = false;
-      sending = true;
-    });
-    int maximumAttempts = 1;
-    int attempts = 0;
-    int status = -1;
-    while (status != 0 && attempts < maximumAttempts) {
-      attempts++;
-      status = await sendData();
-      switch (status) {
-        case 0:
-          buttonLoadingController.setLoading(false);
-          dialogs!.showDialogSuccess(() async {
-            //await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const DashboardPage()));
-            await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainScreenPage()));
-          });
-          setState(() {
-            sending = false;
-            sent = true;
-          });
-          Utils.vibrate();
-          return;
-        case 1:
-          if (attempts != maximumAttempts) await Future.delayed(const Duration(seconds: 10));
-          break;
-        default:
-          buttonLoadingController.setLoading(false);
-          setState(() {
-            hasError = true;
-            sending = false;
-            sent = false;
-          });
-          List<ConnectivityResult> results = await connectivity.checkConnectivity();
-          if (results.isEmpty) {
-            dialogs!.showDialogError("Erro ao enviar", "Sem conexão à internet.");
-          } else {
-            dialogs!.showDialogError("Erro ao enviar", "Ocorreu um erro desconhecido. Tente novamente mais tarde.");
-          }
-          Utils.vibrate();
-          return;
-      }
-      if (attempts == maximumAttempts) {
-        dialogs!.showDialogError("Erro ao enviar", "Não foi possivel enviar neste momento. Aparentemente o servidor está ausente.");
-        buttonLoadingController.setLoading(false);
-        setState(() {
-          hasError = true;
-          sending = false;
-          sent = false;
-        });
-        return;
-      }
-    }
-  }
-
-  Future<int> sendData() async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    int sentType = preferences.getInt("sent_type") ?? 0;
+  Future<void> sendData() async {
     buttonLoadingController.setLoading(true);
+    FormData formData = FormData();
+    //formData.fields.add(MapEntry("city", cityName ?? "(Não foi possível obter o nome da cidade. GPS sem precisão!)"));
+    formData.fields.add(MapEntry("latitude", latitude.toString()));
+    formData.fields.add(MapEntry("longitude", longitude.toString()));
+    //formData.fields.add(MapEntry("timestamp", DateTime.now().toLocal().millisecondsSinceEpoch.toString()));
+    //formData.fields.add(MapEntry("date_time", getDateTime()));
+    formData.fields.add(MapEntry("description", description ?? getInitialText()));
+    formData.files.add(MapEntry("image", await MultipartFile.fromFile(imageFile!.path, contentType: DioMediaType.parse("image/jpg"))));
+    ApiResponse response = await appRepository.reportFireFormData(formData);
 
-    ApiResponse response;
-    if (sentType == 0) {
-      FormData formData = FormData();
-      //formData.fields.add(MapEntry("city", cityName ?? "(Não foi possível obter o nome da cidade. GPS sem precisão!)"));
-      formData.fields.add(MapEntry("latitude", latitude.toString()));
-      formData.fields.add(MapEntry("longitude", longitude.toString()));
-      //formData.fields.add(MapEntry("timestamp", DateTime.now().toLocal().millisecondsSinceEpoch.toString()));
-      //formData.fields.add(MapEntry("date_time", getDateTime()));
-      formData.fields.add(MapEntry("description", description ?? getInitialText()));
-      formData.files.add(MapEntry("image", await MultipartFile.fromFile(imageFile!.path, contentType: DioMediaType.parse("image/jpg"))));
-      response = await appRepository.reportFireFormData(formData);
+    if (response.code == ApiResponseCodes.OK) {
+      await imageFile!.delete();
+      FirebaseMessagingSender sender = FirebaseMessagingSender();
+      sender.sendNotification("Um alerta foi reportado", "Foi reportado um alerta de queimada. Clique para ver mais detalhes ou validar, na lista de alertas.", topic: Constants.FCM_TOPIC_ALERT_FIRE);
+      buttonLoadingController.setLoading(false);
+      dialogs!.showDialogSuccess("Enviado", "Obrigado por nos ajudar no monitoramento de queimadas.");
+      return;
+    }
+    List<ConnectivityResult> results = await connectivity.checkConnectivity();
+    if (results.isEmpty) {
+      dialogs!.showDialogError("Erro ao enviar", "Sem conexão à internet.");
     } else {
-      Uint8List imageBytes = await imageFile!.readAsBytes();
-      response = await appRepository.reportFireJson({"image": base64Encode(imageBytes), "latitude": latitude, "longitude": longitude, "description": description ?? getInitialText()});
+      dialogs!.showDialogError("Erro ao enviar", "Não foi possivel enviar neste momento. Houve um problema na conexão com o servidor. Código de resposta: ${response.code}.");
     }
-    //Log.d("Lucas", "Response code: ${response.code}");
-    switch (response.code) {
-      case ApiResponseCodes.OK:
-        return 3;
-      case ApiResponseCodes.ALREADY_REPORTED:
-      case ApiResponseCodes.CREATED:
-        await imageFile!.delete();
-        return 0;
-      case ApiResponseCodes.GATEWAY_TIMEOUT:
-      case ApiResponseCodes.NOT_FOUND:
-        return 1;
-      case ApiResponseCodes.INSUFFICIENT_STORAGE:
-        return 2;
-      default:
-        return 3;
-    }
+    buttonLoadingController.setLoading(false);
+    Utils.vibrate();
   }
 
   bool isValidForm() {
@@ -284,10 +220,7 @@ class FireReportSenderPageState extends State<FireReportSenderPage> {
                                               controller: buttonLoadingController,
                                               onPressed: () async {
                                                 if (isValidForm()) {
-                                                  attemptSendData();
-                                                  //List<int> imageBytes = await !.readAsBytes();
-                                                  //ui.Image decodedImage = await decodeImageFromList(await imageFile!.readAsBytes());
-                                                  //Log.d("lucas", "${decodedImage.width}x${decodedImage.height}");
+                                                  await sendData();
                                                   return;
                                                 }
                                                 Notify.showToast("Espere um pouco.\nAguardando dados da localização...");

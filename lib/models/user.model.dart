@@ -16,7 +16,7 @@ class User {
   String accessToken;
   String photoUrl;
   DateTime? dateLogin;
-  UserType userType = UserType.NORMAL;
+  UserType type = UserType.NORMAL;
 
   User({this.id = "", this.photoUrl = "", this.accessToken = "", this.name = "", this.email = "", this.password = ""});
 
@@ -31,47 +31,47 @@ class User {
     id = map["id"];
     photoUrl = map["photo_url"];
     dateLogin = DateTime.parse(map["date_login"]);
-    int type = map["user_type"] ?? 0;
-    switch (type) {
+    int userType = map["user_type"] ?? 0;
+    switch (userType) {
       case 0:
-        userType = UserType.NORMAL;
+        type = UserType.NORMAL;
         break;
       case 1:
-        userType = UserType.ADMINISTRATOR;
+        type = UserType.ADMINISTRATOR;
         break;
       default:
-        userType = UserType.BANNED;
+        type = UserType.BANNED;
         break;
     }
   }
 
   Future<void> storeData() async {
-    int type = 0;
-    switch (userType) {
+    int userType = 0;
+    switch (type) {
       case UserType.NORMAL:
-        type = 1;
+        userType = 1;
         break;
       case UserType.ADMINISTRATOR:
-        type = 2;
+        userType = 2;
         break;
       default: // UserType.BANNED
     }
     dateLogin = DateTime.now().toLocal();
     GetIt.instance.registerLazySingleton<User>(() => this);
-    String content = json.encode({"user_type": type, "date_login": dateLogin!.toIso8601String(), "id": id, "name": name, "email": email, "access_token": accessToken, "photo_url": photoUrl});
+    String content = json.encode({"user_type": userType, "date_login": dateLogin!.toIso8601String(), "id": id, "name": name, "email": email, "access_token": accessToken, "photo_url": photoUrl});
     await Annotator("user.json").setContent(content);
   }
 
-  void setUSerType(int type) {
-    switch (type) {
+  void setUSerType(int userType) {
+    switch (userType) {
       case 0:
-        userType = UserType.NORMAL;
+        type = UserType.NORMAL;
         break;
       case 1:
-        userType = UserType.ADMINISTRATOR;
+        type = UserType.ADMINISTRATOR;
         break;
       default:
-        userType = UserType.BANNED;
+        type = UserType.BANNED;
         break;
     }
   }
@@ -94,7 +94,8 @@ class User {
 
   Future<void> clear() async {
     Directory directory = await getApplicationDocumentsDirectory();
-    File("${directory.path}/profile_picture.jpg").delete();
+    File file = File("${directory.path}/profile_picture.jpg");
+    if (await file.exists()) file.delete();
     await Annotator("user.json").delete();
     id = "";
     photoUrl = "";

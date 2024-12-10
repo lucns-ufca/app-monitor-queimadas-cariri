@@ -45,9 +45,9 @@ class FirstPageState extends State<FirstPage> with SingleTickerProviderStateMixi
     return FocusDetector(
         onVisibilityGained: () {
           SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-          SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+          SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
             statusBarColor: Colors.transparent,
-            systemNavigationBarColor: Colors.transparent,
+            systemNavigationBarColor: Colors.black.withOpacity(0.002),
             systemNavigationBarIconBrightness: Brightness.light,
             statusBarIconBrightness: Brightness.light,
           ));
