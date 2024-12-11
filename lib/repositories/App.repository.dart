@@ -121,16 +121,18 @@ class AppRepository {
       }
       updatingPrediction = false;
       if (!updatingForecast && !updatingWeather && onUpdateConcluded != null) onUpdateConcluded!();
-    } catch (_) {}
-    updatingPrediction = false;
-    if (onError != null) onError!(api.getResponseCode());
+    } catch (e, t) {
+      debugPrintStack(stackTrace: t);
+      updatingPrediction = false;
+      if (onError != null) onError!(api.getResponseCode());
+    }
   }
 
   Future<void> updateWeather() async {
     updatingWeather = true;
     Directory directory = await getApplicationDocumentsDirectory();
     try {
-      String? data = await downloadData('fire-weather-data/search?page=1&limit=30', "${directory.path}/data/weather/AllCitiesWeather.json");
+      String? data = await downloadData('fire-weather-data/search/last', "${directory.path}/data/weather/AllCitiesWeather.json");
       if (data == null) {
         updatingWeather = false;
         if (onError != null) onError!(api.getResponseCode());
@@ -143,9 +145,11 @@ class AppRepository {
       }
       updatingWeather = false;
       if (!updatingForecast && !updatingPrediction && onUpdateConcluded != null) onUpdateConcluded!();
-    } catch (_) {}
-    updatingWeather = false;
-    if (onError != null) onError!(api.getResponseCode());
+    } catch (e, t) {
+      debugPrintStack(stackTrace: t);
+      updatingWeather = false;
+      if (onError != null) onError!(api.getResponseCode());
+    }
   }
 
   Future<void> updateforecast() async {
@@ -166,16 +170,18 @@ class AppRepository {
       }
       updatingForecast = false;
       if (!updatingWeather && !updatingPrediction && onUpdateConcluded != null) onUpdateConcluded!();
-    } catch (_) {}
-    updatingForecast = false;
-    if (onError != null) onError!(api.getResponseCode());
+    } catch (e, t) {
+      debugPrintStack(stackTrace: t);
+      updatingForecast = false;
+      if (onError != null) onError!(api.getResponseCode());
+    }
   }
 
   Future<String?> downloadData(String url, String path) async {
     try {
       Response response = await api.get(url);
       if (response.statusCode == 200) {
-        String jsonString = json.encode(response.data["data"]);
+        String jsonString = json.encode(response.data);
         File file = File(path);
         await file.create(recursive: true);
         await file.writeAsString(jsonString);

@@ -81,6 +81,10 @@ class User {
     //return accessToken.isNotEmpty;
   }
 
+  bool isAdminstrator() {
+    return type == UserType.ADMINISTRATOR;
+  }
+
   Future<File?> getProfileImage() async {
     if (photoUrl.isEmpty) return null;
     Directory directory = await getApplicationDocumentsDirectory();

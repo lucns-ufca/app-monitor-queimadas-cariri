@@ -27,8 +27,10 @@ class AppColors {
   static const dialogBlack = Color.fromARGB(150, 0, 0, 0);
   static const dialogBackground = Color.fromARGB(208, 208, 154, 74);
 
-  static const appBackground = Color.fromARGB(255, 45, 32, 15);
   static const appValidationBackground = Color.fromARGB(255, 5, 18, 20);
+  static const appValidationAccent = Color.fromARGB(255, 18, 204, 142);
+
+  static const appBackground = Color.fromARGB(255, 45, 32, 15);
   static const mainAreaBackground = Color.fromARGB(255, 212, 139, 37);
   static const appBackgroundInDialog = Color.fromARGB(255, 83, 64, 21);
   static const fragmentBackgroundInDialog = Color.fromARGB(255, 21, 21, 21);

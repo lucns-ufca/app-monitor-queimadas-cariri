@@ -54,7 +54,7 @@ class TabHomePageState extends State<TabHomePage> with AutomaticKeepAliveClientM
 
   void showMenuWindow() {
     PopupMenu popupMenu = PopupMenu(context: context);
-    List<String> titles = [if (!user.hasAccess()) "Login", if (user.hasAccess()) "Validação de queimadas", "Sobre o Projeto", if (user.hasAccess()) "Logout"];
+    List<String> titles = [if (!user.hasAccess()) "Login", if (user.isAdminstrator()) "Validação de queimadas", "Sobre o Projeto", if (user.hasAccess()) "Logout"];
     var items = popupMenu.generateIds(titles);
     popupMenu.showMenu(items, (index) async {
       switch (items[index].text) {
@@ -203,17 +203,17 @@ class TabHomePageState extends State<TabHomePage> with AutomaticKeepAliveClientM
     List<PredictionCityModel> predictionCities = appRepository.getPredictionCities;
     listCities = appRepository.getWeatherCities;
     //List<ForecastCityModel> probabilitiesCities = appRepository.getForecastCities;
-    setState(() {});
-
-    if (predictionCities.isEmpty || appRepository.allowUpdatePrediction()) {
+    bool a = predictionCities.isEmpty || appRepository.allowUpdatePrediction();
+    bool b = listCities.isEmpty || appRepository.allowUpdateWeather();
+    setState(() {
+      loadingTop = a;
+      loadingBottom = b;
+    });
+    if (a) {
       await appRepository.updatePrediction(DateTime.now().year);
       updatePrediction();
-      setState(() {
-        loadingTop = true;
-        loadingBottom = false;
-      });
     }
-    if (listCities.isEmpty || appRepository.allowUpdateWeather()) {
+    if (b) {
       await appRepository.updateWeather();
       updateWeather();
     }

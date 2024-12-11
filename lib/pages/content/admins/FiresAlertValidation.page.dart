@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:focus_detector/focus_detector.dart';
+import 'package:monitor_queimadas_cariri/repositories/Validations.repository.dart';
 import 'package:monitor_queimadas_cariri/utils/AppColors.dart';
 import 'package:monitor_queimadas_cariri/utils/Notification.provider.dart';
+import 'package:monitor_queimadas_cariri/utils/Notify.dart';
 
 class FiresAlertValidationPage extends StatefulWidget {
   const FiresAlertValidationPage({super.key});
@@ -12,6 +14,8 @@ class FiresAlertValidationPage extends StatefulWidget {
 }
 
 class FiresAlertValidationPageState extends State<FiresAlertValidationPage> {
+  final ValidationsRepository validationsRepository = ValidationsRepository();
+
   void clearNotifications() async {
     NotificationProvider notificationProvider = await NotificationProvider.getInstance();
     notificationProvider.removeAll();
@@ -20,6 +24,13 @@ class FiresAlertValidationPageState extends State<FiresAlertValidationPage> {
   @override
   void initState() {
     clearNotifications();
+    validationsRepository.setOnError((responseCode) {
+      if (responseCode == 0) {
+        Notify.showSnackbarError("Falha ao tentar obter dados!");
+        return;
+      }
+      Notify.showSnackbarError("Falha ao tentar obter dados!\nCodigo: $responseCode");
+    });
     super.initState();
   }
 
@@ -51,7 +62,7 @@ class FiresAlertValidationPageState extends State<FiresAlertValidationPage> {
                         child: const Align(
                             alignment: Alignment.bottomCenter,
                             child: Image(
-                              image: AssetImage("assets/images/vitoria_regea_3.jpg"),
+                              image: AssetImage("assets/images/vitoria_regea.jpg"),
                               fit: BoxFit.fitWidth,
                             )));
                   }),
@@ -66,13 +77,44 @@ class FiresAlertValidationPageState extends State<FiresAlertValidationPage> {
                         ),
                         const Flexible(child: Text("Alertas de\nQueimadas", overflow: TextOverflow.ellipsis, maxLines: 4, textAlign: TextAlign.end, style: TextStyle(height: 1.2, fontWeight: FontWeight.w300, color: Colors.white, fontSize: 22))),
                       ])),
-                  Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: Row(
-                          mainAxisSize: MainAxisSize.max,
-                          children: [const Text("Eventos por data", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)), const SizedBox(width: 8), Expanded(child: Container(height: 1, color: Colors.white))])),
+                  Expanded(
+                      child: DefaultTabController(
+                          length: 2,
+                          child: Column(children: [
+                            TabBar(
+                              dividerColor: AppColors.appValidationAccent.withOpacity(0.5),
+                              labelColor: AppColors.appValidationAccent,
+                              unselectedLabelColor: AppColors.white_5,
+                              indicatorColor: AppColors.appValidationAccent,
+                              tabs: const [
+                                Tab(text: "Pendentes"),
+                                Tab(text: "Validados"),
+                              ],
+                            ),
+                            Expanded(
+                                child: TabBarView(children: [
+                              getLoadingWidget(),
+                              getLoadingWidget(),
+                            ]))
+                          ]))),
+                  const SizedBox(height: 56)
                 ],
               )
             ])));
+  }
+
+  Widget getLoadingWidget() {
+    return const Center(
+        child: Row(mainAxisSize: MainAxisSize.min, children: [
+      SizedBox(
+          width: 16,
+          height: 16,
+          child: CircularProgressIndicator(
+            color: AppColors.appValidationAccent,
+            strokeWidth: 3,
+          )),
+      SizedBox(width: 16),
+      Text("Carregando dados...", style: TextStyle(color: Colors.white))
+    ]));
   }
 }
