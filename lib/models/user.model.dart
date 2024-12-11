@@ -49,10 +49,10 @@ class User {
     int userType = 0;
     switch (type) {
       case UserType.NORMAL:
-        userType = 1;
+        userType = 0;
         break;
       case UserType.ADMINISTRATOR:
-        userType = 2;
+        userType = 1;
         break;
       default: // UserType.BANNED
     }

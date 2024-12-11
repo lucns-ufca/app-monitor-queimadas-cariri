@@ -59,7 +59,7 @@ class Dialogs {
   Future<void> showDialogSuccess(String title, String description, {Function? onDismiss}) {
     return showDialogWindow(
         Container(
-            width: 330,
+            width: 360,
             padding: const EdgeInsets.only(top: 24, left: 24, right: 24, bottom: 16),
             decoration: const BoxDecoration(color: AppColors.fragmentBackground, borderRadius: BorderRadius.all(Radius.circular(24)), boxShadow: [
               BoxShadow(
@@ -70,7 +70,7 @@ class Dialogs {
               ),
             ]),
             child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(title, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+              Flexible(child: Text(title, maxLines: 5, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold))),
               const SizedBox(height: 8),
               Text(description, textAlign: TextAlign.start, maxLines: 10, style: const TextStyle(color: Colors.white, fontSize: 16, overflow: TextOverflow.visible)),
               const SizedBox(
@@ -93,7 +93,7 @@ class Dialogs {
   Future<void> showDialogInfo(String title, String description, {String? positiveText, Function? onPositiveClick, String? negativeText, Function? onNegativeClick}) {
     return showDialogWindow(
         Container(
-            width: 330,
+            width: 360,
             padding: const EdgeInsets.only(top: 24, left: 24, right: 24, bottom: 16),
             decoration: const BoxDecoration(color: AppColors.fragmentBackground, borderRadius: BorderRadius.all(Radius.circular(24)), boxShadow: [
               BoxShadow(
@@ -107,6 +107,7 @@ class Dialogs {
               Flexible(
                   child: Text(
                 title,
+                maxLines: 4,
                 textAlign: TextAlign.start,
                 style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold, overflow: TextOverflow.visible),
               )),
@@ -132,7 +133,7 @@ class Dialogs {
   void showDialogError(String title, String description) {
     showDialogWindow(
         Container(
-            width: 330,
+            width: 360,
             padding: const EdgeInsets.all(24),
             decoration: const BoxDecoration(
               color: AppColors.fragmentBackground,

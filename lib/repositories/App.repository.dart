@@ -43,7 +43,7 @@ class AppRepository {
     File file = File(path);
     if (!await file.exists()) return;
     String jsonString = await file.readAsString();
-    List<dynamic> jsonArray = jsonDecode(jsonString);
+    List<dynamic> jsonArray = jsonDecode(jsonString)['data'];
     predictionCities.clear();
     for (dynamic json in jsonArray) {
       predictionCities.add(PredictionCityModel.fromJson(json));
@@ -58,6 +58,10 @@ class AppRepository {
     weatherCities.clear();
     for (dynamic json in jsonArray) {
       weatherCities.add(WeatherCityModel.fromJson(json));
+    }
+    for (WeatherCityModel m in weatherCities) {
+      if (m.city == "Assare") m.city = "Assaré";
+      if (m.city == "Caririacu") m.city = "Caririaçu";
     }
   }
 
@@ -84,14 +88,13 @@ class AppRepository {
     if (predictionCities.isEmpty) return true;
     DateTime old = DateTime.parse(predictionCities[0].dateTime!).toLocal();
     DateTime today = DateTime.now().toLocal();
-    if (today.difference(old).inMinutes > 60) return true;
-    return false;
+    return today.difference(old).inMinutes > 60;
   }
 
   bool allowUpdateWeather() {
     if (weatherCities.isEmpty) return true;
-    DateTime old = DateTime.parse(weatherCities[0].dateTime!).toLocal();
-    DateTime today = DateTime.now().toLocal();
+    DateTime old = DateTime.parse(weatherCities[0].dateTime!);
+    DateTime today = DateTime.now();
     if (today.difference(old).inMinutes > 15) return true;
     return false;
   }
@@ -100,8 +103,7 @@ class AppRepository {
     if (forecastCities.isEmpty) return true;
     DateTime old = DateTime.parse(forecastCities[0].forecast![0].dateTime!).toLocal();
     DateTime today = DateTime.now().toLocal();
-    if (today.difference(old).inDays > 0) return true;
-    return false;
+    return today.difference(old).inDays > 0;
   }
 
   Future<void> updatePrediction(int year) async {
@@ -114,7 +116,7 @@ class AppRepository {
         if (onError != null) onError!(api.getResponseCode());
         return;
       }
-      List<dynamic> jsonArray = jsonDecode(data);
+      List<dynamic> jsonArray = jsonDecode(data)['data'];
       predictionCities.clear();
       for (dynamic json in jsonArray) {
         predictionCities.add(PredictionCityModel.fromJson(json));
@@ -142,6 +144,10 @@ class AppRepository {
       weatherCities.clear();
       for (Map<String, dynamic> json in jsonArray) {
         weatherCities.add(WeatherCityModel.fromJson(json));
+      }
+      for (WeatherCityModel m in weatherCities) {
+        if (m.city == "Assare") m.city = "Assaré";
+        if (m.city == "Caririacu") m.city = "Caririaçu";
       }
       updatingWeather = false;
       if (!updatingForecast && !updatingPrediction && onUpdateConcluded != null) onUpdateConcluded!();

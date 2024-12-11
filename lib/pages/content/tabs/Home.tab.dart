@@ -10,6 +10,7 @@ import 'package:monitor_queimadas_cariri/pages/content/AboutProject.page.dart';
 import 'package:monitor_queimadas_cariri/pages/content/BaseWidgets.dart';
 import 'package:monitor_queimadas_cariri/pages/content/IpDefinition.page.dart';
 import 'package:monitor_queimadas_cariri/pages/content/admins/FiresAlertValidation.page.dart';
+import 'package:monitor_queimadas_cariri/pages/dialogs/BasicDialogs.dart';
 import 'package:monitor_queimadas_cariri/pages/dialogs/PopupMenu.dart';
 import 'package:monitor_queimadas_cariri/pages/start/Acess.page.dart';
 import 'package:monitor_queimadas_cariri/pages/start/First.page.dart';
@@ -54,10 +55,15 @@ class TabHomePageState extends State<TabHomePage> with AutomaticKeepAliveClientM
 
   void showMenuWindow() {
     PopupMenu popupMenu = PopupMenu(context: context);
-    List<String> titles = [if (!user.hasAccess()) "Login", if (user.isAdminstrator()) "Validação de queimadas", "Sobre o Projeto", if (user.hasAccess()) "Logout"];
+    List<String> titles = [if (!user.hasAccess()) "Login", if (!loadingTop && !loadingBottom) "Atualizar Dados", if (user.isAdminstrator()) "Validação de queimadas", "Sobre o Projeto", if (user.hasAccess()) "Logout"];
     var items = popupMenu.generateIds(titles);
     popupMenu.showMenu(items, (index) async {
       switch (items[index].text) {
+        case "Atualizar Dados":
+          //updateLists(force: true);
+          Dialogs dialogs = Dialogs(context);
+          dialogs.showDialogInfo("Você é um administrador do sistema.", "Com este privilégio você poderá acessar partes delicadas do app, como por exemplo, a área de validações de alertas de queimadas e outros futuros recursos.", positiveText: "Entendi");
+          break;
         case "Validação de queimadas":
           await Navigator.push(context, MaterialPageRoute(builder: (context) => const FiresAlertValidationPage()));
           //FirebaseMessagingSender sender = FirebaseMessagingSender();
@@ -189,7 +195,7 @@ class TabHomePageState extends State<TabHomePage> with AutomaticKeepAliveClientM
     }
   }
 
-  void updateLists() async {
+  void updateLists({bool force = false}) async {
     setState(() {
       loadingTop = true;
       loadingBottom = true;
@@ -203,8 +209,8 @@ class TabHomePageState extends State<TabHomePage> with AutomaticKeepAliveClientM
     List<PredictionCityModel> predictionCities = appRepository.getPredictionCities;
     listCities = appRepository.getWeatherCities;
     //List<ForecastCityModel> probabilitiesCities = appRepository.getForecastCities;
-    bool a = predictionCities.isEmpty || appRepository.allowUpdatePrediction();
-    bool b = listCities.isEmpty || appRepository.allowUpdateWeather();
+    bool a = predictionCities.isEmpty || appRepository.allowUpdatePrediction() || force;
+    bool b = listCities.isEmpty || appRepository.allowUpdateWeather() || force;
     setState(() {
       loadingTop = a;
       loadingBottom = b;
@@ -212,10 +218,16 @@ class TabHomePageState extends State<TabHomePage> with AutomaticKeepAliveClientM
     if (a) {
       await appRepository.updatePrediction(DateTime.now().year);
       updatePrediction();
+      setState(() {
+        loadingTop = false;
+      });
     }
     if (b) {
       await appRepository.updateWeather();
       updateWeather();
+      setState(() {
+        loadingBottom = false;
+      });
     }
     /*
     if (probabilitiesCities.isEmpty || appRepository.allowUpdateForecast()) {
@@ -223,10 +235,12 @@ class TabHomePageState extends State<TabHomePage> with AutomaticKeepAliveClientM
       updateProbabilities();
     }
     */
-    setState(() {
-      loadingTop = false;
-      loadingBottom = false;
-    });
+    if (loadingTop || loadingBottom) {
+      setState(() {
+        loadingTop = false;
+        loadingBottom = false;
+      });
+    }
   }
 
   @override

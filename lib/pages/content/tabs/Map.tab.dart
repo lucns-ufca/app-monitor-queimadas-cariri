@@ -131,7 +131,7 @@ class TabMapPageState extends State<TabMapPage> with AutomaticKeepAliveClientMix
                                   buttonChild: Padding(
                                       padding: const EdgeInsets.symmetric(horizontal: 8),
                                       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                        const Text("Ocorrido hoje em:", style: TextStyle(color: AppColors.accent, fontSize: 18)),
+                                        const Text("Registrado nas últimas 24h:", style: TextStyle(color: AppColors.accent, fontSize: 18)),
                                         Row(
                                           children: [
                                             const Text(
