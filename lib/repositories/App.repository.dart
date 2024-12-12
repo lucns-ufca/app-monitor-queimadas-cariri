@@ -199,38 +199,32 @@ class AppRepository {
     return null;
   }
 
-  Future<ApiResponse> getPredictionValues({String? city}) async {
+  Future<Response?> getPredictionValues({String? city}) async {
     try {
-      Response response = await api.get('prediction/predictions.php');
-      if (response.statusCode == 200) {
-        //Prediction prediction = Prediction.fromJson(response.data);
-        //return ApiResponse(responseCode: response.statusCode, response: prediction);
-      }
-      return ApiResponse(code: response.statusCode, data: response.data);
+      return await api.get('prediction/predictions.php');
     } on DioException catch (e) {
-      return _getDefaultErrorResponse(e);
+      return e.response;
     }
   }
 
-  Future<ApiResponse> reportFireFormData(FormData formData) async {
+  Future<Response?> reportFireFormData(FormData formData) async {
     Dio api = Dio(BaseOptions(baseUrl: 'https://monitorqueimadas.duckdns.org/'));
     try {
-      Response response = await api.post('warnings', data: formData);
-      return ApiResponse(code: response.statusCode, data: response.data);
+      return await api.post('warnings', data: formData);
     } on DioException catch (e) {
-      return _getDefaultErrorResponse(e);
+      return e.response;
     }
     /*
       try {
         Response response = await api.post('reports/reports.php', formData);
-        return ApiResponse(code: response.statusCode, data: response.data);
+        return Response(code: response.statusCode, data: response.data);
       } on DioException catch (e) {
         return _getDefaultErrorResponse(e);
       }
       */
   }
 
-  Future<ApiResponse> reportFireJson(Map<String, dynamic> json) async {
+  Future<Response?> reportFireJson(Map<String, dynamic> json) async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     String ip = preferences.getString("ip") ?? "";
     String port = preferences.getString("port") ?? "";
@@ -238,39 +232,9 @@ class AppRepository {
     String baseUrl = useLocal && ip.isNotEmpty && port.isNotEmpty ? 'http://$ip:$port/' : 'https://lucns.io/apps/monitor_queimadas_cariri/';
     Dio api = Dio(BaseOptions(baseUrl: baseUrl));
     try {
-      Response response = await api.post('warnings', data: json);
-      return ApiResponse(code: response.statusCode, data: response.data);
+      return await api.post('warnings', data: json);
     } on DioException catch (e) {
-      return _getDefaultErrorResponse(e);
+      return e.response;
     }
-    /*
-      try {
-        Response response = await api.post('reports/reports.php', formData);
-        return ApiResponse(code: response.statusCode, data: response.data);
-      } on DioException catch (e) {
-        return _getDefaultErrorResponse(e);
-      }
-      */
   }
-
-  ApiResponse _getDefaultErrorResponse(DioException e) {
-    if (e.response == null) {
-      return ApiResponse(message: "O servidor não respondeu. Prazo de espera estourado.", code: ApiResponseCodes.GATEWAY_TIMEOUT);
-    } else if (e.response!.statusCode != null) {
-      String? message;
-      if (e.response!.statusCode == ApiResponseCodes.UNAUTHORIZED) {
-        message = "Sem autorização!";
-      } else {
-        message = ControllerApi.getError(e.response!.statusCode!);
-      }
-      return ApiResponse(message: message, code: e.response!.statusCode);
-    }
-    return ApiResponse();
-  }
-}
-
-abstract class ResponseCallback {
-  void onforecastAvailable(List<ForecastCityModel>? value);
-  void onWeathersAvailable(List<WeatherCityModel>? value);
-  void onPredictionsAvailable(List<PredictionCityModel>? value);
 }

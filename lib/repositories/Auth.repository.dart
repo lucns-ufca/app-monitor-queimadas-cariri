@@ -10,68 +10,36 @@ class AuthRepository {
 
   AuthRepository();
 
-  Future<ApiResponse> login(User user) async {
+  Future<Response?> login(User user) async {
     try {
       Response response = await api.post('auth/login', {"email": user.email, "password": user.password});
-      if (response.data == null) {
-        return ApiResponse(message: "Não foi possivel realizar o login nesse momento.");
-      }
-      //Map<String, dynamic> map = jsonDecode(response.data);
+      if (response.data == null) return null;
+
       Map<String, dynamic> map = response.data;
       user.accessToken = map["access_token"];
       if (map.containsKey("user_type")) user.setUSerType(map["user_type"]);
       await user.storeData();
 
-      return ApiResponse(code: ApiResponseCodes.OK);
+      return response;
     } on DioException catch (e) {
-      if (e.response == null) {
-        return ApiResponse(message: "O servidor não respondeu. Prazo de espera estourado.", code: ApiResponseCodes.GATEWAY_TIMEOUT);
-      } else if (e.response!.statusCode != null) {
-        String? message;
-        if (e.response!.statusCode == ApiResponseCodes.UNAUTHORIZED) {
-          message = "Email ou senha inválidos!";
-        } else {
-          message = ControllerApi.getError(e.response!.statusCode!);
-        }
-        return ApiResponse(message: message, code: e.response!.statusCode);
-      }
+      return e.response;
     }
-    return ApiResponse(message: "Erro desconhecido.");
   }
 
-  Future<ApiResponse> createAccount(User user) async {
+  Future<Response?> createAccount(User user) async {
     try {
-      await api.post('admins', {"username": user.name, "email": user.email, "password": user.password});
-      return ApiResponse(code: ApiResponseCodes.OK);
+      return await api.post('admins', {"username": user.name, "email": user.email, "password": user.password});
     } on DioException catch (e) {
-      if (e.response == null) {
-        return ApiResponse(message: "O servidor não respondeu. Prazo de espera estourado.", code: ApiResponseCodes.GATEWAY_TIMEOUT);
-      } else if (e.response!.statusCode != null) {
-        String? message;
-        if (e.response!.statusCode == ApiResponseCodes.CONFLIT) {
-          message = "Este email já está cadastrado! Tente um diferente.";
-        } else {
-          message = ControllerApi.getError(e.response!.statusCode!);
-        }
-        return ApiResponse(message: message, code: e.response!.statusCode);
-      }
+      return e.response;
     }
-    return ApiResponse(message: "Erro desconhecido.");
   }
 
-  Future<ApiResponse> getUserType(String email) async {
+  Future<Response?> getUserType(String email) async {
     try {
-      Response response = await api.post('user_type', {"email": email});
-      return ApiResponse(code: ApiResponseCodes.OK, data: response.data);
+      return await api.post('user_type', {"email": email});
     } on DioException catch (e) {
-      if (e.response == null) {
-        return ApiResponse(message: "O servidor não respondeu. Prazo de espera estourado.", code: ApiResponseCodes.GATEWAY_TIMEOUT);
-      } else if (e.response!.statusCode != null) {
-        String message = ControllerApi.getError(e.response!.statusCode!);
-        return ApiResponse(message: message, code: e.response!.statusCode);
-      }
+      return e.response;
     }
-    return ApiResponse(message: "Erro desconhecido.");
   }
 
   Future<bool> logout() async {

@@ -124,16 +124,6 @@ class ControllerApi {
   }
 }
 
-class ApiResponse {
-  String? message;
-  dynamic data;
-  int? code;
-
-  ApiResponse({this.message, this.data, this.code});
-
-  bool isOk() => code != null && (code! > 199 && code! < 300);
-}
-
 class ApiResponseCodes {
   static const int OK = 200;
   static const int CREATED = 201;

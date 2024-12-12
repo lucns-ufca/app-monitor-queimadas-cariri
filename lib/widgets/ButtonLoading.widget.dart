@@ -5,9 +5,10 @@ import 'package:flutter/material.dart';
 class ButtonLoading extends StatefulWidget {
   final String? text;
   final Widget? icon;
+  final Color? backgroundColor;
   final Function()? onPressed;
   final ButtonLoadingController? controller;
-  const ButtonLoading({super.key, this.text, this.icon, this.controller, required this.onPressed});
+  const ButtonLoading({super.key, this.backgroundColor, this.text, this.icon, this.controller, required this.onPressed});
 
   @override
   State<StatefulWidget> createState() => ButtonLoadingState();
@@ -64,8 +65,8 @@ class ButtonLoadingState extends State<ButtonLoading> {
           style: ButtonStyle(
               padding: WidgetStateProperty.all(const EdgeInsets.all(0)),
               splashFactory: width == 56 ? NoSplash.splashFactory : InkRipple.splashFactory,
-              backgroundColor: WidgetStateProperty.all(widget.onPressed == null ? AppColors.buttonDisabled : AppColors.buttonNormal),
-              foregroundColor: WidgetStateProperty.all(widget.onPressed == null ? AppColors.textDisabled : AppColors.titleDark),
+              backgroundColor: WidgetStateProperty.all(widget.onPressed == null ? AppColors.buttonDisabled : widget.backgroundColor ?? AppColors.buttonNormal),
+              foregroundColor: WidgetStateProperty.all(widget.onPressed == null ? AppColors.textDisabled : AppColors.white),
               overlayColor: WidgetStateProperty.all(width == minimum || widget.onPressed == null ? Colors.transparent : Colors.white.withOpacity(0.3))),
           child: AnimatedSwitcher(
               switchInCurve: Curves.linear,

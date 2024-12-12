@@ -2,7 +2,6 @@
 
 import 'dart:io';
 
-import 'package:monitor_queimadas_cariri/api/Controller.api.dart';
 import 'package:monitor_queimadas_cariri/firebase/MessagingSender.firebase.dart';
 import 'package:monitor_queimadas_cariri/pages/content/MainScreen.page.dart';
 import 'package:monitor_queimadas_cariri/pages/content/reports/FireReportPages.page.dart';
@@ -60,9 +59,9 @@ class FireReportSenderPageState extends State<FireReportSenderPage> {
     //formData.fields.add(MapEntry("date_time", getDateTime()));
     formData.fields.add(MapEntry("description", description ?? getInitialText()));
     formData.files.add(MapEntry("image", await MultipartFile.fromFile(imageFile!.path, contentType: DioMediaType.parse("image/jpg"))));
-    ApiResponse response = await appRepository.reportFireFormData(formData);
+    Response? response = await appRepository.reportFireFormData(formData);
 
-    if (response.code != null && response.code! > 199 && response.code! < 300) {
+    if (response == null || response.statusCode == null && response.statusCode! > 199 && response.statusCode! < 300) {
       await imageFile!.delete();
       FirebaseMessagingSender sender = FirebaseMessagingSender();
       sender.sendNotification("Um alerta foi reportado", "Foi reportado um alerta de queimada. Clique para ver mais detalhes ou validar, na lista de alertas.", topic: Constants.FCM_TOPIC_ALERT_FIRE);
@@ -70,13 +69,19 @@ class FireReportSenderPageState extends State<FireReportSenderPage> {
       dialogs!.showDialogSuccess("Enviado", "Obrigado por nos ajudar no monitoramento de queimadas.", onDismiss: () async {
         await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const MainScreenPage()));
       });
+      hasError = false;
       return;
     }
+    hasError = true;
     List<ConnectivityResult> results = await connectivity.checkConnectivity();
     if (results.isEmpty) {
       dialogs!.showDialogError("Erro ao enviar", "Sem conexão à internet.");
     } else {
-      dialogs!.showDialogError("Erro ao enviar", "Não foi possivel enviar neste momento. Houve um problema na conexão com o servidor. Código de resposta: ${response.code}.");
+      if (response.statusCode == null) {
+        dialogs!.showDialogError("Erro ao enviar", "Não foi possivel enviar neste momento. Houve um problema na conexão com o servidor.");
+      } else {
+        dialogs!.showDialogError("Erro ao enviar", "Não foi possivel enviar neste momento. Houve um problema na conexão com o servidor. Código de resposta: ${response.statusCode}.");
+      }
     }
     buttonLoadingController.setLoading(false);
     Utils.vibrate();

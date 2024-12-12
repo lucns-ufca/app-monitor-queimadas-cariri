@@ -6,8 +6,14 @@ import 'package:fluttertoast/fluttertoast.dart';
 class Notify {
   static GlobalKey<ScaffoldMessengerState> key = GlobalKey<ScaffoldMessengerState>();
 
-  static showToast(String text, {bool longTost = false}) {
-    Fluttertoast.showToast(msg: text, toastLength: longTost ? Toast.LENGTH_LONG : Toast.LENGTH_SHORT, gravity: ToastGravity.BOTTOM, backgroundColor: Color.fromARGB(255, 46, 35, 24), textColor: const Color.fromARGB(255, 255, 148, 16), fontSize: 16);
+  static showToast(String text, {bool longTost = false, Color? backgroundColor, Color? textColor}) {
+    Fluttertoast.showToast(
+        msg: text,
+        toastLength: longTost ? Toast.LENGTH_LONG : Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: backgroundColor ?? const Color.fromARGB(255, 46, 35, 24),
+        textColor: textColor ?? const Color.fromARGB(255, 255, 148, 16),
+        fontSize: 16);
   }
 
   static showSnackbarSucess(String message, {Duration duration = const Duration(seconds: 5)}) {

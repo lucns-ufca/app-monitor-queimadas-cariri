@@ -31,7 +31,7 @@ class AboutPageState extends State<AboutPage> {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (bool didPop, Object? result) async {
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainScreenPage()));
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const MainScreenPage()));
       },
       child: Scaffold(
         resizeToAvoidBottomInset: false,

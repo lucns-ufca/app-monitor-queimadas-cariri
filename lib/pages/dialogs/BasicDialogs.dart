@@ -10,8 +10,9 @@ import 'package:monitor_queimadas_cariri/widgets/CustomText.dart';
 class Dialogs {
   late BuildContext context;
   MyText? textTitle, textDescription;
+  final Color backgroundColor, accentColor;
 
-  Dialogs(this.context);
+  Dialogs(this.context, {this.backgroundColor = AppColors.fragmentBackground, this.accentColor = AppColors.accent});
 
   Future<void> showDialogWindow(Widget content, bool isCancelable) {
     return showDialog(
@@ -28,17 +29,17 @@ class Dialogs {
             canPop: false,
             child: IntrinsicHeight(
                 child: Container(
-                    decoration: const BoxDecoration(boxShadow: [
+                    decoration: BoxDecoration(boxShadow: const [
                       BoxShadow(
                         color: AppColors.shadow,
                         spreadRadius: 4,
                         blurRadius: 4,
                         offset: Offset(0, 10),
                       )
-                    ], color: AppColors.fragmentBackground, borderRadius: BorderRadius.all(Radius.circular(24))),
+                    ], color: backgroundColor, borderRadius: const BorderRadius.all(Radius.circular(24))),
                     padding: const EdgeInsets.all(24),
                     child: Row(mainAxisSize: MainAxisSize.min, mainAxisAlignment: MainAxisAlignment.start, children: [
-                      const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: AppColors.accent)),
+                      SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: accentColor)),
                       const SizedBox(width: 16),
                       Flexible(
                           child: Text(
@@ -61,7 +62,7 @@ class Dialogs {
         Container(
             width: 360,
             padding: const EdgeInsets.only(top: 24, left: 24, right: 24, bottom: 16),
-            decoration: const BoxDecoration(color: AppColors.fragmentBackground, borderRadius: BorderRadius.all(Radius.circular(24)), boxShadow: [
+            decoration: BoxDecoration(color: backgroundColor, borderRadius: const BorderRadius.all(Radius.circular(24)), boxShadow: const [
               BoxShadow(
                 color: AppColors.shadow,
                 spreadRadius: 5,
@@ -80,6 +81,7 @@ class Dialogs {
                   child: SizedBox(
                       width: double.maxFinite,
                       child: TransparentButton(
+                          textColor: accentColor,
                           text: "OK",
                           onTap: () async {
                             await Future.delayed(const Duration(milliseconds: 150));
@@ -95,7 +97,7 @@ class Dialogs {
         Container(
             width: 360,
             padding: const EdgeInsets.only(top: 24, left: 24, right: 24, bottom: 16),
-            decoration: const BoxDecoration(color: AppColors.fragmentBackground, borderRadius: BorderRadius.all(Radius.circular(24)), boxShadow: [
+            decoration: BoxDecoration(color: backgroundColor, borderRadius: const BorderRadius.all(Radius.circular(24)), boxShadow: const [
               BoxShadow(
                 color: AppColors.shadow,
                 spreadRadius: 5,
@@ -120,6 +122,7 @@ class Dialogs {
                     child: SizedBox(
                         width: double.maxFinite,
                         child: TransparentButton(
+                            textColor: accentColor,
                             text: positiveText ?? "OK",
                             onTap: () async {
                               await Future.delayed(const Duration(milliseconds: 250));
@@ -135,10 +138,10 @@ class Dialogs {
         Container(
             width: 360,
             padding: const EdgeInsets.all(24),
-            decoration: const BoxDecoration(
-              color: AppColors.fragmentBackground,
-              borderRadius: BorderRadius.all(Radius.circular(24)),
-              boxShadow: [
+            decoration: BoxDecoration(
+              color: backgroundColor,
+              borderRadius: const BorderRadius.all(Radius.circular(24)),
+              boxShadow: const [
                 BoxShadow(
                   color: AppColors.shadow,
                   spreadRadius: 5,
@@ -155,6 +158,7 @@ class Dialogs {
               SizedBox(
                   width: double.maxFinite,
                   child: TransparentButton(
+                      textColor: accentColor,
                       text: "OK",
                       onTap: () async {
                         await Future.delayed(const Duration(milliseconds: 150));
@@ -173,7 +177,7 @@ class Dialogs {
                     decoration: const BoxDecoration(color: AppColors.shadow, borderRadius: BorderRadius.all(Radius.circular(24))),
                     padding: const EdgeInsets.all(24),
                     child: Row(mainAxisSize: MainAxisSize.min, mainAxisAlignment: MainAxisAlignment.start, children: [
-                      const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: AppColors.accent)),
+                      SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: accentColor)),
                       if (text.isNotEmpty) const SizedBox(width: 16),
                       if (text.isNotEmpty)
                         Flexible(

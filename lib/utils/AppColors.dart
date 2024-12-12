@@ -30,6 +30,8 @@ class AppColors {
   static const appValidationBackground = Color.fromARGB(255, 5, 18, 20);
   static const appValidationAccentHighlight = Color.fromARGB(255, 13, 228, 156);
   static const appValidationAccent = Color.fromARGB(255, 18, 204, 142);
+  static const appValidationToastBackground = Color.fromARGB(255, 2, 10, 10);
+  static const appValidationFragmentBackground = Color.fromARGB(255, 35, 68, 65);
 
   static const appBackground = Color.fromARGB(255, 45, 32, 15);
   static const mainAreaBackground = Color.fromARGB(255, 212, 139, 37);

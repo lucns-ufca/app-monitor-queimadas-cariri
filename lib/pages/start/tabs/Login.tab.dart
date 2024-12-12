@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:monitor_queimadas_cariri/api/Controller.api.dart';
 import 'package:monitor_queimadas_cariri/models/User.model.dart';
 import 'package:monitor_queimadas_cariri/pages/content/MainScreen.page.dart';
@@ -111,15 +112,15 @@ class LoginTabState extends State<LoginTab> {
 
                     Dialogs dialogs = Dialogs(context);
                     dialogs.showIndeterminateDialog("Acessando...");
-                    ApiResponse response = await AuthRepository().login(User(email: textUser!, password: textPassword!));
+                    Response? response = await AuthRepository().login(User(email: textUser!, password: textPassword!));
                     dialogs.dismiss();
                     Utils.vibrate();
 
-                    if (response.isOk()) {
+                    if (response != null && response.statusCode != null && response.statusCode == ApiResponseCodes.OK) {
                       await navigator!.pushReplacement(MaterialPageRoute(builder: (context) => const MainScreenPage()));
                       return;
                     }
-                    Notify.showSnackbarError(response.message!);
+                    Notify.showSnackbarError("Usuario ou senha inválidos");
                   }
                 : null,
             textButton: "Acessar",

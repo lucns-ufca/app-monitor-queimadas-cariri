@@ -1,5 +1,6 @@
 // Developed by @lucns
 
+import 'package:dio/dio.dart';
 import 'package:monitor_queimadas_cariri/api/Controller.api.dart';
 import 'package:monitor_queimadas_cariri/models/User.model.dart';
 import 'package:monitor_queimadas_cariri/pages/dialogs/BasicDialogs.dart';
@@ -94,15 +95,19 @@ class NewAccountTabState extends State<NewAccountTab> {
                       Dialogs dialogs = Dialogs(context);
                       dialogs.showIndeterminateDialog("Criando conta...");
                       //await Future.delayed(const Duration(seconds: 3));
-                      ApiResponse response = await AuthRepository().createAccount(User(name: textName!, email: textUser!, password: textPassword!));
+                      Response? response = await AuthRepository().createAccount(User(name: textName!, email: textUser!, password: textPassword!));
                       dialogs.dismiss();
                       Utils.vibrate();
-                      if (response.isOk()) {
+                      if (response != null && response.statusCode != null && response.statusCode == ApiResponseCodes.CREATED) {
                         Notify.showToast("Conta criada.");
                         widget.scrollToLogin(textUser!);
                         return;
                       }
-                      Notify.showSnackbarError(response.message!);
+                      if (response != null && response.statusCode != null && response.statusCode == ApiResponseCodes.CONFLIT) {
+                        Notify.showSnackbarError("Este usuario já existe!");
+                        return;
+                      }
+                      Notify.showSnackbarError("Um erro não mapeado ocorreu!");
                     }),
         ],
       ),

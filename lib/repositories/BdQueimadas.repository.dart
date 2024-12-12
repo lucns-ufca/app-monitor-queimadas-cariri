@@ -196,32 +196,12 @@ class BdQueimadasRepository {
     //String? data = await downloadData('weather/forecast.php', "${directory.path}/data/weather/AllCitiesForecast.json");
   }
 
-  Future<ApiResponse> getPredictionValues({String? city}) async {
+  Future<Response?> getPredictionValues({String? city}) async {
     try {
-      Response response = await controllerApi.get('prediction/predictions.php');
-      if (response.statusCode == 200) {
-        //Prediction prediction = Prediction.fromJson(response.data);
-        //return ApiResponse(responseCode: response.statusCode, response: prediction);
-      }
-      return ApiResponse(code: response.statusCode, data: response.data);
+      return await controllerApi.get('prediction/predictions.php');
     } on DioException catch (e) {
-      return _getDefaultErrorResponse(e);
+      return e.response;
     }
-  }
-
-  ApiResponse _getDefaultErrorResponse(DioException e) {
-    if (e.response == null) {
-      return ApiResponse(message: "O servidor não respondeu. Prazo de espera estourado.", code: ApiResponseCodes.GATEWAY_TIMEOUT);
-    } else if (e.response!.statusCode != null) {
-      String? message;
-      if (e.response!.statusCode == ApiResponseCodes.UNAUTHORIZED) {
-        message = "Sem autorização!";
-      } else {
-        message = ControllerApi.getError(e.response!.statusCode!);
-      }
-      return ApiResponse(message: message, code: e.response!.statusCode);
-    }
-    return ApiResponse();
   }
 
   bool isNearest(double lat1, double lon1, double lat2, double lon2) {
