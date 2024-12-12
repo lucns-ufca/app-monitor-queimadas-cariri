@@ -12,8 +12,9 @@ class FireAlertModel {
   double? latitude;
   double? longitude;
   String? status;
+  String? description;
 
-  FireAlertModel({this.id, this.dateTime, this.imageUrl, this.latitude, this.longitude, this.status});
+  FireAlertModel({this.id, this.dateTime, this.description, this.imageUrl, this.latitude, this.longitude, this.status});
 
   factory FireAlertModel.fromJson(Map<String, dynamic> json) => _$FireAlertModelFromJson(json);
 

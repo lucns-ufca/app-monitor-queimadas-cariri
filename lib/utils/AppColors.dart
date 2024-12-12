@@ -28,6 +28,7 @@ class AppColors {
   static const dialogBackground = Color.fromARGB(208, 208, 154, 74);
 
   static const appValidationBackground = Color.fromARGB(255, 5, 18, 20);
+  static const appValidationAccentHighlight = Color.fromARGB(255, 13, 228, 156);
   static const appValidationAccent = Color.fromARGB(255, 18, 204, 142);
 
   static const appBackground = Color.fromARGB(255, 45, 32, 15);
@@ -39,7 +40,6 @@ class AppColors {
   static const fragmentBackgroundInfo = Color.fromARGB(208, 255, 182, 47);
   static const fragmentBackgroundSuccess = Color.fromARGB(208, 26, 194, 102);
   static const menuBackground = Color.fromARGB(195, 248, 212, 177);
-  static const cardBackground = gray_7;
   static const listDivider = Color.fromARGB(255, 15, 9, 0);
 
   static const textAccent = Color.fromARGB(197, 255, 187, 40);
@@ -62,6 +62,7 @@ class AppColors {
   static const red = Color.fromARGB(255, 224, 54, 82);
   static const graphLines = Color.fromARGB(28, 255, 255, 255);
 
+  static const cardBackground = Color.fromARGB(45, 255, 255, 255);
   static const ticketColor = Color.fromARGB(118, 255, 248, 241);
   static const titleDark = Color.fromARGB(255, 70, 43, 9);
   static const descriptionDark = Color.fromARGB(255, 110, 71, 27);

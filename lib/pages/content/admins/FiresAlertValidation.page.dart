@@ -1,7 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:focus_detector/focus_detector.dart';
-import 'package:monitor_queimadas_cariri/repositories/Validations.repository.dart';
+import 'package:monitor_queimadas_cariri/models/FireAlert.model.dart';
+import 'package:monitor_queimadas_cariri/repositories/Alerts.repository.dart';
 import 'package:monitor_queimadas_cariri/utils/AppColors.dart';
 import 'package:monitor_queimadas_cariri/utils/Notification.provider.dart';
 import 'package:monitor_queimadas_cariri/utils/Notify.dart';
@@ -14,7 +16,7 @@ class FiresAlertValidationPage extends StatefulWidget {
 }
 
 class FiresAlertValidationPageState extends State<FiresAlertValidationPage> {
-  final ValidationsRepository validationsRepository = ValidationsRepository();
+  final AlertsRepository alertsRepository = AlertsRepository();
 
   void clearNotifications() async {
     NotificationProvider notificationProvider = await NotificationProvider.getInstance();
@@ -24,7 +26,7 @@ class FiresAlertValidationPageState extends State<FiresAlertValidationPage> {
   @override
   void initState() {
     clearNotifications();
-    validationsRepository.setOnError((responseCode) {
+    alertsRepository.setOnError((responseCode) {
       if (responseCode == 0) {
         Notify.showSnackbarError("Falha ao tentar obter dados!");
         return;
@@ -54,8 +56,8 @@ class FiresAlertValidationPageState extends State<FiresAlertValidationPage> {
               const SizedBox(width: double.maxFinite, height: double.maxFinite),
               TweenAnimationBuilder<double>(
                   tween: Tween<double>(begin: 0.0, end: 1.0),
-                  curve: Curves.ease,
-                  duration: const Duration(seconds: 5),
+                  curve: Curves.easeIn,
+                  duration: const Duration(seconds: 4),
                   builder: (BuildContext context, double opacity, Widget? child) {
                     return Opacity(
                         opacity: opacity,
@@ -91,16 +93,138 @@ class FiresAlertValidationPageState extends State<FiresAlertValidationPage> {
                                 Tab(text: "Validados"),
                               ],
                             ),
-                            Expanded(
-                                child: TabBarView(children: [
-                              getLoadingWidget(),
-                              getLoadingWidget(),
-                            ]))
-                          ]))),
-                  const SizedBox(height: 56)
+                            Expanded(child: TabBarView(children: [getContent(true), getContent(false)]))
+                          ])))
                 ],
               )
             ])));
+  }
+
+  Widget getContent(bool pending) {
+    return ShaderMask(
+        shaderCallback: (rect) {
+          return const LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [AppColors.appValidationBackground, Colors.transparent],
+          ).createShader(Rect.fromLTRB(0, rect.height * 0.75, rect.width, rect.height));
+        },
+        blendMode: BlendMode.dstIn,
+        child: Padding(
+            padding: const EdgeInsets.only(left: 24, right: 24, top: 24, bottom: 48),
+            child: FutureBuilder(
+                future: pending ? alertsRepository.getPendingAlerts() : alertsRepository.getValidatedAlerts(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState != ConnectionState.done) {
+                    return getLoadingWidget();
+                  }
+                  List<FireAlertModel>? alertList = snapshot.data;
+                  if (snapshot.hasError || alertList == null) {
+                    return getErrorWidget();
+                  }
+                  if (alertList.isEmpty) {
+                    return getEmptyListWidget();
+                  }
+                  return SingleChildScrollView(
+                      child: Column(
+                          children: List.generate(alertList.length + 1, (index) {
+                    if (index == alertList.length) return const SizedBox(height: 72);
+                    DateTime dateOccurrence = DateTime.parse(alertList[index].dateTime!);
+                    DateTime now = DateTime.now();
+                    String dateHour = "${dateOccurrence.hour}:${dateOccurrence.minute}";
+                    Duration difference = now.difference(dateOccurrence);
+                    if (difference.inHours > 47) {
+                      dateHour = "Reportado antes de ontem às $dateHour";
+                    } else if (difference.inHours > 23) {
+                      dateHour = "Reportado ontem às $dateHour";
+                    } else if (difference.inHours > 9) {
+                      dateHour = "Reportado hoje às $dateHour";
+                    } else if (difference.inHours > 1) {
+                      dateHour = "Reportado a ${difference.inHours} horas atrás";
+                    } else if (difference.inHours == 1) {
+                      dateHour = "Reportado a uma hora atrás";
+                    } else if (difference.inMinutes > 10) {
+                      dateHour = "Reportado a menos de 1 hora atrás";
+                    } else if (difference.inMinutes > 1) {
+                      dateHour = "Reportado a alguns minutos atrás";
+                    } else {
+                      dateHour = "Reportado agora a pouco";
+                    }
+                    return Column(children: [getListItemWidget(dateHour, alertList[index].description!, alertList[index].imageUrl), SizedBox(height: index < alertList.length - 1 ? 16 : 24)]);
+                  })));
+                })));
+  }
+
+  Widget getListItemWidget(String title, String description, String? imageUrl) {
+    double width = MediaQuery.of(context).size.width - (2 * 24);
+    double height = 110;
+    return ConstrainedBox(
+        constraints: BoxConstraints(minHeight: height, maxWidth: width, minWidth: width),
+        child: Container(
+            decoration: BoxDecoration(
+              color: AppColors.gray.withOpacity(0.25),
+              borderRadius: const BorderRadius.all(Radius.circular(24)),
+            ),
+            child: IntrinsicHeight(
+                child: Row(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Container(
+                  width: height,
+                  decoration: BoxDecoration(
+                    color: AppColors.gray.withOpacity(0.25),
+                    borderRadius: const BorderRadius.only(topLeft: Radius.circular(24), bottomLeft: Radius.circular(24)),
+                  ),
+                  child: imageUrl == null
+                      ? const Center(child: SizedBox(width: 16, height: 16, child: Icon(Icons.warning)))
+                      : CachedNetworkImage(
+                          imageUrl: imageUrl,
+                          placeholder: (context, url) => const Center(
+                                  child: SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(color: AppColors.appValidationAccent),
+                              )),
+                          errorWidget: (context, url, error) => const Center(child: SizedBox(width: 16, height: 16, child: Icon(Icons.warning))),
+                          imageBuilder: (context, imageProvider) => Container(
+                                  decoration: BoxDecoration(
+                                image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+                                borderRadius: const BorderRadius.only(topLeft: Radius.circular(24), bottomLeft: Radius.circular(24)),
+                              )))),
+              Expanded(
+                  child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      child: Column(children: [
+                        Expanded(
+                            child: Column(mainAxisSize: MainAxisSize.max, crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.start, children: [
+                          Flexible(child: Text(title, overflow: TextOverflow.ellipsis, maxLines: 10, style: const TextStyle(color: AppColors.appValidationAccentHighlight, fontSize: 16, fontWeight: FontWeight.w400))),
+                          Flexible(child: Text(description, overflow: TextOverflow.ellipsis, maxLines: 10, style: const TextStyle(color: AppColors.white_2, fontSize: 14, fontWeight: FontWeight.w500)))
+                        ])),
+                        const SizedBox(height: 16),
+                        Container(width: double.maxFinite, height: 0.5, padding: const EdgeInsets.symmetric(horizontal: 16), color: AppColors.white_2),
+                        SizedBox(
+                            width: double.maxFinite,
+                            child: TextButton(
+                                style: ButtonStyle(
+                                    shape: WidgetStateProperty.all<RoundedRectangleBorder>(const RoundedRectangleBorder(borderRadius: BorderRadius.only(bottomRight: Radius.circular(24)))),
+                                    backgroundColor: WidgetStateProperty.resolveWith((states) => Colors.transparent),
+                                    overlayColor: WidgetStateProperty.resolveWith((states) => AppColors.appValidationAccent.withOpacity(0.5))),
+                                onPressed: () {},
+                                child: const Text("Validar Alerta", style: TextStyle(fontSize: 18, color: AppColors.white_2, fontWeight: FontWeight.w300))))
+                      ]))),
+            ]))));
+  }
+
+  Widget getErrorWidget() {
+    return const Center(child: Row(mainAxisSize: MainAxisSize.min, children: [SizedBox(width: 16, height: 16, child: Icon(Icons.warning)), SizedBox(width: 16), Text("Carregando dados...", style: TextStyle(color: AppColors.white_5))]));
+  }
+
+  Widget getEmptyListWidget() {
+    return SizedBox(
+        width: double.maxFinite,
+        height: double.maxFinite,
+        child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [Icon(Icons.check_circle, color: AppColors.appValidationAccent.withOpacity(0.75)), const SizedBox(width: 8), const Text("Nenhum alerta.", style: TextStyle(color: AppColors.white_5))]));
   }
 
   Widget getLoadingWidget() {

@@ -4,7 +4,7 @@ import 'package:monitor_queimadas_cariri/api/Api.dart';
 import 'package:monitor_queimadas_cariri/api/Controller.api.dart';
 import 'package:monitor_queimadas_cariri/models/FireAlert.model.dart';
 
-class ValidationsRepository {
+class AlertsRepository {
   final ControllerApi api = ControllerApi(Api(baseUrl: 'https://monitorqueimadas.duckdns.org/'));
   void Function(int)? onError;
 
@@ -12,19 +12,19 @@ class ValidationsRepository {
     this.onError = onError;
   }
 
-  Future<List<FireAlertModel>?> getPendingValidations(ValidationType validationType) async {
-    return await getValidationsPerType(ValidationType.PENDING);
+  Future<List<FireAlertModel>?> getPendingAlerts() async {
+    return await getAlertsPerType(ValidationType.PENDING);
   }
 
-  Future<List<FireAlertModel>?> getInvalidValidations(ValidationType validationType) async {
-    return await getValidationsPerType(ValidationType.INVALID);
+  Future<List<FireAlertModel>?> getInvalidAlerts() async {
+    return await getAlertsPerType(ValidationType.INVALID);
   }
 
-  Future<List<FireAlertModel>?> getValidatedValidations(ValidationType validationType) async {
-    return await getValidationsPerType(ValidationType.VALIDATED);
+  Future<List<FireAlertModel>?> getValidatedAlerts() async {
+    return await getAlertsPerType(ValidationType.VALIDATED);
   }
 
-  Future<List<FireAlertModel>?> getValidationsPerType(ValidationType validationType) async {
+  Future<List<FireAlertModel>?> getAlertsPerType(ValidationType validationType) async {
     String type;
     switch (validationType) {
       case ValidationType.VALIDATED:

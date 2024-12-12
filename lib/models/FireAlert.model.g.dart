@@ -10,6 +10,7 @@ FireAlertModel _$FireAlertModelFromJson(Map<String, dynamic> json) =>
     FireAlertModel(
       id: json['id'] as String?,
       dateTime: json['issuedAt'] as String?,
+      description: json['description'] as String?,
       imageUrl: json['imgUrl'] as String?,
       latitude: (json['latitude'] as num?)?.toDouble(),
       longitude: (json['longitude'] as num?)?.toDouble(),
@@ -24,4 +25,5 @@ Map<String, dynamic> _$FireAlertModelToJson(FireAlertModel instance) =>
       'latitude': instance.latitude,
       'longitude': instance.longitude,
       'status': instance.status,
+      'description': instance.description,
     };

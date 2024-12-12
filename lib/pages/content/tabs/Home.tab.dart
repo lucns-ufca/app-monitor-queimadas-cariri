@@ -10,7 +10,6 @@ import 'package:monitor_queimadas_cariri/pages/content/AboutProject.page.dart';
 import 'package:monitor_queimadas_cariri/pages/content/BaseWidgets.dart';
 import 'package:monitor_queimadas_cariri/pages/content/IpDefinition.page.dart';
 import 'package:monitor_queimadas_cariri/pages/content/admins/FiresAlertValidation.page.dart';
-import 'package:monitor_queimadas_cariri/pages/dialogs/BasicDialogs.dart';
 import 'package:monitor_queimadas_cariri/pages/dialogs/PopupMenu.dart';
 import 'package:monitor_queimadas_cariri/pages/start/Acess.page.dart';
 import 'package:monitor_queimadas_cariri/pages/start/First.page.dart';
@@ -60,9 +59,7 @@ class TabHomePageState extends State<TabHomePage> with AutomaticKeepAliveClientM
     popupMenu.showMenu(items, (index) async {
       switch (items[index].text) {
         case "Atualizar Dados":
-          //updateLists(force: true);
-          Dialogs dialogs = Dialogs(context);
-          dialogs.showDialogInfo("Você é um administrador do sistema.", "Com este privilégio você poderá acessar partes delicadas do app, como por exemplo, a área de validações de alertas de queimadas e outros futuros recursos.", positiveText: "Entendi");
+          updateLists(force: true);
           break;
         case "Validação de queimadas":
           await Navigator.push(context, MaterialPageRoute(builder: (context) => const FiresAlertValidationPage()));

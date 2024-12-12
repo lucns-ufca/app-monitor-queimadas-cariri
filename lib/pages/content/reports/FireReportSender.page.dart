@@ -62,12 +62,14 @@ class FireReportSenderPageState extends State<FireReportSenderPage> {
     formData.files.add(MapEntry("image", await MultipartFile.fromFile(imageFile!.path, contentType: DioMediaType.parse("image/jpg"))));
     ApiResponse response = await appRepository.reportFireFormData(formData);
 
-    if (response.code == ApiResponseCodes.OK) {
+    if (response.code != null && response.code! > 199 && response.code! < 300) {
       await imageFile!.delete();
       FirebaseMessagingSender sender = FirebaseMessagingSender();
       sender.sendNotification("Um alerta foi reportado", "Foi reportado um alerta de queimada. Clique para ver mais detalhes ou validar, na lista de alertas.", topic: Constants.FCM_TOPIC_ALERT_FIRE);
       buttonLoadingController.setLoading(false);
-      dialogs!.showDialogSuccess("Enviado", "Obrigado por nos ajudar no monitoramento de queimadas.");
+      dialogs!.showDialogSuccess("Enviado", "Obrigado por nos ajudar no monitoramento de queimadas.", onDismiss: () async {
+        await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const MainScreenPage()));
+      });
       return;
     }
     List<ConnectivityResult> results = await connectivity.checkConnectivity();
@@ -150,7 +152,7 @@ class FireReportSenderPageState extends State<FireReportSenderPage> {
             return;
           }
           //await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const DashboardPage()));
-          await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainScreenPage()));
+          await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const MainScreenPage()));
         },
         child: SafeArea(
             top: false,
