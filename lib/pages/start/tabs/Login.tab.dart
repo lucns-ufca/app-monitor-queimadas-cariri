@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:monitor_queimadas_cariri/api/Controller.api.dart';
-import 'package:monitor_queimadas_cariri/models/User.model.dart';
 import 'package:monitor_queimadas_cariri/pages/content/MainScreen.page.dart';
 import 'package:monitor_queimadas_cariri/pages/dialogs/BasicDialogs.dart';
 import 'package:monitor_queimadas_cariri/repositories/Auth.repository.dart';
@@ -112,7 +111,7 @@ class LoginTabState extends State<LoginTab> {
 
                     Dialogs dialogs = Dialogs(context);
                     dialogs.showIndeterminateDialog("Acessando...");
-                    Response? response = await AuthRepository().login(User(email: textUser!, password: textPassword!));
+                    Response? response = await AuthRepository().login(textUser!, textPassword!);
                     dialogs.dismiss();
                     Utils.vibrate();
 

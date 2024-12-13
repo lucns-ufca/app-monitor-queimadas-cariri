@@ -3,27 +3,11 @@
 import 'dart:io';
 
 import 'package:monitor_queimadas_cariri/api/Api.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 
 class ControllerApi {
-  bool recursible = false;
   Api api;
   ControllerApi(this.api);
-
-  static String getError(int code) {
-    // Generic response messages
-    switch (code) {
-      case ApiResponseCodes.BAD_REQUEST:
-        return "O servidor não entendeu sua solicitação. Talvez seja necessário atualizar o app.";
-      case ApiResponseCodes.GATEWAY_TIMEOUT:
-        return "O servidor não respondeu. Prazo de espera estourado.";
-      case ApiResponseCodes.UNAUTHORIZED:
-        return "Você precisa fazer login novamente.";
-      default:
-        return "Um erro desconhecido ocorreu.";
-    }
-  }
 
   int getResponseCode() {
     return api.getResponseCode();
@@ -42,37 +26,17 @@ class ControllerApi {
     }
   }
 
-  Future<Response> get(String urlPath, {Map<String, dynamic>? parameters}) async {
+  Future<Response> path(String urlPath) async {
     try {
-      if (recursible) {
-        return _getRecursible(urlPath, parameters: parameters);
-      } else {
-        return _get(urlPath, parameters: parameters);
-      }
+      //Response response = await api.dio.patch(urlPath);
+      //if (response.statusCode != null && response.statusCode == 401) await AuthRepository().refreshToken();
+      return await api.dio.patch(urlPath);
     } on DioException {
       rethrow;
     }
   }
 
-  Future<Response> _getRecursible(String urlPath, {Map<String, dynamic>? parameters}) async {
-    if (recursible) {
-      for (int i = 0; i < 10; i++) {
-        try {
-          Response response = await _get(urlPath, parameters: parameters);
-          if (i == 9 || (response.statusCode! > 199 && response.statusCode! < 300)) return response;
-        } on DioException catch (e) {
-          print(e);
-          if (!await hasInternetConnection() || i == 9) rethrow;
-        }
-        await Future.delayed(const Duration(seconds: 1));
-      }
-      return Response(requestOptions: RequestOptions());
-    } else {
-      return _get(urlPath, parameters: parameters);
-    }
-  }
-
-  Future<Response> _get(String urlPath, {Map<String, dynamic>? parameters}) async {
+  Future<Response> get(String urlPath, {Map<String, dynamic>? parameters}) async {
     try {
       return await api.dio.get(urlPath, queryParameters: parameters);
     } on DioException {
@@ -82,45 +46,10 @@ class ControllerApi {
 
   Future<Response> post(String urlPath, Object data) async {
     try {
-      if (recursible) {
-        return _postRecursible(urlPath, data);
-      } else {
-        return _post(urlPath, data);
-      }
-    } on DioException {
-      rethrow;
-    }
-  }
-
-  Future<Response> _postRecursible(String urlPath, Object data) async {
-    if (recursible) {
-      for (int i = 0; i < 10; i++) {
-        try {
-          Response response = await _post(urlPath, data);
-          if (i == 9 || (response.statusCode! > 199 && response.statusCode! < 300)) return response;
-        } on DioException catch (e) {
-          print(e);
-          if (!await hasInternetConnection() || i == 9) rethrow;
-        }
-        await Future.delayed(const Duration(seconds: 1));
-      }
-      return Response(requestOptions: RequestOptions());
-    } else {
-      return _post(urlPath, data);
-    }
-  }
-
-  Future<Response> _post(String urlPath, Object data) async {
-    try {
       return await api.dio.post(urlPath, data: data);
     } on DioException {
       rethrow;
     }
-  }
-
-  Future<bool> hasInternetConnection() async {
-    List<ConnectivityResult> connectivityResult = await Connectivity().checkConnectivity();
-    return connectivityResult.any((item) => item == ConnectivityResult.mobile) || connectivityResult.any((item) => item == ConnectivityResult.wifi);
   }
 }
 

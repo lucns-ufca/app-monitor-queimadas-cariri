@@ -33,8 +33,8 @@ class TabHomePage extends StatefulWidget {
 }
 
 class TabHomePageState extends State<TabHomePage> with AutomaticKeepAliveClientMixin<TabHomePage> {
-  final user = GetIt.I.get<User>();
   final appRepository = GetIt.I.get<AppRepository>();
+  User? user;
   bool loadingTop = true;
   bool loadingBottom = true;
   bool connected = true;
@@ -44,7 +44,7 @@ class TabHomePageState extends State<TabHomePage> with AutomaticKeepAliveClientM
   PredictionCityModel? selectedCurrentMonthHighestOccurred;
 
   void profileClick() async {
-    if (user.hasAccess()) {
+    if (user!.hasAccess()) {
       showMenuWindow();
     } else {
       await Future.delayed(const Duration(milliseconds: 300));
@@ -54,7 +54,7 @@ class TabHomePageState extends State<TabHomePage> with AutomaticKeepAliveClientM
 
   void showMenuWindow() {
     PopupMenu popupMenu = PopupMenu(context: context);
-    List<String> titles = [if (!user.hasAccess()) "Login", if (!loadingTop && !loadingBottom) "Atualizar Dados", if (user.isAdminstrator()) "Validação de queimadas", "Sobre o Projeto", if (user.hasAccess()) "Logout"];
+    List<String> titles = [if (!user!.hasAccess()) "Login", if (!loadingTop && !loadingBottom) "Atualizar Dados", if (user!.isAdminstrator()) "Validação de queimadas", "Sobre o Projeto", if (user!.hasAccess()) "Logout"];
     var items = popupMenu.generateIds(titles);
     popupMenu.showMenu(items, (index) async {
       switch (items[index].text) {
@@ -77,7 +77,7 @@ class TabHomePageState extends State<TabHomePage> with AutomaticKeepAliveClientM
         case "Sobre o Projeto":
           await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const AboutPage()));
         case "Logout":
-          user.clear();
+          user!.clear();
           await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const FirstPage()));
           break;
       }
@@ -242,8 +242,7 @@ class TabHomePageState extends State<TabHomePage> with AutomaticKeepAliveClientM
 
   @override
   void initState() {
-    imageProfile = user.getProfileImage();
-    appRepository.setOnUpdateConcluded(() {});
+    imageProfile = user!.getProfileImage();
     SchedulerBinding.instance.addPostFrameCallback((_) async {
       await Future.delayed(const Duration(milliseconds: 300));
       Connectivity connectivity = Connectivity();
@@ -296,8 +295,9 @@ class TabHomePageState extends State<TabHomePage> with AutomaticKeepAliveClientM
                   builder: (context, result) {
                     if (result.connectionState == ConnectionState.done) {
                       String name = "";
-                      if (user.name.contains(" ")) {
-                        List<String> segments = user.name.split(" ");
+                      String username = user!.getName() ?? "";
+                      if (username.contains(" ")) {
+                        List<String> segments = username.split(" ");
                         name = segments[0];
                         for (int i = 1; i < segments.length - 1; i++) {
                           if (segments[i].length < 3) continue;
@@ -305,7 +305,7 @@ class TabHomePageState extends State<TabHomePage> with AutomaticKeepAliveClientM
                         }
                         name += ' ${segments[segments.length - 1]}';
                       } else {
-                        name = user.name;
+                        name = username;
                       }
                       if (result.data == null) {
                         return getProfileButton(name: name);

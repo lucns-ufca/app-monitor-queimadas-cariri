@@ -2,7 +2,6 @@
 
 import 'package:dio/dio.dart';
 import 'package:monitor_queimadas_cariri/api/Controller.api.dart';
-import 'package:monitor_queimadas_cariri/models/User.model.dart';
 import 'package:monitor_queimadas_cariri/pages/dialogs/BasicDialogs.dart';
 import 'package:monitor_queimadas_cariri/repositories/Auth.repository.dart';
 import 'package:monitor_queimadas_cariri/utils/Notify.dart';
@@ -94,12 +93,12 @@ class NewAccountTabState extends State<NewAccountTab> {
 
                       Dialogs dialogs = Dialogs(context);
                       dialogs.showIndeterminateDialog("Criando conta...");
-                      //await Future.delayed(const Duration(seconds: 3));
-                      Response? response = await AuthRepository().createAccount(User(name: textName!, email: textUser!, password: textPassword!));
+
+                      Response? response = await AuthRepository().createAccount(textName!, textUser!, textPassword!);
                       dialogs.dismiss();
                       Utils.vibrate();
                       if (response != null && response.statusCode != null && response.statusCode == ApiResponseCodes.CREATED) {
-                        Notify.showToast("Conta criada.");
+                        await dialogs.showDialogSuccess("Conta Criada!", "Sua conta foi criada com sucesso. Agora você pode fazer login.");
                         widget.scrollToLogin(textUser!);
                         return;
                       }
@@ -129,6 +128,6 @@ class NewAccountTabState extends State<NewAccountTab> {
   }
 
   bool isNameValid() {
-    return textName != null && textName!.length > 4 && textName!.split(" ")[1].length > 1;
+    return textName != null && textName!.length > 4 && textName!.contains(" ") && textName!.split(" ")[1].length > 1;
   }
 }

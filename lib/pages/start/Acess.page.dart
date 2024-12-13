@@ -80,21 +80,21 @@ class LoginFormState extends State<LoginForm> {
       dialogs.dismiss();
       return;
     }
-    User user = User();
-    user.name = googleUser.displayName ?? "";
-    user.email = googleUser.email;
-    user.id = googleUser.id;
-    user.photoUrl = googleUser.photoUrl ?? "";
-    user.type = UserType.NORMAL;
-    if (Constants.WHITE_LIST_EMAILS.any((email) => email == user.email)) {
-      user.type = UserType.ADMINISTRATOR;
+    User user = await User.getInstance();
+    user.setName(googleUser.displayName!);
+    user.setEmail(googleUser.email);
+    user.setId(googleUser.id);
+    user.setPhotoUrl(googleUser.photoUrl ?? "");
+    user.setType(UserType.NORMAL);
+    if (Constants.WHITE_LIST_EMAILS.any((email) => email == user.getEmail())) {
+      user.setType(UserType.ADMINISTRATOR);
       FirebaseMessagingController messaging = FirebaseMessagingController();
       await messaging.subscribeTopic(Constants.FCM_TOPIC_ALERT_FIRE);
     }
 
     try {
       GoogleSignInAuthentication? googleAuth = await googleUser.authentication;
-      user.accessToken = googleAuth.accessToken ?? "";
+      user.setAccessToken(googleAuth.accessToken!);
     } catch (e, stacktrace) {
       debugPrintStack(stackTrace: stacktrace);
     }
@@ -111,7 +111,7 @@ class LoginFormState extends State<LoginForm> {
 
     await user.storeData();
     dialogs.dismiss();
-    if (user.type == UserType.ADMINISTRATOR) {
+    if (user.isAdminstrator()) {
       await dialogs.showDialogInfo("Você é um administrador do sistema.", "Com este privilégio você poderá acessar partes delicadas do app, como por exemplo, a área de validações de alertas de queimadas e outros futuros recursos.", positiveText: "Entendi");
     }
     openTabsPage();
@@ -133,13 +133,21 @@ class LoginFormState extends State<LoginForm> {
           }
         },
         child: Stack(children: [
-          Column(mainAxisSize: MainAxisSize.max, mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            const SizedBox(),
-            Column(mainAxisSize: MainAxisSize.min, children: [
-              Container(transform: Matrix4.translationValues(0, 2, 0), child: ImageTransitionScroller(duration: const Duration(seconds: 20), assets: "assets/images/minimal_forest2.png", width: imageWidth, height: imageWidth / 2.87)),
-              Container(height: MediaQuery.of(context).size.height * 0.2, width: double.maxFinite, color: AppColors.appBackground, child: Align(alignment: Alignment.bottomCenter, child: AppLogos(showAppLogo: true)))
-            ])
-          ]),
+          SizedBox(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              child: SingleChildScrollView(
+                  physics: const NeverScrollableScrollPhysics(),
+                  child: SizedBox(
+                      width: MediaQuery.of(context).size.width,
+                      height: MediaQuery.of(context).size.height,
+                      child: Column(mainAxisSize: MainAxisSize.max, mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                        const SizedBox(),
+                        Column(mainAxisSize: MainAxisSize.min, children: [
+                          Container(transform: Matrix4.translationValues(0, 2, 0), child: ImageTransitionScroller(duration: const Duration(seconds: 20), assets: "assets/images/minimal_forest2.png", width: imageWidth, height: imageWidth / 2.87)),
+                          Container(height: MediaQuery.of(context).size.height * 0.2, width: double.maxFinite, color: AppColors.appBackground, child: Align(alignment: Alignment.bottomCenter, child: AppLogos(showAppLogo: true)))
+                        ])
+                      ])))),
           Column(mainAxisSize: MainAxisSize.min, children: [
             ExpandablePageView(onPageChanged: (index) => setState(() => page = index), physics: const NeverScrollableScrollPhysics(), pageController: pageController, children: [
               LoginTab(scrollToNewAccount: () {

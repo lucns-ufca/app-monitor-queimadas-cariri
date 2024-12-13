@@ -78,15 +78,13 @@ void main() async {
 
   SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
   PackageInfo packageInfo = await PackageInfo.fromPlatform();
-  User user = User();
-  await user.loadData();
+  User user = await User.getInstance();
 
   GetIt sl = GetIt.instance;
   sl.allowReassignment = true;
   sl.registerLazySingleton<SharedPreferences>(() => sharedPreferences);
   sl.registerLazySingleton<PackageInfo>(() => packageInfo);
   sl.registerLazySingleton<AppRepository>(() => AppRepository());
-  sl.registerLazySingleton<User>(() => user);
 
   NotificationProvider notificationProvider = await NotificationProvider.getInstance(onNotificationClick: onNotificationClick);
   await notificationProvider.setChannel(Constants.NOTIFICATION_CHANNEL_ID, Constants.NOTIFICATION_CHANNEL_TITLE, Constants.NOTIFICATION_CHANNEL_DESCRIPTION);

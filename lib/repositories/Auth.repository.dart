@@ -10,14 +10,15 @@ class AuthRepository {
 
   AuthRepository();
 
-  Future<Response?> login(User user) async {
+  Future<Response?> login(String email, String password) async {
     try {
-      Response response = await api.post('auth/login', {"email": user.email, "password": user.password});
+      Response response = await api.post('auth/login', {"email": email, "password": password});
       if (response.data == null) return null;
 
-      Map<String, dynamic> map = response.data;
-      user.accessToken = map["access_token"];
-      if (map.containsKey("user_type")) user.setUSerType(map["user_type"]);
+      User user = await User.getInstance();
+      user.setAccessToken(response.data["access_token"]);
+      user.setRefreshToken(response.data["refresh_token"]);
+      if (response.data.containsKey("user_type")) user.setUSerType(response.data["user_type"]);
       await user.storeData();
 
       return response;
@@ -26,9 +27,9 @@ class AuthRepository {
     }
   }
 
-  Future<Response?> createAccount(User user) async {
+  Future<Response?> createAccount(String name, String email, String password) async {
     try {
-      return await api.post('admins', {"username": user.name, "email": user.email, "password": user.password});
+      return await api.post('admins', {"username": name, "email": email, "password": password});
     } on DioException catch (e) {
       return e.response;
     }
@@ -37,6 +38,21 @@ class AuthRepository {
   Future<Response?> getUserType(String email) async {
     try {
       return await api.post('user_type', {"email": email});
+    } on DioException catch (e) {
+      return e.response;
+    }
+  }
+
+  Future<Response?> refreshToken(String refreshToken) async {
+    try {
+      Response response = await api.post('auth/refresh', {"refreshToken": refreshToken});
+      if (response.statusCode == 200) {
+        User user = await User.getInstance();
+        user.setAccessToken(response.data["access_token"]);
+        user.setRefreshToken(response.data["refresh_token"]);
+        await user.storeData();
+      }
+      return response;
     } on DioException catch (e) {
       return e.response;
     }
