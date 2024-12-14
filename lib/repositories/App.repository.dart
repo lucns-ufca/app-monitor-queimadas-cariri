@@ -199,29 +199,12 @@ class AppRepository {
     return null;
   }
 
-  Future<Response?> getPredictionValues({String? city}) async {
-    try {
-      return await api.get('prediction/predictions.php');
-    } on DioException catch (e) {
-      return e.response;
-    }
-  }
-
   Future<Response?> reportFireFormData(FormData formData) async {
-    Dio api = Dio(BaseOptions(baseUrl: 'https://monitorqueimadas.duckdns.org/'));
     try {
-      return await api.post('warnings', data: formData);
+      return await api.post('prediction/predictions.php', formData);
     } on DioException catch (e) {
       return e.response;
     }
-    /*
-      try {
-        Response response = await api.post('reports/reports.php', formData);
-        return Response(code: response.statusCode, data: response.data);
-      } on DioException catch (e) {
-        return _getDefaultErrorResponse(e);
-      }
-      */
   }
 
   Future<Response?> reportFireJson(Map<String, dynamic> json) async {

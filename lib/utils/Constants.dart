@@ -9,6 +9,7 @@ class Constants {
 
   static const List<String> WHITE_LIST_EMAILS = [
     'lucns.dev@gmail.com',
+    'lucns@mail.com',
     'lucas.nascimento@aluno.ufca.edu.br',
     'pedro.hugo@aluno.ufca.edu.br',
     'fabricio.freitas@ufca.edu.br',

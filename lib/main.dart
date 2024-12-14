@@ -85,6 +85,7 @@ void main() async {
   sl.registerLazySingleton<SharedPreferences>(() => sharedPreferences);
   sl.registerLazySingleton<PackageInfo>(() => packageInfo);
   sl.registerLazySingleton<AppRepository>(() => AppRepository());
+  sl.registerLazySingleton<User>(() => user);
 
   NotificationProvider notificationProvider = await NotificationProvider.getInstance(onNotificationClick: onNotificationClick);
   await notificationProvider.setChannel(Constants.NOTIFICATION_CHANNEL_ID, Constants.NOTIFICATION_CHANNEL_TITLE, Constants.NOTIFICATION_CHANNEL_DESCRIPTION);
@@ -145,7 +146,7 @@ class MainAppState extends State<MainApp> {
           colorScheme: ColorScheme.fromSeed(primary: Colors.white, seedColor: AppColors.accent),
           useMaterial3: true,
         ),
-        home: widget.user.hasAccess() ? MainScreenPage(fromNotification: widget.fromNotification) : const FirstPage());
+        home: widget.user.isAuthenticated() ? MainScreenPage(fromNotification: widget.fromNotification) : const FirstPage());
   }
 }
 

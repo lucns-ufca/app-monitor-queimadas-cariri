@@ -33,8 +33,8 @@ class TabHomePage extends StatefulWidget {
 }
 
 class TabHomePageState extends State<TabHomePage> with AutomaticKeepAliveClientMixin<TabHomePage> {
-  final appRepository = GetIt.I.get<AppRepository>();
-  User? user;
+  final User user = GetIt.I.get<User>();
+  final AppRepository appRepository = GetIt.I.get<AppRepository>();
   bool loadingTop = true;
   bool loadingBottom = true;
   bool connected = true;
@@ -44,7 +44,7 @@ class TabHomePageState extends State<TabHomePage> with AutomaticKeepAliveClientM
   PredictionCityModel? selectedCurrentMonthHighestOccurred;
 
   void profileClick() async {
-    if (user!.hasAccess()) {
+    if (user.isAuthenticated()) {
       showMenuWindow();
     } else {
       await Future.delayed(const Duration(milliseconds: 300));
@@ -54,7 +54,7 @@ class TabHomePageState extends State<TabHomePage> with AutomaticKeepAliveClientM
 
   void showMenuWindow() {
     PopupMenu popupMenu = PopupMenu(context: context);
-    List<String> titles = [if (!user!.hasAccess()) "Login", if (!loadingTop && !loadingBottom) "Atualizar Dados", if (user!.isAdminstrator()) "Validação de queimadas", "Sobre o Projeto", if (user!.hasAccess()) "Logout"];
+    List<String> titles = [if (!user.isAuthenticated()) "Login", if (!loadingTop && !loadingBottom) "Atualizar Dados", if (user.isAdminstrator()) "Validação de queimadas", "Sobre o Projeto", if (user.isAuthenticated()) "Logout"];
     var items = popupMenu.generateIds(titles);
     popupMenu.showMenu(items, (index) async {
       switch (items[index].text) {
@@ -77,7 +77,7 @@ class TabHomePageState extends State<TabHomePage> with AutomaticKeepAliveClientM
         case "Sobre o Projeto":
           await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const AboutPage()));
         case "Logout":
-          user!.clear();
+          user.clear();
           await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const FirstPage()));
           break;
       }
@@ -242,7 +242,7 @@ class TabHomePageState extends State<TabHomePage> with AutomaticKeepAliveClientM
 
   @override
   void initState() {
-    imageProfile = user!.getProfileImage();
+    imageProfile = user.getProfileImage();
     SchedulerBinding.instance.addPostFrameCallback((_) async {
       await Future.delayed(const Duration(milliseconds: 300));
       Connectivity connectivity = Connectivity();
@@ -294,20 +294,9 @@ class TabHomePageState extends State<TabHomePage> with AutomaticKeepAliveClientM
                   future: imageProfile,
                   builder: (context, result) {
                     if (result.connectionState == ConnectionState.done) {
-                      String name = "";
-                      String username = user!.getName() ?? "";
-                      if (username.contains(" ")) {
-                        List<String> segments = username.split(" ");
-                        name = segments[0];
-                        for (int i = 1; i < segments.length - 1; i++) {
-                          if (segments[i].length < 3) continue;
-                          name += ' ${segments[i].substring(0, 1)}';
-                        }
-                        name += ' ${segments[segments.length - 1]}';
-                      } else {
-                        name = username;
-                      }
-                      if (result.data == null) {
+                      String? name = user.getName();
+                      if (result.hasError || result.data == null) {
+                        if (name == null) return getProfileButton();
                         return getProfileButton(name: name);
                       }
                       return Column(mainAxisSize: MainAxisSize.min, children: [
@@ -330,13 +319,13 @@ class TabHomePageState extends State<TabHomePage> with AutomaticKeepAliveClientM
                                 ])))),
                         const SizedBox(height: 4),
                         Text(
-                          name,
+                          name ?? "Visitante",
                           style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontFamily: "RobotoCondensedLight"),
                         )
                       ]);
                     }
                     return getProfileButton(loading: true);
-                  }),
+                  })
             ])),
         Expanded(
             child: CustomScrollView(
@@ -377,6 +366,22 @@ class TabHomePageState extends State<TabHomePage> with AutomaticKeepAliveClientM
     } else {
       return Column(children: [SizedBox(height: 220, child: BaseWidgets().getCenteredloading("Carregando noticias...")), const SizedBox(height: 16), _getBottomContent()]);
     }
+  }
+
+  String retrieveName(String completeName) {
+    String name = "";
+    if (completeName.contains(" ")) {
+      List<String> segments = completeName.split(" ");
+      name = segments[0];
+      for (int i = 1; i < segments.length - 1; i++) {
+        if (segments[i].length < 3) continue;
+        name += ' ${segments[i].substring(0, 1)}';
+      }
+      name += ' ${segments[segments.length - 1]}';
+    } else {
+      name = completeName;
+    }
+    return name;
   }
 
   Widget getProfileButton({String name = "Visitante", bool loading = false}) {

@@ -5,7 +5,6 @@ import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:monitor_queimadas_cariri/api/Api.dart';
-import 'package:monitor_queimadas_cariri/api/Controller.api.dart';
 import 'package:monitor_queimadas_cariri/models/FireOccurrence.model.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
@@ -13,7 +12,6 @@ import 'package:flutter/foundation.dart';
 
 class BdQueimadasRepository {
   Api api = Api(baseUrl: 'https://terrabrasilis.dpi.inpe.br/');
-  late ControllerApi controllerApi;
   Map<String, dynamic> cities = {};
   String csrf = "ySRCjAhp-E3o9U06aJioHbX3SZKczvFNN7hE";
   String cookie = "_csrf=OUAZnDlWF34ND-ZzHLylZNpw";
@@ -52,10 +50,6 @@ class BdQueimadasRepository {
     'Umari': '033232313708'
   };
   Map<String, dynamic> occurrences = {};
-
-  BdQueimadasRepository() {
-    controllerApi = ControllerApi(api);
-  }
 
   void setOnUpdateListener(void Function()? onUpdate, void Function()? onUpdateConcluded, void Function()? onFailure) {
     this.onUpdate = onUpdate;
@@ -107,7 +101,7 @@ class BdQueimadasRepository {
 
   Future<bool> requestCookies() async {
     try {
-      Response response = await controllerApi.get('queimadas/bdqueimadas/');
+      Response response = await api.dio.get('queimadas/bdqueimadas/');
       if (response.statusCode == 200) {
         String value = response.headers.value("set-cookie")!;
         cookie = value.substring(0, value.indexOf(';'));
@@ -127,7 +121,7 @@ class BdQueimadasRepository {
 
   Future<Map<String, dynamic>?> requestOccurrences(String cityId, String from, String to) async {
     try {
-      Response response = await controllerApi.post('queimadas/bdqueimadas/get-attributes-table', getData(cityId, from, to));
+      Response response = await api.dio.post('queimadas/bdqueimadas/get-attributes-table', data: getData(cityId, from, to));
       return response.data;
     } on DioException catch (_) {}
     return null;
@@ -177,7 +171,7 @@ class BdQueimadasRepository {
 
   Future<String?> downloadData(String url, String path) async {
     try {
-      Response response = await controllerApi.get(url);
+      Response response = await api.dio.get(url);
       if (response.statusCode == 200) {
         String jsonString = json.encode(response.data["data"]);
         File file = File(path);
@@ -198,7 +192,7 @@ class BdQueimadasRepository {
 
   Future<Response?> getPredictionValues({String? city}) async {
     try {
-      return await controllerApi.get('prediction/predictions.php');
+      return await api.dio.get('prediction/predictions.php');
     } on DioException catch (e) {
       return e.response;
     }

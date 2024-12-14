@@ -55,6 +55,7 @@ class LoginForm extends StatefulWidget {
 }
 
 class LoginFormState extends State<LoginForm> {
+  final user = GetIt.I.get<User>();
   final packageInfo = GetIt.I.get<PackageInfo>();
   String? textUser, textPassword;
   PageController pageController = PageController();
@@ -80,14 +81,12 @@ class LoginFormState extends State<LoginForm> {
       dialogs.dismiss();
       return;
     }
-    User user = await User.getInstance();
     user.setName(googleUser.displayName!);
     user.setEmail(googleUser.email);
     user.setId(googleUser.id);
     user.setPhotoUrl(googleUser.photoUrl ?? "");
-    user.setType(UserType.NORMAL);
-    if (Constants.WHITE_LIST_EMAILS.any((email) => email == user.getEmail())) {
-      user.setType(UserType.ADMINISTRATOR);
+    user.setType(UserType.STUDENT);
+    if (user.isAdminstrator()) {
       FirebaseMessagingController messaging = FirebaseMessagingController();
       await messaging.subscribeTopic(Constants.FCM_TOPIC_ALERT_FIRE);
     }

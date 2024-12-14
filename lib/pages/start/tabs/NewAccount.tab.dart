@@ -97,16 +97,20 @@ class NewAccountTabState extends State<NewAccountTab> {
                       Response? response = await AuthRepository().createAccount(textName!, textUser!, textPassword!);
                       dialogs.dismiss();
                       Utils.vibrate();
-                      if (response != null && response.statusCode != null && response.statusCode == ApiResponseCodes.CREATED) {
-                        await dialogs.showDialogSuccess("Conta Criada!", "Sua conta foi criada com sucesso. Agora você pode fazer login.");
-                        widget.scrollToLogin(textUser!);
-                        return;
+                      if (response != null && response.statusCode != null) {
+                        switch (response.statusCode) {
+                          case ApiResponseCodes.CREATED:
+                            await dialogs.showDialogSuccess("Conta Criada!", "Sua conta foi criada com sucesso. Agora você pode fazer login.");
+                            widget.scrollToLogin(textUser!);
+                            break;
+                          case ApiResponseCodes.CONFLICT:
+                            Notify.showSnackbarError("Usuario Já existe!");
+                            break;
+                          default:
+                            Notify.showSnackbarError("Ocorreu um erro desconhecido!");
+                            break;
+                        }
                       }
-                      if (response != null && response.statusCode != null && response.statusCode == ApiResponseCodes.CONFLIT) {
-                        Notify.showSnackbarError("Este usuario já existe!");
-                        return;
-                      }
-                      Notify.showSnackbarError("Um erro não mapeado ocorreu!");
                     }),
         ],
       ),

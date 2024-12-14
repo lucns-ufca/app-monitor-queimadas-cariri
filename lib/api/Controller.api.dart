@@ -1,11 +1,13 @@
 // Developed by @lucns
 
-import 'dart:io';
-
+import 'package:get_it/get_it.dart';
 import 'package:monitor_queimadas_cariri/api/Api.dart';
 import 'package:dio/dio.dart';
+import 'package:monitor_queimadas_cariri/models/User.model.dart';
+import 'package:monitor_queimadas_cariri/repositories/Auth.repository.dart';
 
 class ControllerApi {
+  final user = GetIt.I.get<User>();
   Api api;
   ControllerApi(this.api);
 
@@ -13,23 +15,12 @@ class ControllerApi {
     return api.getResponseCode();
   }
 
-  Future<Response> download(String url, File file) async {
-    try {
-      Response response = await api.dio.get(url, options: Options(responseType: ResponseType.bytes, followRedirects: false));
-      RandomAccessFile randomAccessFile = await file.open(mode: FileMode.write);
-      List<int> imageBytes = response.data as List<int>;
-      await randomAccessFile.writeFrom(imageBytes, 0, imageBytes.length);
-      await randomAccessFile.close();
-      return response;
-    } on DioException {
-      rethrow;
-    }
-  }
-
   Future<Response> path(String urlPath) async {
     try {
-      //Response response = await api.dio.patch(urlPath);
-      //if (response.statusCode != null && response.statusCode == 401) await AuthRepository().refreshToken();
+      if (user.isAuthenticated()) {
+        if (user.isExpirate()) await AuthRepository().refreshToken(user.getRefreshToken()!);
+        api.dio.options.headers['Authorization'] = user.getAccessToken();
+      }
       return await api.dio.patch(urlPath);
     } on DioException {
       rethrow;
@@ -38,6 +29,10 @@ class ControllerApi {
 
   Future<Response> get(String urlPath, {Map<String, dynamic>? parameters}) async {
     try {
+      if (user.isAuthenticated()) {
+        if (user.isExpirate()) await AuthRepository().refreshToken(user.getRefreshToken()!);
+        api.dio.options.headers['Authorization'] = user.getAccessToken();
+      }
       return await api.dio.get(urlPath, queryParameters: parameters);
     } on DioException {
       rethrow;
@@ -46,6 +41,10 @@ class ControllerApi {
 
   Future<Response> post(String urlPath, Object data) async {
     try {
+      if (user.isAuthenticated()) {
+        if (user.isExpirate()) await AuthRepository().refreshToken(user.getRefreshToken()!);
+        api.dio.options.headers['Authorization'] = user.getAccessToken();
+      }
       return await api.dio.post(urlPath, data: data);
     } on DioException {
       rethrow;
@@ -63,5 +62,5 @@ class ApiResponseCodes {
   static const int BAD_REQUEST = 400;
   static const int UNAUTHORIZED = 401;
   static const int NOT_FOUND = 404;
-  static const int CONFLIT = 409;
+  static const int CONFLICT = 409;
 }

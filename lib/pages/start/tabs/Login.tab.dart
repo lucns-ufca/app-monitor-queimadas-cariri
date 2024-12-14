@@ -1,9 +1,13 @@
 import 'package:dio/dio.dart';
+import 'package:get_it/get_it.dart';
 import 'package:monitor_queimadas_cariri/api/Controller.api.dart';
+import 'package:monitor_queimadas_cariri/firebase/MessagingController.firebase.dart';
+import 'package:monitor_queimadas_cariri/models/User.model.dart';
 import 'package:monitor_queimadas_cariri/pages/content/MainScreen.page.dart';
 import 'package:monitor_queimadas_cariri/pages/dialogs/BasicDialogs.dart';
 import 'package:monitor_queimadas_cariri/repositories/Auth.repository.dart';
 import 'package:monitor_queimadas_cariri/utils/AppColors.dart';
+import 'package:monitor_queimadas_cariri/utils/Constants.dart';
 import 'package:monitor_queimadas_cariri/utils/Notify.dart';
 import 'package:monitor_queimadas_cariri/utils/Utils.dart';
 import 'package:monitor_queimadas_cariri/widgets/Button.dart';
@@ -22,6 +26,7 @@ class LoginTab extends StatefulWidget {
 }
 
 class LoginTabState extends State<LoginTab> {
+  final User user = GetIt.I.get<User>();
   SharedPreferences? preferences;
   String? textUser, textPassword;
   NavigatorState? navigator;
@@ -115,11 +120,25 @@ class LoginTabState extends State<LoginTab> {
                     dialogs.dismiss();
                     Utils.vibrate();
 
-                    if (response != null && response.statusCode != null && response.statusCode == ApiResponseCodes.OK) {
-                      await navigator!.pushReplacement(MaterialPageRoute(builder: (context) => const MainScreenPage()));
-                      return;
+                    if (response != null && response.statusCode != null) {
+                      switch (response.statusCode) {
+                        case ApiResponseCodes.OK:
+                          if (user.isAdminstrator()) {
+                            await dialogs.showDialogInfo("Você é um administrador do sistema.", "Com este privilégio você poderá acessar partes delicadas do app, como por exemplo, a área de validações de alertas de queimadas e outros futuros recursos.",
+                                positiveText: "Entendi");
+                            FirebaseMessagingController messaging = FirebaseMessagingController();
+                            await messaging.subscribeTopic(Constants.FCM_TOPIC_ALERT_FIRE);
+                          }
+                          await navigator!.pushReplacement(MaterialPageRoute(builder: (context) => const MainScreenPage()));
+                          break;
+                        case ApiResponseCodes.UNAUTHORIZED:
+                          Notify.showSnackbarError("Usuario ou senha inválidos!");
+                          break;
+                        default:
+                          Notify.showSnackbarError("Ocorreu um erro desconhecido!");
+                          break;
+                      }
                     }
-                    Notify.showSnackbarError("Usuario ou senha inválidos");
                   }
                 : null,
             textButton: "Acessar",
@@ -131,6 +150,7 @@ class LoginTabState extends State<LoginTab> {
 
   bool isUserValid() {
     if (textUser != null && textUser!.contains("@") && textUser!.contains(".") && !textUser!.endsWith("@") && !textUser!.endsWith(".")) {
+      if (textUser!.lastIndexOf(".") < textUser!.lastIndexOf("@")) return false;
       String before = textUser!.substring(0, textUser!.indexOf("@"));
       String center = textUser!.substring(textUser!.lastIndexOf("@") + 1, textUser!.lastIndexOf("."));
       String after = textUser!.substring(textUser!.lastIndexOf(".") + 1, textUser!.length);

@@ -27,7 +27,7 @@ class MainScreenPage extends StatefulWidget {
 }
 
 class MainScreenPageState extends State<MainScreenPage> {
-  final user = GetIt.I.get<User>();
+  final User user = GetIt.I.get<User>();
   final List<PermissionData> permissions = [PermissionData(name: "Camera", permission: Permission.camera), PermissionData(name: "Localização", permission: Permission.locationWhenInUse)];
   final PageController pageController = PageController();
 
@@ -59,9 +59,9 @@ class MainScreenPageState extends State<MainScreenPage> {
   @override
   Widget build(BuildContext context) {
     return PopScope(
-        canPop: !user.hasAccess(),
+        canPop: !user.isAuthenticated(),
         onPopInvokedWithResult: (bool didPop, Object? result) async {
-          if (user.hasAccess()) {
+          if (user.isAuthenticated()) {
             SystemNavigator.pop();
           } else {
             SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
