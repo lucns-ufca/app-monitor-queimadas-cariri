@@ -45,8 +45,9 @@ class AuthRepository {
     }
   }
 
-  Future<Response?> refreshToken(String refreshToken) async {
+  Future<Response?> refreshToken(String accessToken, String refreshToken) async {
     try {
+      api.dio.options.headers['Authorization'] = 'Bearer $accessToken';
       Response response = await api.dio.post('auth/refresh', data: {"refreshToken": refreshToken});
       if (response.statusCode == 200) {
         user.setAccessToken(response.data["access_token"]);

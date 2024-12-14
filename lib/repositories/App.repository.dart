@@ -11,7 +11,6 @@ import 'package:monitor_queimadas_cariri/models/WeatherCity.model.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class AppRepository {
   final ControllerApi api = ControllerApi(Api(baseUrl: 'https://monitorqueimadas.duckdns.org/'));
@@ -31,7 +30,7 @@ class AppRepository {
   List<WeatherCityModel> get getWeatherCities => weatherCities;
   List<ForecastCityModel> get getForecastCities => forecastCities;
 
-  void setOnUpdateConcluded(void Function() onUpdateConcluded) {
+  void setOnUpdateConcluded(void Function()? onUpdateConcluded) {
     this.onUpdateConcluded = onUpdateConcluded;
   }
 
@@ -201,21 +200,7 @@ class AppRepository {
 
   Future<Response?> reportFireFormData(FormData formData) async {
     try {
-      return await api.post('prediction/predictions.php', formData);
-    } on DioException catch (e) {
-      return e.response;
-    }
-  }
-
-  Future<Response?> reportFireJson(Map<String, dynamic> json) async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    String ip = preferences.getString("ip") ?? "";
-    String port = preferences.getString("port") ?? "";
-    bool useLocal = preferences.getBool("use_local") ?? false;
-    String baseUrl = useLocal && ip.isNotEmpty && port.isNotEmpty ? 'http://$ip:$port/' : 'https://lucns.io/apps/monitor_queimadas_cariri/';
-    Dio api = Dio(BaseOptions(baseUrl: baseUrl));
-    try {
-      return await api.post('warnings', data: json);
+      return await api.post('warnings', formData);
     } on DioException catch (e) {
       return e.response;
     }

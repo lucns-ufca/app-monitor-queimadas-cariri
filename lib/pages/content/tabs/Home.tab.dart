@@ -215,16 +215,20 @@ class TabHomePageState extends State<TabHomePage> with AutomaticKeepAliveClientM
     if (a) {
       await appRepository.updatePrediction(DateTime.now().year);
       updatePrediction();
-      setState(() {
-        loadingTop = false;
-      });
+      if (mounted) {
+        setState(() {
+          loadingTop = false;
+        });
+      }
     }
     if (b) {
       await appRepository.updateWeather();
       updateWeather();
-      setState(() {
-        loadingBottom = false;
-      });
+      if (mounted) {
+        setState(() {
+          loadingBottom = false;
+        });
+      }
     }
     /*
     if (probabilitiesCities.isEmpty || appRepository.allowUpdateForecast()) {

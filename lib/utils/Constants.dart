@@ -8,8 +8,8 @@ class Constants {
   static const int PAGE_TYPE_VALIDATION = 1;
 
   static const List<String> WHITE_LIST_EMAILS = [
+    'abc@mail.io',
     'lucns.dev@gmail.com',
-    'lucns@mail.com',
     'lucas.nascimento@aluno.ufca.edu.br',
     'pedro.hugo@aluno.ufca.edu.br',
     'fabricio.freitas@ufca.edu.br',

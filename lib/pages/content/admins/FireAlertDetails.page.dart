@@ -117,7 +117,7 @@ class FireAlertDetailsPageState extends State<FireAlertDetailsPage> {
                                     height: 24,
                                     child: CircularProgressIndicator(color: AppColors.appValidationAccent),
                                   )),
-                              errorWidget: (context, url, error) => const Center(child: SizedBox(width: 16, height: 16, child: Icon(Icons.warning))),
+                              errorWidget: (context, url, error) => const Center(child: SizedBox(width: 16, height: 16, child: Icon(Icons.warning, color: AppColors.red))),
                               imageBuilder: (context, imageProvider) => Container(
                                       decoration: BoxDecoration(
                                     image: DecorationImage(image: imageProvider, fit: BoxFit.cover),

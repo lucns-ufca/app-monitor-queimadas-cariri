@@ -61,10 +61,10 @@ class FireReportSenderPageState extends State<FireReportSenderPage> {
     formData.files.add(MapEntry("image", await MultipartFile.fromFile(imageFile!.path, contentType: DioMediaType.parse("image/jpg"))));
     Response? response = await appRepository.reportFireFormData(formData);
 
-    if (response == null || response.statusCode == null && response.statusCode! > 199 && response.statusCode! < 300) {
+    if (response != null && response.statusCode != null && response.statusCode! > 199 && response.statusCode! < 300) {
       await imageFile!.delete();
       FirebaseMessagingSender sender = FirebaseMessagingSender();
-      sender.sendNotification("Um alerta foi reportado", "Foi reportado um alerta de queimada. Clique para ver mais detalhes ou validar, na lista de alertas.", topic: Constants.FCM_TOPIC_ALERT_FIRE);
+      sender.sendNotification("Alerta de Queimada", "Foi reportado um alerta de queimada. Clique para ver mais detalhes ou validar, na lista de alertas.", topic: Constants.FCM_TOPIC_ALERT_FIRE);
       buttonLoadingController.setLoading(false);
       dialogs!.showDialogSuccess("Enviado", "Obrigado por nos ajudar no monitoramento de queimadas.", onDismiss: () async {
         await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const MainScreenPage()));
@@ -77,7 +77,7 @@ class FireReportSenderPageState extends State<FireReportSenderPage> {
     if (results.isEmpty) {
       dialogs!.showDialogError("Erro ao enviar", "Sem conexão à internet.");
     } else {
-      if (response.statusCode == null) {
+      if (response == null || response.statusCode == null) {
         dialogs!.showDialogError("Erro ao enviar", "Não foi possivel enviar neste momento. Houve um problema na conexão com o servidor.");
       } else {
         dialogs!.showDialogError("Erro ao enviar", "Não foi possivel enviar neste momento. Houve um problema na conexão com o servidor. Código de resposta: ${response.statusCode}.");

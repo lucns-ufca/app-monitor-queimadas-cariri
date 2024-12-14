@@ -1,14 +1,15 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:monitor_queimadas_cariri/api/Api.dart';
+import 'package:monitor_queimadas_cariri/api/Controller.api.dart';
 import 'package:monitor_queimadas_cariri/models/FireAlert.model.dart';
 
 class AlertsRepository {
-  final Api api = Api(baseUrl: 'https://monitorqueimadas.duckdns.org/');
+  final ControllerApi api = ControllerApi(Api(baseUrl: 'https://monitorqueimadas.duckdns.org/'));
 
   Future<Response?> sendFireAlertStatus(String id, bool validate) async {
     try {
-      return await api.dio.patch(validate ? '/warnings/$id/validate' : '/warnings/$id/invalidate');
+      return await api.patch(validate ? '/warnings/$id/validate' : '/warnings/$id/invalidate');
     } on DioException catch (e) {
       return e.response;
     }
@@ -40,7 +41,7 @@ class AlertsRepository {
         break;
     }
     try {
-      Response response = await api.dio.get('warnings', queryParameters: {'page': 1, 'limit': 10, 'status': type});
+      Response response = await api.get('warnings', parameters: {'page': 1, 'limit': 10, 'status': type});
       if (response.statusCode == 200) {
         List<FireAlertModel> models = [];
         for (dynamic d in response.data['data']) {

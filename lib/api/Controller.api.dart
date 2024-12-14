@@ -15,11 +15,11 @@ class ControllerApi {
     return api.getResponseCode();
   }
 
-  Future<Response> path(String urlPath) async {
+  Future<Response> patch(String urlPath) async {
     try {
       if (user.isAuthenticated()) {
-        if (user.isExpirate()) await AuthRepository().refreshToken(user.getRefreshToken()!);
-        api.dio.options.headers['Authorization'] = user.getAccessToken();
+        if (user.isExpirate()) await AuthRepository().refreshToken(user.getAccessToken()!, user.getRefreshToken()!);
+        api.dio.options.headers['Authorization'] = 'Bearer ${user.getAccessToken()}';
       }
       return await api.dio.patch(urlPath);
     } on DioException {
@@ -30,8 +30,8 @@ class ControllerApi {
   Future<Response> get(String urlPath, {Map<String, dynamic>? parameters}) async {
     try {
       if (user.isAuthenticated()) {
-        if (user.isExpirate()) await AuthRepository().refreshToken(user.getRefreshToken()!);
-        api.dio.options.headers['Authorization'] = user.getAccessToken();
+        if (user.isExpirate()) await AuthRepository().refreshToken(user.getAccessToken()!, user.getRefreshToken()!);
+        api.dio.options.headers['Authorization'] = 'Bearer ${user.getAccessToken()}';
       }
       return await api.dio.get(urlPath, queryParameters: parameters);
     } on DioException {
@@ -42,8 +42,8 @@ class ControllerApi {
   Future<Response> post(String urlPath, Object data) async {
     try {
       if (user.isAuthenticated()) {
-        if (user.isExpirate()) await AuthRepository().refreshToken(user.getRefreshToken()!);
-        api.dio.options.headers['Authorization'] = user.getAccessToken();
+        if (user.isExpirate()) await AuthRepository().refreshToken(user.getAccessToken()!, user.getRefreshToken()!);
+        api.dio.options.headers['Authorization'] = 'Bearer ${user.getAccessToken()}';
       }
       return await api.dio.post(urlPath, data: data);
     } on DioException {
