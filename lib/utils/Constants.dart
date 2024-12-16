@@ -5,6 +5,8 @@ class Constants {
   static const String NOTIFICATION_CHANNEL_ID = "app_notifications";
   static const String NOTIFICATION_CHANNEL_TITLE = "Alerta de Queimadas";
   static const String NOTIFICATION_CHANNEL_DESCRIPTION = "Este canal é usado para criar notificações sobre alertas de queimadas reportados.";
+  static const String FCM_TOPIC_ALERT_FIRE = 'monitor_queimadas_cariri-alert_fire';
+  static const String FCM_TOPIC_ALERT_FIRE_DEV = 'monitor_queimadas_cariri-alert_fire_dev';
   static const int PAGE_TYPE_VALIDATION = 1;
 
   static const List<String> WHITE_LIST_EMAILS = [
@@ -69,8 +71,6 @@ class Constants {
     'Tarrafas': CityData(name: 'Tarrafas', latitude: -6.684036, longitude: -39.758108, geographicalArea: const Tuple(key: '2022', value: '412,719'), urbanizedArea: const Tuple(key: '2019', value: '1,85'), population: const Tuple(key: '2022', value: '7.529')),
     'Umari': CityData(name: 'Umari', latitude: -6.644247, longitude: -38.699599, geographicalArea: const Tuple(key: '2022', value: '263,183'), urbanizedArea: const Tuple(key: '2019', value: '0,92'), population: const Tuple(key: '2022', value: '6.871')),
   };
-
-  static const String FCM_TOPIC_ALERT_FIRE = 'monitor_queimadas_cariri-alert_fire';
 }
 
 class CityData {

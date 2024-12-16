@@ -116,7 +116,27 @@ class Dialogs {
               const SizedBox(height: 8),
               Text(description, textAlign: TextAlign.justify, maxLines: 10, style: const TextStyle(color: Colors.white, fontSize: 16, overflow: TextOverflow.visible)),
               const SizedBox(height: 24),
-              // INSERIR DOIS BOTOES AQUI
+              if (onPositiveClick != null && onNegativeClick != null)
+                Align(
+                    alignment: AlignmentDirectional.centerEnd,
+                    child: Row(mainAxisSize: MainAxisSize.min, children: [
+                      SizedBox(
+                          width: 100,
+                          child: TransparentButton(
+                              textColor: accentColor,
+                              text: negativeText ?? "Cancelar",
+                              onTap: () {
+                                onNegativeClick();
+                              })),
+                      SizedBox(
+                          width: 150,
+                          child: TransparentButton(
+                              textColor: accentColor,
+                              text: positiveText ?? "OK",
+                              onTap: () {
+                                onPositiveClick();
+                              }))
+                    ])),
               if ((positiveText != null || onPositiveClick != null) && onNegativeClick == null)
                 Center(
                     child: SizedBox(

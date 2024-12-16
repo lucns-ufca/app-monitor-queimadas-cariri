@@ -1,6 +1,5 @@
-import 'dart:developer';
-
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
+import 'package:app_settings/app_settings.dart';
 import 'package:focus_detector/focus_detector.dart';
 import 'package:monitor_queimadas_cariri/models/User.model.dart';
 import 'package:monitor_queimadas_cariri/pages/content/admins/FiresAlertValidation.page.dart';
@@ -43,9 +42,15 @@ class MainScreenPageState extends State<MainScreenPage> {
         Dialogs dialogs = Dialogs(context);
         dialogs.showDialogInfo("Permissão negada!",
             "O Monitor de queimadas Cariri precisa de permissão para criar notificações. Só assim será possível gerar notificações sobre novos alertas de queimadas. Caso queira dar essa permissão, basta acessar a área de permissões do app, clicando abaixo.",
-            positiveText: "Abrir Permissões", onPositiveClick: () {
-          log("Abrir area de notificacoes");
-        }, negativeText: "Cancelar");
+            positiveText: "Abrir Permissões",
+            onPositiveClick: () {
+              AppSettings.openAppSettings(type: AppSettingsType.notification);
+              dialogs.dismiss();
+            },
+            negativeText: "Cancelar",
+            onNegativeClick: () {
+              dialogs.dismiss();
+            });
       }
     }
   }
