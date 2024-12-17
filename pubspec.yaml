@@ -64,8 +64,8 @@ dependencies:
   googleapis_auth: 
   package_info_plus: 
   flutter_local_notifications:
-  cached_network_image: ^3.4.1
-  app_settings: ^5.1.1
+  cached_network_image: 
+  app_settings: 
 
 dev_dependencies:
   flutter_test:
