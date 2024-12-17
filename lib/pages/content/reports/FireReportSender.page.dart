@@ -2,7 +2,9 @@
 
 import 'dart:io';
 
+import 'package:get_it/get_it.dart';
 import 'package:monitor_queimadas_cariri/firebase/MessagingSender.firebase.dart';
+import 'package:monitor_queimadas_cariri/models/User.model.dart';
 import 'package:monitor_queimadas_cariri/pages/content/MainScreen.page.dart';
 import 'package:monitor_queimadas_cariri/pages/content/reports/FireReportPages.page.dart';
 import 'package:monitor_queimadas_cariri/pages/dialogs/BasicDialogs.dart';
@@ -33,7 +35,10 @@ class FireReportSenderPage extends StatefulWidget {
 }
 
 class FireReportSenderPageState extends State<FireReportSenderPage> {
-  Connectivity connectivity = Connectivity();
+  final ButtonLoadingController buttonLoadingController = ButtonLoadingController();
+  final AppRepository appRepository = AppRepository();
+  final Connectivity connectivity = Connectivity();
+  final User user = GetIt.I.get<User>();
   File? imageFile;
   String? description;
   double latitude = 0;
@@ -46,8 +51,6 @@ class FireReportSenderPageState extends State<FireReportSenderPage> {
   bool hasError = false;
   String? hours;
   Dialogs? dialogs;
-  ButtonLoadingController buttonLoadingController = ButtonLoadingController();
-  AppRepository appRepository = AppRepository();
 
   Future<void> sendData() async {
     buttonLoadingController.setLoading(true);
@@ -57,6 +60,7 @@ class FireReportSenderPageState extends State<FireReportSenderPage> {
     formData.fields.add(MapEntry("longitude", longitude.toString()));
     //formData.fields.add(MapEntry("timestamp", DateTime.now().toLocal().millisecondsSinceEpoch.toString()));
     //formData.fields.add(MapEntry("date_time", getDateTime()));
+    formData.fields.add(MapEntry("username", user.isAuthenticated() ? user.getName() ?? "Visitante" : "Visitante"));
     formData.fields.add(MapEntry("description", description ?? getInitialText()));
     formData.files.add(MapEntry("image", await MultipartFile.fromFile(imageFile!.path, contentType: DioMediaType.parse("image/jpg"))));
     Response? response = await appRepository.reportFireFormData(formData);

@@ -115,6 +115,7 @@ class FiresAlertValidationPageState extends State<FiresAlertValidationPage> {
                   if (snapshot.hasError || alertList == null) {
                     return getErrorWidget();
                   }
+                  alertList.sort((a, b) => b.dateTime!.compareTo(a.dateTime!));
                   if (alertList.isEmpty) {
                     return getEmptyListWidget();
                   }
