@@ -2,13 +2,11 @@
 
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math' as math;
 
 import 'package:monitor_queimadas_cariri/api/Api.dart';
 import 'package:monitor_queimadas_cariri/models/FireOccurrence.model.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-//import 'package:path_provider/path_provider.dart';
 
 class BdQueimadasRepository {
   Api api = Api(baseUrl: 'https://terrabrasilis.dpi.inpe.br/');
@@ -184,29 +182,4 @@ class BdQueimadasRepository {
     }
     return null;
   }
-
-  Future<void> updateOccurrences() async {
-    //Directory directory = await getApplicationDocumentsDirectory();
-    //String? data = await downloadData('weather/forecast.php', "${directory.path}/data/weather/AllCitiesForecast.json");
-  }
-
-  Future<Response?> getPredictionValues({String? city}) async {
-    try {
-      return await api.dio.get('prediction/predictions.php');
-    } on DioException catch (e) {
-      return e.response;
-    }
-  }
-
-  bool isNearest(double lat1, double lon1, double lat2, double lon2) {
-    double radius = 6371; // earth radius in km
-    double dlat = radians(lat2 - lat1);
-    double dlon = radians(lon2 - lon1);
-    double a = (math.sin(dlat / 2) * math.sin(dlat / 2) + math.cos(radians(lat1)) * math.cos(radians(lat2)) * math.sin(dlon / 2) * math.sin(dlon / 2));
-    double c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a));
-    double d = radius * c;
-    return d <= 1;
-  }
-
-  double radians(double deg) => deg / 180.0 * 3.1415;
 }
