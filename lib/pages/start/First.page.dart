@@ -3,7 +3,7 @@
 import 'package:flutter/services.dart';
 import 'package:focus_detector/focus_detector.dart';
 import 'package:monitor_queimadas_cariri/pages/content/MainScreen.page.dart';
-import 'package:monitor_queimadas_cariri/pages/start/Acess.page.dart';
+import 'package:monitor_queimadas_cariri/pages/start/Access.page.dart';
 import 'package:monitor_queimadas_cariri/utils/AppColors.dart';
 import 'package:monitor_queimadas_cariri/utils/Notification.provider.dart';
 import 'package:monitor_queimadas_cariri/widgets/AppLogos.widget.dart';

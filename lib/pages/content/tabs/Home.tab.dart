@@ -11,7 +11,7 @@ import 'package:monitor_queimadas_cariri/pages/content/BaseWidgets.dart';
 import 'package:monitor_queimadas_cariri/pages/content/IpDefinition.page.dart';
 import 'package:monitor_queimadas_cariri/pages/content/admins/FiresAlertValidation.page.dart';
 import 'package:monitor_queimadas_cariri/pages/dialogs/PopupMenu.dart';
-import 'package:monitor_queimadas_cariri/pages/start/Acess.page.dart';
+import 'package:monitor_queimadas_cariri/pages/start/Access.page.dart';
 import 'package:monitor_queimadas_cariri/pages/start/First.page.dart';
 import 'package:monitor_queimadas_cariri/repositories/App.repository.dart';
 import 'package:monitor_queimadas_cariri/utils/AppColors.dart';
@@ -237,10 +237,12 @@ class TabHomePageState extends State<TabHomePage> with AutomaticKeepAliveClientM
     }
     */
     if (loadingTop || loadingBottom) {
-      setState(() {
-        loadingTop = false;
-        loadingBottom = false;
-      });
+      if (mounted) {
+        setState(() {
+          loadingTop = false;
+          loadingBottom = false;
+        });
+      }
     }
   }
 

@@ -4,9 +4,9 @@ import 'package:monitor_queimadas_cariri/pages/content/MainScreen.page.dart';
 import 'package:monitor_queimadas_cariri/utils/Constants.dart';
 import 'package:flutter/material.dart';
 
-import 'package:monitor_queimadas_cariri/widgets/Toolbar.dart';
 import 'package:monitor_queimadas_cariri/utils/AppColors.dart';
 import 'package:flutter/services.dart';
+import 'package:video_player/video_player.dart';
 
 class AboutPage extends StatefulWidget {
   const AboutPage({super.key});
@@ -17,12 +17,16 @@ class AboutPage extends StatefulWidget {
 
 class AboutPageState extends State<AboutPage> {
   double toolbarHeight = 220;
+  VideoPlayerController videoController = VideoPlayerController.asset('assets/videos/dark_bird.mp4');
 
   @override
   void initState() {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(systemNavigationBarColor: Colors.transparent, statusBarColor: Colors.transparent, statusBarIconBrightness: Brightness.light, systemNavigationBarIconBrightness: Brightness.light));
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [SystemUiOverlay.top]);
     super.initState();
+    videoController.setLooping(true);
+    videoController.initialize().then((_) => setState(() {}));
+    videoController.play();
   }
 
   @override
@@ -38,23 +42,22 @@ class AboutPageState extends State<AboutPage> {
         backgroundColor: AppColors.appBackground,
         body: Stack(
           children: [
-            Container(
-              height: toolbarHeight,
-              decoration: const BoxDecoration(
-                  image: DecorationImage(
-                fit: BoxFit.fitWidth,
-                alignment: FractionalOffset.topCenter,
-                image: AssetImage("assets/images/soldadinho_araripe2.jpg"),
-              )),
-              child: Column(mainAxisSize: MainAxisSize.min, children: [
-                const SizedBox(height: 28),
-                MyToolbar(
-                    title: "Sobre o Projeto",
-                    onBackPressed: () async {
-                      //await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const DashboardPage()));
-                    })
-              ]),
-            ),
+            AspectRatio(aspectRatio: videoController.value.aspectRatio, child: VideoPlayer(videoController)),
+            SizedBox(
+                height: toolbarHeight,
+                child: Padding(
+                    padding: const EdgeInsets.only(left: 16),
+                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      const SizedBox(height: 32),
+                      const Text("Soldadinho do Araripe", style: TextStyle(color: Colors.white, fontSize: 14)),
+                      const SizedBox(height: 8),
+                      Container(width: 145, height: 0.5, color: Colors.white),
+                      const SizedBox(height: 8),
+                      const Text(
+                        "Está em perigo\ncrítico de extinção",
+                        style: TextStyle(color: Colors.white, fontSize: 12),
+                      )
+                    ]))),
             Align(
               alignment: Alignment.bottomCenter,
               child: Container(

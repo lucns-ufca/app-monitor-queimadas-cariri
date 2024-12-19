@@ -66,6 +66,7 @@ dependencies:
   flutter_local_notifications:
   cached_network_image: 
   app_settings: 
+  video_player:
 
 dev_dependencies:
   flutter_test:
@@ -107,6 +108,7 @@ flutter:
     - assets/icons/weather/
     - assets/icons/
     - assets/files/
+    - assets/videos/
     
   fonts:
   - family: MontBlancBold
