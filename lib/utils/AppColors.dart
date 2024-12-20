@@ -43,9 +43,13 @@ class AppColors {
   static const fragmentBackgroundSuccess = Color.fromARGB(208, 26, 194, 102);
   static const menuBackground = Color.fromARGB(195, 248, 212, 177);
   static const listDivider = Color.fromARGB(255, 15, 9, 0);
+  static const aboutGradientStart = Color.fromARGB(255, 45, 32, 15);
+  static const aboutGradientEnd = Color.fromARGB(255, 81, 59, 28);
+  static const twigColor = Color.fromARGB(255, 117, 148, 43);
 
   static const textAccent = Color.fromARGB(197, 255, 187, 40);
   static const textNormal = Color.fromARGB(197, 255, 255, 255);
+  static const textNormal2 = Color.fromARGB(220, 255, 255, 255);
   static const textDisabled = Color.fromARGB(137, 255, 255, 255);
   static const textNormalSecondary = gray_4;
   static const textDisabledSecondary = gray_4;

@@ -1,0 +1,43 @@
+[
+    {
+        "name": "Prof. Dr. Luís Fabrício de Freitas Souza",
+        "description": "Possui graduação em Computação pela Universidade Federal Rural de Pernambuco (2012). Mestrado Acadêmico pelo Instituto Federal do Ceará (IFCE), em Ciência da Computação, Doutorado em Engenharia de Teleinformática (Universidade Federal do Ceará). Atualmente, professor da Universidade Federal do Cariri, pesquisador e desenvolvedor com ênfase em Projetos relacionados à Inteligência Artificial, Machine Learning, Reconhecimento de Padrões, Processamento e Análise de Imagens e Sinais.",
+        "image": "Luis_Fabricio_de_Freitas_Souza.jpg",
+        "technologies": "Java, python, css, c++, flutter, Nestjs e Postgres"
+    },
+    {
+        "name": "Ítalo Fernandes de Oliveira Maia",
+        "description": "Sou Ítalo, e faço parte da equipe de Back-end. Como desenvolvedor voluntário, estou entusiasmado em contribuir para o desenvolvimento do nosso projeto de monitoramento de queimadas no Cariri. Atualmente, estou cursando o 4º semestre do Tecnólogo em Análise e Desenvolvimento de Sistemas na Universidade Federal do Cariri. Minha paixão por tecnologia e inovação me levou a me envolver neste projeto, onde posso aplicar meus conhecimentos em desenvolvimento web. Minhas principais responsabilidades incluem desenvolver e testar os endpoints da API do projeto. Estou comprometido em trabalhar em equipe e utilizar minhas habilidades técnicas para alcançar os objetivos do projeto. Além do meu interesse em tecnologia, também sou apaixonado por jogos eletrônicos e esportes, principalmente o vôlei. Acredito que a diversidade de experiências enriquece nossa equipe e nos ajuda a abordar os desafios de maneiras criativas. Estou animado para fazer parte deste projeto e contribuir  para a criação de uma solução impactante para a nossa comunidade.",
+        "image": "Ítalo_Fernandes_de_Oliveira_Maia.jpg",
+        "technologies": "Nest.js, Typescript e Docker",
+        "email": "italo.fernandes@aluno.ufca.edu.br",
+        "linkedin": "https://www.linkedin.com/in/italo-maia/"
+    },
+    {
+        "name": "Lívia Nunes de Melo",
+        "description": "Faço parte da Equipe de Mídia e Educacional do projeto de Monitoramento de Queimadas no Cariri. Atuo com entusiasmo no gerenciamento das redes sociais e na divulgação deste importante projeto de conservação ambiental. Minha afinidade com a comunicação e a utilização estratégica das redes sociais me motivou a integrar essa iniciativa, onde posso aplicar meu conhecimento para conscientizar e engajar a comunidade sobre a preservação do meio ambiente. Além do meu interesse pela comunicação digital, tenho uma paixão pela tecnologia e seu potencial transformador. Acredito firmemente que a combinação da minha expertise em comunicação com meu entusiasmo pela tecnologia me capacitam a contribuir para o sucesso deste projeto.",
+        "image": "Lívia_Nunes_de_Melo.png",
+        "technologies": "Figma, Adobe Premiere Pro, Linkedin e Instagram",
+        "email": "livia.nunes@aluno.ufca.edu.br",
+        "linkedin": "https://www.linkedin.com/in/l%C3%ADvia-nunes-5809b211b/",
+        "instagram": ""
+    },
+    {
+        "name": "",
+        "description": "",
+        "image": "",
+        "technologies": "",
+        "email": "",
+        "linkedin": "",
+        "instagram": ""
+    },
+    {
+        "name": "",
+        "description": "",
+        "image": "",
+        "technologies": "",
+        "email": "",
+        "linkedin": "",
+        "instagram": ""
+    }
+]

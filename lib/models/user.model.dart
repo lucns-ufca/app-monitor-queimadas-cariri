@@ -71,7 +71,8 @@ class User {
     _data.type = type;
   }
 
-  void setAccessToken(String token) {
+  void setAccessToken(String token, {bool isGoogleAccount = false}) {
+    _data.isGoogleAccount = isGoogleAccount;
     _data.accessToken = token;
     _data.expirationDateTime = DateTime.now().add(const Duration(minutes: 15)).toLocal();
   }
@@ -96,6 +97,10 @@ class User {
 
   bool isExpirate() {
     return DateTime.now().isAfter(_data.expirationDateTime!);
+  }
+
+  bool isValidated() {
+    return isAuthenticated() && !_data.isGoogleAccount;
   }
 
   bool isAuthenticated() {
@@ -141,6 +146,7 @@ class UserData {
   String? accessToken, refreshToken;
   String? photoUrl;
   DateTime? expirationDateTime;
+  bool isGoogleAccount = false;
   UserType type = UserType.STUDENT;
 
   UserData._();
@@ -156,6 +162,7 @@ class UserData {
     refreshToken = map["refresh_token"];
     id = map["id"];
     photoUrl = map["photo_url"];
+    isGoogleAccount = map["is_google_account"];
     expirationDateTime = DateTime.parse(map["expiration_datetime"]);
     int userType = map["user_type"] ?? 0;
     switch (userType) {
@@ -182,7 +189,8 @@ class UserData {
         break;
       default: // UserType.BANNED
     }
-    String content = json.encode({"user_type": userType, "expiration_datetime": expirationDateTime!.toIso8601String(), "id": id, "name": name, "email": email, "access_token": accessToken, "refresh_token": refreshToken, "photo_url": photoUrl});
+    String content = json.encode(
+        {"user_type": userType, "expiration_datetime": expirationDateTime!.toIso8601String(), "id": id, "name": name, "email": email, "access_token": accessToken, "refresh_token": refreshToken, "photo_url": photoUrl, 'is_google_account': isGoogleAccount});
     await Annotator("user.json").setContent(content);
   }
 

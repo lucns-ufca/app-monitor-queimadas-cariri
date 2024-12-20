@@ -99,7 +99,7 @@ class LoginFormState extends State<LoginForm> {
 
     try {
       GoogleSignInAuthentication? googleAuth = await googleUser.authentication;
-      user.setAccessToken(googleAuth.accessToken!);
+      user.setAccessToken(googleAuth.accessToken!, isGoogleAccount: true);
     } catch (e, t) {
       debugPrintStack(stackTrace: t);
     }
