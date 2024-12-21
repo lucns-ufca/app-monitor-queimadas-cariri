@@ -19,25 +19,34 @@
         "image": "Lívia_Nunes_de_Melo.png",
         "technologies": "Figma, Adobe Premiere Pro, Linkedin e Instagram",
         "email": "livia.nunes@aluno.ufca.edu.br",
-        "linkedin": "https://www.linkedin.com/in/l%C3%ADvia-nunes-5809b211b/",
-        "instagram": ""
+        "linkedin": "https://www.linkedin.com/in/l%C3%ADvia-nunes-5809b211b/"
     },
     {
-        "name": "",
-        "description": "",
-        "image": "",
-        "technologies": "",
-        "email": "",
-        "linkedin": "",
-        "instagram": ""
+        "name": "Lucas do Nascimento Souza",
+        "description": "Sou o criador do APP e desenvolvedor do sistema de IA. Adoro montar projetos de eletrônica/robótica vinculadas a apps ou sistemas autônomos. Sou programador profissional. E por meio deste projeto pude aplicar minhas habilidades na prática buscando somar recursos que agregassem grande valor ao projeto. Sou residente do litoral do Ceará, terra da luz.",
+        "image": "lucns.jpg",
+        "technologies": "Java, Flutter, C++, Python, Raspberry, Arduino e Hardware Gadgets",
+        "email": "lucas.nascimento@aluno.ufca.edu.br",
+        "linkedin": "https://www.linkedin.com/in/lucns",
+        "instagram": "https://instagram.com/lucns",
+        "lattes": "http://lattes.cnpq.br/1089071220154105",
+        "orcid": "https://orcid.org/0009-0001-3765-0918",
+        "github": "https://github.com/lucns"
     },
     {
-        "name": "",
-        "description": "",
-        "image": "",
-        "technologies": "",
-        "email": "",
-        "linkedin": "",
-        "instagram": ""
+        "name": "Osvaldo Soares Landim Junior",
+        "description": "Programador Front-end. Atualmente, estou no ultimo período da graduação em Análise e Desenvolvimento de Sistemas pela Universidade Federal do Cariri. Trabalho como desenvolvedor de sistemas web há 2 anos na parte de desenvolvimento front, mas também me divirto no back-end sempre que possível. Minhas principais responsabilidade dentro da equipe de front-end são:  organização de tarefas e alinhamento com minha equipe e com as outras envolvidas, para proporcionar a evolução da aplicação. Além da coordenação da equipe de trabalho, também atuo na parte de programação dos projetos. Atualmente também estou liderando a Equipe Front-End no projeto \"Monitor de Queimadas Cariri\", em elaboração pela Universidade Federal do Cariri.",
+        "image": "Osvaldo_Soares_Landim_Junior.png",
+        "technologies": "React, TypeScript e StyleComponets",
+        "email": "soares.osvaldo@aluno.ufca.edu.br",
+        "linkedin": "https://br.linkedin.com/in/osvaldo-soares-landim-junior-4264211b5"
+    },
+    {
+        "name": "Pedro Hugo Ursulino Fernandes",
+        "description": "Sou estudante do curso de Ciências da Computação na UFCA e possuo experiência no desenvolvimento de aplicações utilizando diversas tecnologias, incluindo TypeScript e Node.js.",
+        "image": "Pedro_Hugo_Ursulino_Fernandes.jpg",
+        "technologies": "Node.js, Typescript, Nest.js, Prisma ORM e PostgreSQL.",
+        "email": "pedro.hugo@aluno.ufca.edu.br",
+        "linkedin": "https://www.linkedin.com/in/pedrohugou"
     }
 ]

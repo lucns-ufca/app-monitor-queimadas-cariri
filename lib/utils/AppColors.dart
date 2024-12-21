@@ -45,6 +45,7 @@ class AppColors {
   static const listDivider = Color.fromARGB(255, 15, 9, 0);
   static const aboutGradientStart = Color.fromARGB(255, 45, 32, 15);
   static const aboutGradientEnd = Color.fromARGB(255, 81, 59, 28);
+  static const aboutButtons = Color.fromARGB(255, 122, 98, 63);
   static const twigColor = Color.fromARGB(255, 117, 148, 43);
 
   static const textAccent = Color.fromARGB(197, 255, 187, 40);
