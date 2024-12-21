@@ -87,6 +87,7 @@ class FirebaseMessagingSender extends FirebaseMessagingSenderBase {
 abstract class FirebaseMessagingSenderBase {
   Api api;
   String? bearerToken, projectId;
+  int responseCode = 0;
 
   FirebaseMessagingSenderBase() : api = Api(baseUrl: "https://fcm.googleapis.com/v1/projects/");
 
@@ -108,7 +109,8 @@ abstract class FirebaseMessagingSenderBase {
     Map<String, dynamic> headers = {"Authorization": "Bearer $bearerToken", "Content-Type": "application/json; UTF-8"};
     api.addHeaders(headers);
     try {
-      await api.dio.post("$projectId/messages:send", data: json.encode(payload));
+      Response response = await api.dio.post("$projectId/messages:send", data: json.encode(payload));
+      responseCode = response.statusCode ?? 0;
       //Response response = await api.dio.post("$projectId/messages:send", data: json.encode(jsonObject));
       //log("response code->${response.statusCode}");
     } on DioException catch (e) {

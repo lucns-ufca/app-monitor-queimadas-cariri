@@ -91,7 +91,7 @@ void main() async {
   await notificationProvider.setChannel(Constants.NOTIFICATION_CHANNEL_ID, Constants.NOTIFICATION_CHANNEL_TITLE, Constants.NOTIFICATION_CHANNEL_DESCRIPTION);
   notificationProvider.removeAll();
 
-  FirebaseMessagingController messaging = FirebaseMessagingController();
+  FirebaseMessagingReceiver messaging = FirebaseMessagingReceiver();
   await messaging.initialize((token) {}, onMessageReceived, onBackgroundMessageReceived, onFirebaseNotificationClick);
 
   //final packageInfo = GetIt.I.get<PackageInfo>();
@@ -123,9 +123,16 @@ class MainApp extends StatefulWidget {
 class MainAppState extends State<MainApp> {
   final appRepository = GetIt.I.get<AppRepository>();
 
+  void initializeNotificationReceiverChannel() async {
+    FirebaseMessagingReceiver messaging = FirebaseMessagingReceiver();
+    await messaging.subscribeTopic(Constants.FCM_TOPIC_GENERAL_MESSAGES);
+  }
+
   @override
   void initState() {
     super.initState();
+    initializeNotificationReceiverChannel();
+
     appRepository.setOnError((responseCode) {
       if (responseCode == 0) {
         Notify.showSnackbarError("Falha ao tentar obter dados!");

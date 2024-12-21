@@ -6,10 +6,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:monitor_queimadas_cariri/utils/Annotator.dart';
 
-class FirebaseMessagingController {
+class FirebaseMessagingReceiver {
   String? token;
 
-  FirebaseMessagingController();
+  FirebaseMessagingReceiver();
 
   Future<void> initialize(void Function(String) onTokenAvailable, void Function(RemoteMessage?) onMessageReceived, Future<void> Function(RemoteMessage) onBackgroundMessageReceived, void Function(RemoteMessage) onFirebaseNotificationClick) async {
     //https://console.firebase.google.com/project/monitor-queimadas-cariri/settings/cloudmessaging/android:lucns.monitor_queimadas_cariri

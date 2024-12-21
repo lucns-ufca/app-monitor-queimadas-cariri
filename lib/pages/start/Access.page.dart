@@ -93,7 +93,7 @@ class LoginFormState extends State<LoginForm> {
     user.setPhotoUrl(googleUser.photoUrl ?? "");
     user.setType(UserType.STUDENT);
     if (user.isAdminstrator()) {
-      FirebaseMessagingController messaging = FirebaseMessagingController();
+      FirebaseMessagingReceiver messaging = FirebaseMessagingReceiver();
       await messaging.subscribeTopic(Constants.FCM_TOPIC_ALERT_FIRE);
     }
 

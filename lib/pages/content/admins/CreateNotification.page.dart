@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:focus_detector/focus_detector.dart';
+import 'package:monitor_queimadas_cariri/firebase/MessagingSender.firebase.dart';
 import 'package:monitor_queimadas_cariri/pages/content/MainScreen.page.dart';
 import 'package:monitor_queimadas_cariri/pages/dialogs/BasicDialogs.dart';
 import 'package:monitor_queimadas_cariri/utils/AppColors.dart';
+import 'package:monitor_queimadas_cariri/utils/Constants.dart';
 import 'package:monitor_queimadas_cariri/utils/Notify.dart';
 import 'package:monitor_queimadas_cariri/widgets/ButtonLoading.widget.dart';
 import 'package:monitor_queimadas_cariri/widgets/TextField.dart';
@@ -17,16 +19,28 @@ class CreateNotificationPage extends StatefulWidget {
 
 class CreateNotificationPageState extends State<CreateNotificationPage> {
   final ButtonLoadingController buttonLoadingController = ButtonLoadingController();
+  final FirebaseMessagingSender sender = FirebaseMessagingSender();
   Dialogs? dialogs;
   bool sending = false;
   bool hasError = false;
   bool sent = false;
+  bool titlechanged = false;
+  bool contentChanged = false;
   String title = "";
   String content = "";
 
   Future<void> sendData() async {
+    buttonLoadingController.setLoading(true);
     await Future.delayed(const Duration(seconds: 1));
-    await dialogs!.showDialogSuccess("Enviado", "A notificação será recebida em todos os dispositivos que possui o app instalado.");
+    sender.sendNotification(title, content, topic: Constants.FCM_TOPIC_GENERAL_MESSAGES);
+    setState(() {
+      sent = true;
+      hasError = false;
+    });
+    buttonLoadingController.setLoading(false);
+    await dialogs!.showDialogSuccess("Notificação Enviada", "A notificação será recebida em todos os dispositivos que possui o app instalado.", onDismiss: () async {
+      await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const MainScreenPage()));
+    });
   }
 
   @override
@@ -37,6 +51,8 @@ class CreateNotificationPageState extends State<CreateNotificationPage> {
 
   @override
   Widget build(BuildContext context) {
+    String? statusTitle = isValidTitle();
+    String? statusContent = isValidContent();
     return PopScope(
         canPop: false,
         onPopInvokedWithResult: (bool didPop, Object? result) async {
@@ -88,7 +104,7 @@ class CreateNotificationPageState extends State<CreateNotificationPage> {
                           child: SingleChildScrollView(
                               child: Padding(
                                   padding: const EdgeInsets.only(left: 24, right: 24, bottom: 56),
-                                  child: Column(children: [
+                                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                                     getDivider("Regras de Envio"),
                                     const SizedBox(height: 16),
                                     const Text("1 - As notificações enviadas aqui serão recebidas em todos os smartphones com o app instalado. Portanto, cuidado com o conteúdo que você está inserindo nela.", style: TextStyle(color: AppColors.pink)),
@@ -105,8 +121,30 @@ class CreateNotificationPageState extends State<CreateNotificationPage> {
                                     const SizedBox(height: 16),
                                     getDivider("Dados da Notificação"),
                                     const SizedBox(height: 16),
-                                    MyFieldText(onInput: (value) {}, hintText: "Titulo", action: TextInputAction.next, inputType: TextInputType.text, textCapitalization: TextCapitalization.sentences),
-                                    const SizedBox(height: 16),
+                                    if (titlechanged && statusTitle != null)
+                                      Text(
+                                        statusTitle,
+                                        style: TextStyle(color: isValidTitle() == null ? AppColors.textNormal2 : AppColors.pink),
+                                      ),
+                                    const SizedBox(height: 8),
+                                    MyFieldText(
+                                        hintText: "Titulo",
+                                        action: TextInputAction.next,
+                                        inputType: TextInputType.text,
+                                        textCapitalization: TextCapitalization.sentences,
+                                        onInput: (text) {
+                                          setState(() {
+                                            title = text;
+                                            titlechanged = true;
+                                          });
+                                        }),
+                                    const SizedBox(height: 36),
+                                    if (contentChanged && statusContent != null)
+                                      Text(
+                                        statusContent,
+                                        style: TextStyle(color: isValidContent() == null ? AppColors.textNormal2 : AppColors.pink),
+                                      ),
+                                    const SizedBox(height: 8),
                                     MyFieldText(
                                       textAlignVertical: TextAlignVertical.top,
                                       height: 200,
@@ -115,21 +153,28 @@ class CreateNotificationPageState extends State<CreateNotificationPage> {
                                       action: TextInputAction.newline,
                                       inputType: TextInputType.multiline,
                                       textCapitalization: TextCapitalization.sentences,
-                                      onInput: (text) {},
+                                      onInput: (text) {
+                                        setState(() {
+                                          content = text;
+                                          contentChanged = true;
+                                        });
+                                      },
                                     ),
                                     const SizedBox(height: 24),
-                                    ButtonLoading(
-                                        backgroundColor: AppColors.appAdminAccent.withOpacity(0.5),
-                                        text: hasError ? "Tentar novamente" : (sent ? "Enviado" : "Enviar Notificação"),
-                                        icon: Icon(!sent || hasError ? Icons.send : Icons.done_outline),
-                                        controller: buttonLoadingController,
-                                        onPressed: () async {
-                                          if (isValidTitle() == null && isValidContent() == null) {
-                                            await sendData();
-                                            return;
-                                          }
-                                          Notify.showToast("Espere um pouco.\nAguardando dados da localização...");
-                                        })
+                                    Center(
+                                        child: ButtonLoading(
+                                            backgroundColor: AppColors.appAdminAccent.withOpacity(0.5),
+                                            text: hasError ? "Tentar novamente" : (sent ? "Enviado" : "Enviar Notificação"),
+                                            icon: Icon(!sent || hasError ? Icons.send : Icons.done_outline),
+                                            controller: buttonLoadingController,
+                                            onPressed: () async {
+                                              if (isValidTitle() == null && isValidContent() == null) {
+                                                FocusManager.instance.primaryFocus?.unfocus(); // hide keyboard
+                                                await sendData();
+                                                return;
+                                              }
+                                              Notify.showToast("Espere um pouco.\nAguardando dados da localização...");
+                                            }))
                                   ]))))
                     ],
                   )
@@ -141,10 +186,33 @@ class CreateNotificationPageState extends State<CreateNotificationPage> {
   }
 
   String? isValidTitle() {
+    if (title.isEmpty) return "Digite um titulo válido.";
+    if (title.startsWith(" ")) return "O titulo não deve começar com espaço!";
+    String firstLetter = title.substring(0, 1);
+    if (firstLetter != firstLetter.toUpperCase()) return "A primeira letra do titulo deve ser maiúscula!";
+    if (title.endsWith(" ")) return "O titulo não deve terminar com espaço!";
+    if (title.contains("  ")) return "O titulo não deve ter dois espaços seguidos!";
+    if (title.length > 32) return "O titulo não deve ultrapassar 32 caracteres!";
+    if (title.length < 5) return "O titulo está muito curto!";
+    if (!title.contains(" ")) return "Digite pelo menos mais uma palavra.";
+    List<String> segments = title.split(" ");
+    if (segments[segments.length - 1].length < 3) return "A última palavra é muito curta!";
     return null;
   }
 
   String? isValidContent() {
+    if (content.isEmpty) return "Digite um conteúdo válido.";
+    if (content.startsWith(" ")) return "O conteúdo não deve começar com espaço!";
+    String firstLetter = content.substring(0, 1);
+    if (firstLetter != firstLetter.toUpperCase()) return "A primeira letra do titulo deve ser maiúscula!";
+    if (content.endsWith(" ")) return "O conteúdo não deve terminar com espaço!";
+    if (content.contains(" ") && content.split(" ").length < 4) return "Há poucas palavras no conteúdo!";
+    if (content.contains("  ")) return "O conteúdo não deve ter dois espaços seguidos!";
+    if (content.length > 512) return "O conteúdo não deve ultrapassar 32 caracteres!";
+    if (!content.contains(" ")) return "Digite pelo menos 5 palavras.";
+
+    List<String> segments = content.split(" ");
+    if (segments[segments.length - 1].length < 2) return "A última palavra é muito curta!";
     return null;
   }
 }

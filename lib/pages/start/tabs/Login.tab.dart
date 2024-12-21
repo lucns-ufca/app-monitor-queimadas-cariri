@@ -126,7 +126,7 @@ class LoginTabState extends State<LoginTab> {
                           if (user.isAdminstrator()) {
                             await dialogs.showDialogInfo("Você é um administrador do sistema.", "Com este privilégio você poderá acessar partes delicadas do app, como por exemplo, a área de validações de alertas de queimadas e outros futuros recursos.",
                                 positiveText: "Entendi");
-                            FirebaseMessagingController messaging = FirebaseMessagingController();
+                            FirebaseMessagingReceiver messaging = FirebaseMessagingReceiver();
                             await messaging.subscribeTopic(Constants.FCM_TOPIC_ALERT_FIRE);
                           }
                           await navigator!.pushReplacement(MaterialPageRoute(builder: (context) => const MainScreenPage()));
