@@ -44,7 +44,7 @@ class FiresAlertValidationPageState extends State<FiresAlertValidationPage> {
         child: Scaffold(
             primary: false,
             resizeToAvoidBottomInset: false,
-            backgroundColor: AppColors.appValidationBackground,
+            backgroundColor: AppColors.appAdminBackground,
             body: Stack(children: [
               const SizedBox(width: double.maxFinite, height: double.maxFinite),
               TweenAnimationBuilder<double>(
@@ -77,10 +77,10 @@ class FiresAlertValidationPageState extends State<FiresAlertValidationPage> {
                           length: 2,
                           child: Column(children: [
                             TabBar(
-                              dividerColor: AppColors.appValidationAccent.withOpacity(0.5),
-                              labelColor: AppColors.appValidationAccent,
+                              dividerColor: AppColors.appAdminAccent.withOpacity(0.5),
+                              labelColor: AppColors.appAdminAccent,
                               unselectedLabelColor: AppColors.white_5,
-                              indicatorColor: AppColors.appValidationAccent,
+                              indicatorColor: AppColors.appAdminAccent,
                               tabs: const [
                                 Tab(text: "Pendentes"),
                                 Tab(text: "Validados"),
@@ -99,7 +99,7 @@ class FiresAlertValidationPageState extends State<FiresAlertValidationPage> {
           return const LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [AppColors.appValidationBackground, Colors.transparent],
+            colors: [AppColors.appAdminBackground, Colors.transparent],
           ).createShader(Rect.fromLTRB(0, rect.height * 0.75, rect.width, rect.height));
         },
         blendMode: BlendMode.dstIn,
@@ -175,7 +175,7 @@ class FiresAlertValidationPageState extends State<FiresAlertValidationPage> {
                                   child: SizedBox(
                                 width: 24,
                                 height: 24,
-                                child: CircularProgressIndicator(color: AppColors.appValidationAccent),
+                                child: CircularProgressIndicator(color: AppColors.appAdminAccent),
                               )),
                           errorWidget: (context, url, error) => const Center(child: SizedBox(width: 16, height: 16, child: Icon(Icons.warning, color: AppColors.red))),
                           imageBuilder: (context, imageProvider) => Container(
@@ -189,7 +189,7 @@ class FiresAlertValidationPageState extends State<FiresAlertValidationPage> {
                     child: Padding(
                         padding: const EdgeInsets.all(16),
                         child: Column(mainAxisSize: MainAxisSize.max, crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.start, children: [
-                          Flexible(child: Text(title, overflow: TextOverflow.ellipsis, maxLines: 10, style: const TextStyle(color: AppColors.appValidationAccentHighlight, fontSize: 16, fontWeight: FontWeight.w400))),
+                          Flexible(child: Text(title, overflow: TextOverflow.ellipsis, maxLines: 10, style: const TextStyle(color: AppColors.appAdminAccentHighlight, fontSize: 16, fontWeight: FontWeight.w400))),
                           Flexible(child: Text(fireAlert.description!, textAlign: TextAlign.justify, overflow: TextOverflow.ellipsis, maxLines: 10, style: const TextStyle(color: AppColors.white_2, fontSize: 14, fontWeight: FontWeight.w500)))
                         ]))),
                 const SizedBox(height: 16),
@@ -200,7 +200,7 @@ class FiresAlertValidationPageState extends State<FiresAlertValidationPage> {
                         style: ButtonStyle(
                             shape: WidgetStateProperty.all<RoundedRectangleBorder>(const RoundedRectangleBorder(borderRadius: BorderRadius.only(bottomRight: Radius.circular(24)))),
                             backgroundColor: WidgetStateProperty.resolveWith((states) => Colors.transparent),
-                            overlayColor: WidgetStateProperty.resolveWith((states) => AppColors.appValidationAccent.withOpacity(0.5))),
+                            overlayColor: WidgetStateProperty.resolveWith((states) => AppColors.appAdminAccent.withOpacity(0.5))),
                         onPressed: () async {
                           await Future.delayed(const Duration(milliseconds: 250));
                           await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => FireAlertDetailsPage(fireAlert)));
@@ -221,7 +221,7 @@ class FiresAlertValidationPageState extends State<FiresAlertValidationPage> {
         child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
-            children: [Icon(Icons.check_circle, color: AppColors.appValidationAccent.withOpacity(0.75)), const SizedBox(width: 8), const Text("Nenhum alerta.", style: TextStyle(color: AppColors.white_5))]));
+            children: [Icon(Icons.check_circle, color: AppColors.appAdminAccent.withOpacity(0.75)), const SizedBox(width: 8), const Text("Nenhum alerta.", style: TextStyle(color: AppColors.white_5))]));
   }
 
   Widget getLoadingWidget() {
@@ -231,7 +231,7 @@ class FiresAlertValidationPageState extends State<FiresAlertValidationPage> {
           width: 16,
           height: 16,
           child: CircularProgressIndicator(
-            color: AppColors.appValidationAccent,
+            color: AppColors.appAdminAccent,
             strokeWidth: 3,
           )),
       SizedBox(width: 16),

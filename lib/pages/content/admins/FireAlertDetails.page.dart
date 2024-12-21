@@ -76,7 +76,7 @@ class FireAlertDetailsPageState extends State<FireAlertDetailsPage> {
 
   @override
   void initState() {
-    dialogs = Dialogs(context, backgroundColor: AppColors.appValidationFragmentBackground, accentColor: AppColors.appValidationAccent);
+    dialogs = Dialogs(context, backgroundColor: AppColors.appAdminFragmentBackground, accentColor: AppColors.appAdminAccent);
     super.initState();
   }
 
@@ -87,9 +87,9 @@ class FireAlertDetailsPageState extends State<FireAlertDetailsPage> {
         onPopInvokedWithResult: (bool didPop, Object? result) {
           if (sending) {
             if (statusClick != null && statusClick == "Validar Alerta") {
-              Notify.showToast("Validação em andamento...", backgroundColor: AppColors.appValidationToastBackground, textColor: AppColors.appValidationAccent);
+              Notify.showToast("Validação em andamento...", backgroundColor: AppColors.appAdminToastBackground, textColor: AppColors.appAdminAccent);
             } else {
-              Notify.showToast("Invalidação em andamento...", backgroundColor: AppColors.appValidationToastBackground, textColor: AppColors.appValidationAccent);
+              Notify.showToast("Invalidação em andamento...", backgroundColor: AppColors.appAdminToastBackground, textColor: AppColors.appAdminAccent);
             }
             return;
           }
@@ -98,13 +98,13 @@ class FireAlertDetailsPageState extends State<FireAlertDetailsPage> {
         child: Scaffold(
             primary: false,
             resizeToAvoidBottomInset: false,
-            backgroundColor: AppColors.appValidationBackground,
+            backgroundColor: AppColors.appAdminBackground,
             body: SafeArea(
                 top: false,
                 child: Container(
                   width: MediaQuery.of(context).size.width,
                   height: double.maxFinite,
-                  color: AppColors.appValidationBackground,
+                  color: AppColors.appAdminBackground,
                   child: Column(
                     mainAxisSize: MainAxisSize.max,
                     children: [
@@ -115,7 +115,7 @@ class FireAlertDetailsPageState extends State<FireAlertDetailsPage> {
                                       child: SizedBox(
                                     width: 24,
                                     height: 24,
-                                    child: CircularProgressIndicator(color: AppColors.appValidationAccent),
+                                    child: CircularProgressIndicator(color: AppColors.appAdminAccent),
                                   )),
                               errorWidget: (context, url, error) => const Center(child: SizedBox(width: 16, height: 16, child: Icon(Icons.warning, color: AppColors.red))),
                               imageBuilder: (context, imageProvider) => Container(
@@ -132,13 +132,13 @@ class FireAlertDetailsPageState extends State<FireAlertDetailsPage> {
                                   const SizedBox(height: 8),
                                   Row(
                                     children: [
-                                      SvgPicture.asset("assets/icons/marker_alert.svg", width: 24, height: 24, colorFilter: const ColorFilter.mode(AppColors.appValidationAccent, BlendMode.srcIn)),
+                                      SvgPicture.asset("assets/icons/marker_alert.svg", width: 24, height: 24, colorFilter: const ColorFilter.mode(AppColors.appAdminAccent, BlendMode.srcIn)),
                                       const SizedBox(width: 8),
                                       MyText(
                                           text: "${widget.fireAlert.latitude}, ${widget.fireAlert.longitude}",
                                           style: const TextStyle(
                                             fontSize: 16,
-                                            color: AppColors.appValidationAccent,
+                                            color: AppColors.appAdminAccent,
                                           ))
                                     ],
                                   ),
@@ -164,7 +164,7 @@ class FireAlertDetailsPageState extends State<FireAlertDetailsPage> {
                                           duration: const Duration(seconds: 1),
                                           child: statusClick != null
                                               ? ButtonLoading(
-                                                  backgroundColor: AppColors.appValidationAccent.withOpacity(0.5),
+                                                  backgroundColor: AppColors.appAdminAccent.withOpacity(0.5),
                                                   text: hasError ? "Tentar novamente" : (sent ? (statusClick == "Validar Alerta" ? "Validado" : "Invalidado") : statusClick),
                                                   icon: Icon(!sent || hasError ? Icons.send : Icons.done_outline),
                                                   controller: buttonLoadingController,
@@ -186,7 +186,7 @@ class FireAlertDetailsPageState extends State<FireAlertDetailsPage> {
                                                     const SizedBox(width: 16),
                                                     Expanded(
                                                         child: MyButton(
-                                                      colorBackground: AppColors.appValidationAccent.withOpacity(0.5),
+                                                      colorBackground: AppColors.appAdminAccent.withOpacity(0.5),
                                                       textButton: "Validar",
                                                       onClick: () {
                                                         setState(() {

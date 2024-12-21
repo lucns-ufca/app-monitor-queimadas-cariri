@@ -123,7 +123,7 @@ class LoginFormState extends State<LoginForm> {
   }
 
   void openTabsPage() async {
-    await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainScreenPage()));
+    await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const MainScreenPage()));
   }
 
   @override

@@ -9,6 +9,7 @@ import 'package:monitor_queimadas_cariri/models/content/News.model.dart';
 import 'package:monitor_queimadas_cariri/pages/content/AboutProject.page.dart';
 import 'package:monitor_queimadas_cariri/pages/content/BaseWidgets.dart';
 import 'package:monitor_queimadas_cariri/pages/content/IpDefinition.page.dart';
+import 'package:monitor_queimadas_cariri/pages/content/admins/CreateNotification.page.dart';
 import 'package:monitor_queimadas_cariri/pages/content/admins/FiresAlertValidation.page.dart';
 import 'package:monitor_queimadas_cariri/pages/dialogs/PopupMenu.dart';
 import 'package:monitor_queimadas_cariri/pages/start/Access.page.dart';
@@ -54,7 +55,14 @@ class TabHomePageState extends State<TabHomePage> with AutomaticKeepAliveClientM
 
   void showMenuWindow() {
     PopupMenu popupMenu = PopupMenu(context: context);
-    List<String> titles = [if (!user.isAuthenticated()) "Login", if (!loadingTop && !loadingBottom) "Atualizar Dados", if (user.isAdminstrator()) "Validação de queimadas", "Sobre o Projeto", if (user.isAuthenticated()) "Logout"];
+    List<String> titles = [
+      if (!user.isAuthenticated()) "Login",
+      if (!loadingTop && !loadingBottom) "Atualizar Dados",
+      if (user.isAdminstrator()) "Validação de queimadas",
+      "Sobre o Projeto",
+      if (user.isAdminstrator()) "Lançar notificação",
+      if (user.isAuthenticated()) "Logout"
+    ];
     var items = popupMenu.generateIds(titles);
     popupMenu.showMenu(items, (index) async {
       switch (items[index].text) {
@@ -76,6 +84,9 @@ class TabHomePageState extends State<TabHomePage> with AutomaticKeepAliveClientM
           break;
         case "Sobre o Projeto":
           await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const AboutPage()));
+        case "Lançar notificação":
+          await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const CreateNotificationPage()));
+          break;
         case "Logout":
           user.clear();
           await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const FirstPage()));

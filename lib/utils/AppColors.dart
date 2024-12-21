@@ -27,11 +27,11 @@ class AppColors {
   static const dialogBlack = Color.fromARGB(150, 0, 0, 0);
   static const dialogBackground = Color.fromARGB(208, 208, 154, 74);
 
-  static const appValidationBackground = Color.fromARGB(255, 5, 18, 20);
-  static const appValidationAccentHighlight = Color.fromARGB(255, 13, 228, 156);
-  static const appValidationAccent = Color.fromARGB(255, 18, 204, 142);
-  static const appValidationToastBackground = Color.fromARGB(255, 2, 10, 10);
-  static const appValidationFragmentBackground = Color.fromARGB(255, 35, 68, 65);
+  static const appAdminBackground = Color.fromARGB(255, 5, 18, 20);
+  static const appAdminAccentHighlight = Color.fromARGB(255, 13, 228, 156);
+  static const appAdminAccent = Color.fromARGB(255, 18, 204, 142);
+  static const appAdminToastBackground = Color.fromARGB(255, 2, 10, 10);
+  static const appAdminFragmentBackground = Color.fromARGB(255, 35, 68, 65);
 
   static const appBackground = Color.fromARGB(255, 45, 32, 15);
   static const mainAreaBackground = Color.fromARGB(255, 212, 139, 37);
@@ -66,6 +66,7 @@ class AppColors {
   static const fieldTextCursor = white;
   static const fieldTextText = Color.fromARGB(131, 255, 255, 255);
   static const fieldTextHint = Color.fromARGB(171, 255, 255, 255);
+  static const pink = Color.fromARGB(255, 255, 77, 106);
   static const red = Color.fromARGB(255, 224, 54, 82);
   static const graphLines = Color.fromARGB(28, 255, 255, 255);
 
