@@ -43,8 +43,10 @@ void onFirebaseNotificationClick(RemoteMessage remoteMessage) async {
     case Constants.NOTIFICATION_ID_GENERAL:
       break;
     default:
-      BuildContext context = appGlobalKey.currentContext ?? appGlobalKey.currentState!.context;
-      Navigator.push(context, MaterialPageRoute(builder: (context) => const FiresAlertValidationPage()));
+      //BuildContext context = appGlobalKey.currentContext ?? appGlobalKey.currentState!.context;
+      //Navigator.push(context, MaterialPageRoute(builder: (context) => const FiresAlertValidationPage()));
+      SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+      sharedPreferences.setInt('from_notification_type', Constants.NOTIFICATION_ID_INTERNAL_ALERTS);
       break;
   }
 }

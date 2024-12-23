@@ -16,6 +16,7 @@ import 'package:monitor_queimadas_cariri/pages/start/Access.page.dart';
 import 'package:monitor_queimadas_cariri/pages/start/First.page.dart';
 import 'package:monitor_queimadas_cariri/repositories/App.repository.dart';
 import 'package:monitor_queimadas_cariri/utils/AppColors.dart';
+import 'package:monitor_queimadas_cariri/utils/Constants.dart';
 import 'package:monitor_queimadas_cariri/utils/Utils.dart';
 import 'package:monitor_queimadas_cariri/widgets/ContainerGradient.widget.dart';
 import 'package:monitor_queimadas_cariri/widgets/ImageTransitionScroller.widget.dart';
@@ -25,6 +26,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:get_it/get_it.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TabHomePage extends StatefulWidget {
   const TabHomePage({super.key});
@@ -36,6 +38,7 @@ class TabHomePage extends StatefulWidget {
 class TabHomePageState extends State<TabHomePage> with AutomaticKeepAliveClientMixin<TabHomePage> {
   final User user = GetIt.I.get<User>();
   final AppRepository appRepository = GetIt.I.get<AppRepository>();
+  final SharedPreferences preferences = GetIt.I.get<SharedPreferences>();
   bool loadingTop = true;
   bool loadingBottom = true;
   bool connected = true;
@@ -282,6 +285,10 @@ class TabHomePageState extends State<TabHomePage> with AutomaticKeepAliveClientM
       });
 
       updateLists();
+
+      if (preferences.containsKey('from_notification_type') && preferences.getInt('from_notification_type') == Constants.NOTIFICATION_ID_INTERNAL_ALERTS) {
+        await Navigator.push(context, MaterialPageRoute(builder: (context) => const FiresAlertValidationPage()));
+      }
     });
     super.initState();
   }

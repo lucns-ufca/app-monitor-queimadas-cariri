@@ -17,7 +17,7 @@ class Constants {
   };
 
   static const String FCM_TOPIC_GENERAL_MESSAGES = 'monitor_queimadas_cariri-general_messages';
-  static const String FCM_TOPIC_ALERT_FIRE = 'monitor_queimadas_cariri-alert_fire_dev';
+  static const String FCM_TOPIC_ALERT_FIRE = 'monitor_queimadas_cariri-alert_fire';
   static const int PAGE_TYPE_VALIDATION = 1;
 
   static const List<String> WHITE_LIST_EMAILS = [

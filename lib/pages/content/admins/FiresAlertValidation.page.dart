@@ -2,11 +2,13 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:focus_detector/focus_detector.dart';
+import 'package:get_it/get_it.dart';
 import 'package:monitor_queimadas_cariri/models/FireAlert.model.dart';
 import 'package:monitor_queimadas_cariri/pages/content/admins/FireAlertDetails.page.dart';
 import 'package:monitor_queimadas_cariri/repositories/Alerts.repository.dart';
 import 'package:monitor_queimadas_cariri/utils/AppColors.dart';
 import 'package:monitor_queimadas_cariri/utils/Notification.provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class FiresAlertValidationPage extends StatefulWidget {
   const FiresAlertValidationPage({super.key});
@@ -17,15 +19,17 @@ class FiresAlertValidationPage extends StatefulWidget {
 
 class FiresAlertValidationPageState extends State<FiresAlertValidationPage> {
   final AlertsRepository alertsRepository = AlertsRepository();
+  final SharedPreferences preferences = GetIt.I.get<SharedPreferences>();
 
-  void clearNotifications() async {
+  void initializeParameters() async {
     NotificationProvider notificationProvider = await NotificationProvider.getInstance();
     notificationProvider.removeAll();
+    preferences.remove('from_notification_type');
   }
 
   @override
   void initState() {
-    clearNotifications();
+    initializeParameters();
     super.initState();
   }
 
