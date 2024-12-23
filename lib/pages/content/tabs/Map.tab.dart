@@ -66,6 +66,7 @@ class TabMapPageState extends State<TabMapPage> with AutomaticKeepAliveClientMix
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       bdq.setOnUpdateListener(() async {
+        if (!mounted) return;
         await updateMarkers();
       }, () {
         updated = true;

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:focus_detector/focus_detector.dart';
+import 'package:get_it/get_it.dart';
 import 'package:monitor_queimadas_cariri/firebase/MessagingSender.firebase.dart';
 import 'package:monitor_queimadas_cariri/pages/content/MainScreen.page.dart';
 import 'package:monitor_queimadas_cariri/pages/dialogs/BasicDialogs.dart';
@@ -9,6 +10,7 @@ import 'package:monitor_queimadas_cariri/utils/Constants.dart';
 import 'package:monitor_queimadas_cariri/utils/Notify.dart';
 import 'package:monitor_queimadas_cariri/widgets/ButtonLoading.widget.dart';
 import 'package:monitor_queimadas_cariri/widgets/TextField.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CreateNotificationPage extends StatefulWidget {
   const CreateNotificationPage({super.key});
@@ -20,6 +22,7 @@ class CreateNotificationPage extends StatefulWidget {
 class CreateNotificationPageState extends State<CreateNotificationPage> {
   final ButtonLoadingController buttonLoadingController = ButtonLoadingController();
   final FirebaseMessagingSender sender = FirebaseMessagingSender();
+  final SharedPreferences preferences = GetIt.I.get<SharedPreferences>();
   Dialogs? dialogs;
   bool sending = false;
   bool hasError = false;
@@ -33,13 +36,10 @@ class CreateNotificationPageState extends State<CreateNotificationPage> {
     buttonLoadingController.setLoading(true);
     await Future.delayed(const Duration(seconds: 1));
     sender.sendNotification(title, content, topic: Constants.FCM_TOPIC_GENERAL_MESSAGES, channelId: Constants.NOTIFICATION_ID_GENERAL);
-    setState(() {
-      sent = true;
-      hasError = false;
-    });
     buttonLoadingController.setLoading(false);
+    preferences.setString('notification_sent_datetime', DateTime.now().toString());
     await dialogs!.showDialogSuccess("Notificação Enviada", "A notificação será recebida em todos os dispositivos que possui o app instalado.", onDismiss: () async {
-      //await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const MainScreenPage()));
+      await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const MainScreenPage()));
     });
   }
 
@@ -51,6 +51,24 @@ class CreateNotificationPageState extends State<CreateNotificationPage> {
 
   @override
   Widget build(BuildContext context) {
+    String? date = preferences.getString('notification_sent_datetime');
+    String? phrase;
+    if (date != null) {
+      DateTime now = DateTime.now();
+      DateTime dateTime = DateTime.parse(date).add(const Duration(days: 7));
+      Duration difference = dateTime.difference(now);
+      if (difference.inDays > 1) {
+        phrase = "Você poderá enviar novamente em ${difference.inDays} dias!";
+      } else if (difference.inDays == 1) {
+        phrase = "Você poderá enviar novamente em 1 dia!";
+      } else if (difference.inHours > 1) {
+        phrase = "Você poderá enviar novamente em pouco mais de ${difference.inHours} horas!";
+      } else if (difference.inMinutes > 1) {
+        phrase = "Você poderá enviar novamente em pouco mais de ${difference.inMinutes} minutos!";
+      } else {
+        phrase = "Você poderá enviar novamente daqui a altuns segundos!";
+      }
+    }
     String? statusTitle = isValidTitle();
     String? statusContent = isValidContent();
     return PopScope(
@@ -92,7 +110,7 @@ class CreateNotificationPageState extends State<CreateNotificationPage> {
                   Column(
                     children: [
                       Padding(
-                          padding: const EdgeInsets.all(24),
+                          padding: const EdgeInsets.only(left: 24, right: 24, top: 48),
                           child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                             Image.asset('assets/images/monitor_queimadas_cariri.png', width: 122, height: 48),
                             const SizedBox(
@@ -100,82 +118,92 @@ class CreateNotificationPageState extends State<CreateNotificationPage> {
                             ),
                             const Flexible(child: Text("Envio de\nNotificações", overflow: TextOverflow.ellipsis, maxLines: 4, textAlign: TextAlign.end, style: TextStyle(height: 1.2, fontWeight: FontWeight.w300, color: Colors.white, fontSize: 22))),
                           ])),
-                      Expanded(
-                          child: SingleChildScrollView(
-                              child: Padding(
-                                  padding: const EdgeInsets.only(left: 24, right: 24, bottom: 56),
-                                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                    getDivider("Regras de Envio"),
-                                    const SizedBox(height: 16),
-                                    const Text("1 - As notificações enviadas aqui serão recebidas em todos os smartphones com o app instalado. Portanto, cuidado com o conteúdo que você está inserindo nela.", style: TextStyle(color: AppColors.pink)),
-                                    const SizedBox(height: 8),
-                                    const Text("2 - Tente inserir um conteúdo atrativo que fará com que o usuário toque para ver, invés de apagar a notificação.", style: TextStyle(color: AppColors.pink)),
-                                    const SizedBox(height: 8),
-                                    const Text("3 - Não envie muitas notificações dentro de um intervalo curto de tempo. Isso poderá fazer com que o usuário desisntale o nosso app.", style: TextStyle(color: AppColors.pink)),
-                                    const SizedBox(height: 8),
-                                    const Text("4 - Ao tocar na notificação o app irá abrir, para que o usuário veja as atualizações. Entáo não crie um conteúdo considerado fake news.", style: TextStyle(color: AppColors.pink)),
-                                    const SizedBox(height: 8),
-                                    const Text("5 - Seja intuitivo e direto. O conteúdo da notificação não deve ser longo.", style: TextStyle(color: AppColors.pink)),
-                                    const SizedBox(height: 8),
-                                    const Text("Obs: Existe algumas validações sobre o texto digitado. O botao de enviar só ficará habilitado se não for encontrado nenhuma inconformidade no texto digitado.", style: TextStyle(color: AppColors.accent)),
-                                    const SizedBox(height: 16),
-                                    getDivider("Dados da Notificação"),
-                                    const SizedBox(height: 16),
-                                    if (titlechanged && statusTitle != null)
-                                      Text(
-                                        statusTitle,
-                                        style: TextStyle(color: isValidTitle() == null ? AppColors.textNormal2 : AppColors.pink),
-                                      ),
-                                    const SizedBox(height: 8),
-                                    MyFieldText(
-                                        hintText: "Titulo",
-                                        action: TextInputAction.next,
-                                        inputType: TextInputType.text,
+                      if (phrase != null)
+                        Container(
+                            padding: const EdgeInsets.only(left: 36, right: 36, top: 48),
+                            child: Center(
+                                child: Column(children: [
+                              const Text("O envio de notificações só é permitido se houver um intervalo de tempo de no minimo 7 dias entre os envios!",
+                                  textAlign: TextAlign.center, style: const TextStyle(color: AppColors.pink, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis, maxLines: 10),
+                              Text(phrase, textAlign: TextAlign.center, style: const TextStyle(color: AppColors.accent, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis, maxLines: 10),
+                            ]))),
+                      if (phrase == null)
+                        Expanded(
+                            child: SingleChildScrollView(
+                                child: Padding(
+                                    padding: const EdgeInsets.only(left: 24, right: 24, bottom: 56),
+                                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                      getDivider("Regras de Envio"),
+                                      const SizedBox(height: 16),
+                                      const Text("1 - As notificações enviadas aqui serão recebidas em todos os smartphones com o app instalado. Portanto, cuidado com o conteúdo que você está inserindo nela.", style: TextStyle(color: AppColors.pink)),
+                                      const SizedBox(height: 8),
+                                      const Text("2 - Tente inserir um conteúdo atrativo que fará com que o usuário toque para ver, invés de apagar a notificação.", style: TextStyle(color: AppColors.pink)),
+                                      const SizedBox(height: 8),
+                                      const Text("3 - Não envie muitas notificações dentro de um intervalo curto de tempo. Isso poderá fazer com que o usuário desisntale o nosso app.", style: TextStyle(color: AppColors.pink)),
+                                      const SizedBox(height: 8),
+                                      const Text("4 - Ao tocar na notificação o app irá abrir, para que o usuário veja as atualizações. Entáo não crie um conteúdo considerado fake news.", style: TextStyle(color: AppColors.pink)),
+                                      const SizedBox(height: 8),
+                                      const Text("5 - Seja intuitivo e direto. O conteúdo da notificação não deve ser longo.", style: TextStyle(color: AppColors.pink)),
+                                      const SizedBox(height: 8),
+                                      const Text("Obs: Existe algumas validações sobre o texto digitado. O botao de enviar só ficará habilitado se não for encontrado nenhuma inconformidade no texto digitado.", style: TextStyle(color: AppColors.accent)),
+                                      const SizedBox(height: 16),
+                                      getDivider("Dados da Notificação"),
+                                      const SizedBox(height: 16),
+                                      if (titlechanged && statusTitle != null)
+                                        Text(
+                                          statusTitle,
+                                          style: TextStyle(color: isValidTitle() == null ? AppColors.textNormal2 : AppColors.pink),
+                                        ),
+                                      const SizedBox(height: 8),
+                                      MyFieldText(
+                                          hintText: "Titulo",
+                                          action: TextInputAction.next,
+                                          inputType: TextInputType.text,
+                                          textCapitalization: TextCapitalization.sentences,
+                                          onInput: (text) {
+                                            setState(() {
+                                              title = text;
+                                              titlechanged = true;
+                                            });
+                                          }),
+                                      const SizedBox(height: 36),
+                                      if (contentChanged && statusContent != null)
+                                        Text(
+                                          statusContent,
+                                          style: TextStyle(color: isValidContent() == null ? AppColors.textNormal2 : AppColors.pink),
+                                        ),
+                                      const SizedBox(height: 8),
+                                      MyFieldText(
+                                        textAlignVertical: TextAlignVertical.top,
+                                        height: 200,
+                                        maximumLines: 10,
+                                        hintText: "Conteúdo",
+                                        action: TextInputAction.newline,
+                                        inputType: TextInputType.multiline,
                                         textCapitalization: TextCapitalization.sentences,
                                         onInput: (text) {
                                           setState(() {
-                                            title = text;
-                                            titlechanged = true;
+                                            content = text;
+                                            contentChanged = true;
                                           });
-                                        }),
-                                    const SizedBox(height: 36),
-                                    if (contentChanged && statusContent != null)
-                                      Text(
-                                        statusContent,
-                                        style: TextStyle(color: isValidContent() == null ? AppColors.textNormal2 : AppColors.pink),
+                                        },
                                       ),
-                                    const SizedBox(height: 8),
-                                    MyFieldText(
-                                      textAlignVertical: TextAlignVertical.top,
-                                      height: 200,
-                                      maximumLines: 10,
-                                      hintText: "Conteúdo",
-                                      action: TextInputAction.newline,
-                                      inputType: TextInputType.multiline,
-                                      textCapitalization: TextCapitalization.sentences,
-                                      onInput: (text) {
-                                        setState(() {
-                                          content = text;
-                                          contentChanged = true;
-                                        });
-                                      },
-                                    ),
-                                    const SizedBox(height: 24),
-                                    Center(
-                                        child: ButtonLoading(
-                                            backgroundColor: AppColors.appAdminAccent.withOpacity(0.5),
-                                            text: hasError ? "Tentar novamente" : (sent ? "Enviado" : "Enviar Notificação"),
-                                            icon: Icon(!sent || hasError ? Icons.send : Icons.done_outline),
-                                            controller: buttonLoadingController,
-                                            onPressed: () async {
-                                              if (isValidTitle() == null && isValidContent() == null) {
-                                                FocusManager.instance.primaryFocus?.unfocus(); // hide keyboard
-                                                await sendData();
-                                                return;
-                                              }
-                                              Notify.showToast("Espere um pouco.\nAguardando dados da localização...");
-                                            }))
-                                  ]))))
+                                      const SizedBox(height: 24),
+                                      Center(
+                                          child: ButtonLoading(
+                                              backgroundColor: AppColors.appAdminAccent.withOpacity(0.5),
+                                              text: hasError ? "Tentar novamente" : (sent ? "Enviado" : "Enviar Notificação"),
+                                              icon: Icon(!sent || hasError ? Icons.send : Icons.done_outline),
+                                              controller: buttonLoadingController,
+                                              onPressed: () async {
+                                                if (isValidTitle() == null && isValidContent() == null) {
+                                                  FocusManager.instance.primaryFocus?.unfocus(); // hide keyboard
+                                                  await sendData();
+                                                  return;
+                                                }
+                                                Notify.showToast("Espere um pouco.\nAguardando dados da localização...");
+                                              }))
+                                    ]))))
                     ],
                   )
                 ]))));

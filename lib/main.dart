@@ -134,7 +134,7 @@ class MainAppState extends State<MainApp> {
     super.initState();
     initializeNotificationReceiverChannel();
 
-    appRepository.addUpdateListener((responseCode) {
+    appRepository.setOnErrorListener((responseCode) {
       if (responseCode == null || responseCode == 0) {
         Notify.showSnackbarError("Falha ao tentar obter dados!");
         return;

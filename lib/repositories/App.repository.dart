@@ -22,6 +22,7 @@ class AppRepository {
   bool updatingWeather = false;
   bool updatingForecast = false;
   List<Function> listeners = [];
+  void Function(int)? onError;
 
   AppRepository();
 
@@ -31,6 +32,10 @@ class AppRepository {
 
   void addUpdateListener(void Function(int?) onUpdate) {
     listeners.add(onUpdate);
+  }
+
+  void setOnErrorListener(void Function(int?) onError) {
+    this.onError = onError;
   }
 
   void _onUpdate({int? errorCode}) {
@@ -113,13 +118,13 @@ class AppRepository {
       String? data = await downloadData('predictions?page=1&limit=30&year=$year', "${directory.path}/data/prediction/AllCitiesPrediction.json");
       if (data == null) {
         updatingPrediction = false;
-        _onUpdate(errorCode: api.getResponseCode());
+        if (onError != null) onError!(api.getResponseCode());
         return;
       }
       List<dynamic> jsonArray = jsonDecode(data)['data'];
       if (jsonArray.isEmpty) {
         updatingPrediction = false;
-        _onUpdate(errorCode: api.getResponseCode());
+        if (onError != null) onError!(0);
         return;
       }
       predictionCities.clear();
@@ -131,7 +136,7 @@ class AppRepository {
     } catch (e, t) {
       debugPrintStack(stackTrace: t);
       updatingPrediction = false;
-      _onUpdate(errorCode: api.getResponseCode());
+      if (onError != null) onError!(api.getResponseCode());
     }
   }
 
@@ -142,13 +147,13 @@ class AppRepository {
       String? data = await downloadData('fire-weather-data/search/last', "${directory.path}/data/weather/AllCitiesWeather.json");
       if (data == null) {
         updatingWeather = false;
-        _onUpdate(errorCode: api.getResponseCode());
+        if (onError != null) onError!(api.getResponseCode());
         return;
       }
       List<dynamic> jsonArray = jsonDecode(data);
       if (jsonArray.isEmpty) {
         updatingWeather = false;
-        _onUpdate(errorCode: api.getResponseCode());
+        if (onError != null) onError!(0);
         return;
       }
       weatherCities.clear();
@@ -164,7 +169,7 @@ class AppRepository {
     } catch (e, t) {
       debugPrintStack(stackTrace: t);
       updatingWeather = false;
-      _onUpdate(errorCode: api.getResponseCode());
+      if (onError != null) onError!(api.getResponseCode());
     }
   }
 
@@ -176,7 +181,7 @@ class AppRepository {
 
       if (data == null) {
         updatingForecast = false;
-        _onUpdate(errorCode: api.getResponseCode());
+        if (onError != null) onError!(api.getResponseCode());
         return;
       }
       List<dynamic> jsonArray = jsonDecode(data);
@@ -189,7 +194,7 @@ class AppRepository {
     } catch (e, t) {
       debugPrintStack(stackTrace: t);
       updatingForecast = false;
-      _onUpdate(errorCode: api.getResponseCode());
+      if (onError != null) onError!(api.getResponseCode());
     }
   }
 

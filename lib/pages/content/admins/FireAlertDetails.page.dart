@@ -156,47 +156,48 @@ class FireAlertDetailsPageState extends State<FireAlertDetailsPage> {
                                     onInput: (text) {},
                                   )
                                 ]),
-                                Column(mainAxisSize: MainAxisSize.max, mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                                  const SizedBox(height: 24),
-                                  Padding(
-                                      padding: const EdgeInsets.only(bottom: 16),
-                                      child: AnimatedSwitcher(
-                                          duration: const Duration(seconds: 1),
-                                          child: statusClick != null
-                                              ? ButtonLoading(
-                                                  backgroundColor: AppColors.appAdminAccent.withOpacity(0.5),
-                                                  text: hasError ? "Tentar novamente" : (sent ? (statusClick == "Validar Alerta" ? "Validado" : "Invalidado") : statusClick),
-                                                  icon: Icon(!sent || hasError ? Icons.send : Icons.done_outline),
-                                                  controller: buttonLoadingController,
-                                                  onPressed: () async {
-                                                    await sendData(statusClick == "Validar Alerta");
-                                                  })
-                                              : Row(
-                                                  children: [
-                                                    Expanded(
-                                                        child: MyButton(
-                                                      colorBackground: AppColors.buttonNegative,
-                                                      textButton: "Invalidar",
-                                                      onClick: () {
-                                                        setState(() {
-                                                          statusClick = "Invalidar Alerta";
-                                                        });
-                                                      },
-                                                    )),
-                                                    const SizedBox(width: 16),
-                                                    Expanded(
-                                                        child: MyButton(
-                                                      colorBackground: AppColors.appAdminAccent.withOpacity(0.5),
-                                                      textButton: "Validar",
-                                                      onClick: () {
-                                                        setState(() {
-                                                          statusClick = "Validar Alerta";
-                                                        });
-                                                      },
-                                                    ))
-                                                  ],
-                                                )))
-                                ])
+                                if (widget.fireAlert.status == "PENDING")
+                                  Column(mainAxisSize: MainAxisSize.max, mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                                    const SizedBox(height: 24),
+                                    Padding(
+                                        padding: const EdgeInsets.only(bottom: 16),
+                                        child: AnimatedSwitcher(
+                                            duration: const Duration(seconds: 1),
+                                            child: statusClick != null
+                                                ? ButtonLoading(
+                                                    backgroundColor: AppColors.appAdminAccent.withOpacity(0.5),
+                                                    text: hasError ? "Tentar novamente" : (sent ? (statusClick == "Validar Alerta" ? "Validado" : "Invalidado") : statusClick),
+                                                    icon: Icon(!sent || hasError ? Icons.send : Icons.done_outline),
+                                                    controller: buttonLoadingController,
+                                                    onPressed: () async {
+                                                      await sendData(statusClick == "Validar Alerta");
+                                                    })
+                                                : Row(
+                                                    children: [
+                                                      Expanded(
+                                                          child: MyButton(
+                                                        colorBackground: AppColors.buttonNegative,
+                                                        textButton: "Invalidar",
+                                                        onClick: () {
+                                                          setState(() {
+                                                            statusClick = "Invalidar Alerta";
+                                                          });
+                                                        },
+                                                      )),
+                                                      const SizedBox(width: 16),
+                                                      Expanded(
+                                                          child: MyButton(
+                                                        colorBackground: AppColors.appAdminAccent.withOpacity(0.5),
+                                                        textButton: "Validar",
+                                                        onClick: () {
+                                                          setState(() {
+                                                            statusClick = "Validar Alerta";
+                                                          });
+                                                        },
+                                                      ))
+                                                    ],
+                                                  )))
+                                  ])
                               ])))
                     ],
                   ),

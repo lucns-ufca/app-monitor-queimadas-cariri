@@ -261,11 +261,12 @@ class TabHomePageState extends State<TabHomePage> with AutomaticKeepAliveClientM
   void initState() {
     appRepository.addUpdateListener((errorCode) {
       if (errorCode == null) {
-        // success
-        setState(() {
-          loadingTop = appRepository.updatingPrediction;
-          loadingBottom = appRepository.updatingWeather;
-        });
+        if (mounted) {
+          setState(() {
+            loadingTop = appRepository.updatingPrediction;
+            loadingBottom = appRepository.updatingWeather;
+          });
+        }
       }
     });
     imageProfile = user.getProfileImage();
