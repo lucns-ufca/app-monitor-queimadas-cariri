@@ -29,9 +29,9 @@ class FirebaseMessagingSender extends FirebaseMessagingSenderBase {
     }
   }
 
-  void sendNotification(String title, String body, {String? topic, String? token}) {
+  void sendNotification(String title, String body, {String? topic, String? token, String channelId = "default_channel_id"}) {
     bool isEmpty = queue.isEmpty;
-    queue.add(FirebaseMessagingPayload(title: title, body: body, topic: topic, token: token));
+    queue.add(FirebaseMessagingPayload(title: title, body: body, topic: topic, token: token, channelId: channelId));
     if (isEmpty) dequeue();
   }
 
@@ -102,6 +102,9 @@ abstract class FirebaseMessagingSenderBase {
       message["data"] = messaging.toJson();
     } else {
       message["notification"] = messaging.toJson();
+      message["android"] = {
+        'notification': {'channel_id': messaging.channelId}
+      };
     }
     Map<String, dynamic> payload = {};
     payload["message"] = message;
@@ -129,10 +132,10 @@ abstract class FirebaseMessagingSenderBase {
 }
 
 class FirebaseMessagingPayload {
-  String? topic, token, title, body;
+  String? topic, token, title, body, channelId;
   Map<String, dynamic>? data;
 
-  FirebaseMessagingPayload({this.topic, this.token, this.title, this.body, this.data});
+  FirebaseMessagingPayload({this.topic, this.token, this.title, this.body, this.data, this.channelId});
 
   Map<String, dynamic> toJson() {
     if (data == null) {

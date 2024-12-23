@@ -3,12 +3,13 @@
 import 'dart:ui';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
-import 'package:monitor_queimadas_cariri/firebase/MessagingController.firebase.dart';
+import 'package:monitor_queimadas_cariri/firebase/MessagingReceiver.firebase.dart';
 import 'package:monitor_queimadas_cariri/models/User.model.dart';
 import 'package:monitor_queimadas_cariri/pages/content/MainScreen.page.dart';
 import 'package:monitor_queimadas_cariri/pages/dialogs/BasicDialogs.dart';
 import 'package:monitor_queimadas_cariri/pages/start/tabs/Login.tab.dart';
 import 'package:monitor_queimadas_cariri/pages/start/tabs/NewAccount.tab.dart';
+import 'package:monitor_queimadas_cariri/repositories/Auth.repository.dart';
 import 'package:monitor_queimadas_cariri/utils/AppColors.dart';
 import 'package:monitor_queimadas_cariri/utils/Constants.dart';
 import 'package:monitor_queimadas_cariri/widgets/AppLogos.widget.dart';
@@ -58,7 +59,8 @@ class LoginFormState extends State<LoginForm> {
   final user = GetIt.I.get<User>();
   final packageInfo = GetIt.I.get<PackageInfo>();
   String? textUser, textPassword;
-  PageController pageController = PageController();
+  final PageController pageController = PageController();
+  Dialogs? dialogs;
   int page = 0;
 
   void initializePreferences() async {
@@ -66,15 +68,20 @@ class LoginFormState extends State<LoginForm> {
     textUser = preferences.getString("user") ?? "";
   }
 
+  void showLoginError() {
+    dialogs!.dismiss();
+    dialogs!.showDialogError("Falha ao realizar login!", "Ocorreu um problema interno desconhecido, ou não mapeado. Tente novamente mais tarde.");
+  }
+
   @override
   void initState() {
+    dialogs = Dialogs(context);
     initializePreferences();
     super.initState();
   }
 
   void signInWithGoogle() async {
-    Dialogs dialogs = Dialogs(context);
-    dialogs.showBlackLoading();
+    dialogs!.showBlackLoading();
     GoogleSignIn googleSignIn = GoogleSignIn();
     GoogleSignInAccount? googleUser;
     try {
@@ -83,8 +90,7 @@ class LoginFormState extends State<LoginForm> {
       debugPrintStack(stackTrace: t);
     }
     if (googleUser == null) {
-      dialogs.dismiss();
-      dialogs.showDialogError("Falha ao realizar login!", "Ocorreu um problema interno desconhecido, ou não mapeado. Tente novamente mais tarde.");
+      showLoginError();
       return;
     }
     user.setName(googleUser.displayName!);
@@ -99,25 +105,25 @@ class LoginFormState extends State<LoginForm> {
 
     try {
       GoogleSignInAuthentication? googleAuth = await googleUser.authentication;
-      user.setAccessToken(googleAuth.accessToken!, isGoogleAccount: true);
+      user.setIdToken(googleAuth.idToken!);
+      user.setAccessToken(googleAuth.accessToken!);
     } catch (e, t) {
       debugPrintStack(stackTrace: t);
+      showLoginError();
+      return;
     }
 
-    /*
-    if (user.email.isNotEmpty) {
-      AuthRepository authRepository = AuthRepository();
-      ApiResponse response = await authRepository.getUserType(user.email);
-      if (response.isOk()) {
-        Map<String, dynamic> map = jsonDecode(response.data);
-        user.setUSerType(map['user_type']);
-      }
-      */
+    try {
+      await AuthRepository().loginWithGoogleAccount(user.getEmail()!, user.getName()!, user.getAccessToken()!);
+    } catch (e) {
+      showLoginError();
+      return;
+    }
 
     await user.storeData();
-    dialogs.dismiss();
+    dialogs!.dismiss();
     if (user.isAdminstrator()) {
-      await dialogs.showDialogInfo("Você é um administrador do sistema.", "Com este privilégio você poderá acessar partes delicadas do app, como por exemplo, a área de validações de alertas de queimadas e outros futuros recursos.", positiveText: "Entendi");
+      await dialogs!.showDialogInfo("Você é um administrador do sistema.", "Com este privilégio você poderá acessar partes delicadas do app, como por exemplo, a área de validações de alertas de queimadas e outros futuros recursos.", positiveText: "Entendi");
     }
     openTabsPage();
   }

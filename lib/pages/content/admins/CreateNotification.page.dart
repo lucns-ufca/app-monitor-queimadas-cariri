@@ -32,14 +32,14 @@ class CreateNotificationPageState extends State<CreateNotificationPage> {
   Future<void> sendData() async {
     buttonLoadingController.setLoading(true);
     await Future.delayed(const Duration(seconds: 1));
-    sender.sendNotification(title, content, topic: Constants.FCM_TOPIC_GENERAL_MESSAGES);
+    sender.sendNotification(title, content, topic: Constants.FCM_TOPIC_GENERAL_MESSAGES, channelId: Constants.NOTIFICATION_ID_GENERAL);
     setState(() {
       sent = true;
       hasError = false;
     });
     buttonLoadingController.setLoading(false);
     await dialogs!.showDialogSuccess("Notificação Enviada", "A notificação será recebida em todos os dispositivos que possui o app instalado.", onDismiss: () async {
-      await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const MainScreenPage()));
+      //await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const MainScreenPage()));
     });
   }
 

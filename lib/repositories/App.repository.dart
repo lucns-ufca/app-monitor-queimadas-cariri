@@ -116,6 +116,11 @@ class AppRepository {
         return;
       }
       List<dynamic> jsonArray = jsonDecode(data)['data'];
+      if (jsonArray.isEmpty) {
+        updatingPrediction = false;
+        if (onError != null) onError!(api.getResponseCode());
+        return;
+      }
       predictionCities.clear();
       for (dynamic json in jsonArray) {
         predictionCities.add(PredictionCityModel.fromJson(json));
@@ -140,6 +145,11 @@ class AppRepository {
         return;
       }
       List<dynamic> jsonArray = jsonDecode(data);
+      if (jsonArray.isEmpty) {
+        updatingWeather = false;
+        if (onError != null) onError!(api.getResponseCode());
+        return;
+      }
       weatherCities.clear();
       for (Map<String, dynamic> json in jsonArray) {
         weatherCities.add(WeatherCityModel.fromJson(json));

@@ -68,7 +68,7 @@ class FireReportSenderPageState extends State<FireReportSenderPage> {
     if (response != null && response.statusCode != null && response.statusCode! > 199 && response.statusCode! < 300) {
       await imageFile!.delete();
       FirebaseMessagingSender sender = FirebaseMessagingSender();
-      sender.sendNotification("Alerta de Queimada", "Foi reportado um alerta de queimada. Clique para ver mais detalhes ou validar, na lista de alertas.", topic: Constants.FCM_TOPIC_ALERT_FIRE);
+      sender.sendNotification("Alerta de Queimada", "Foi reportado um alerta de queimada. Clique para ver mais detalhes ou validar, na lista de alertas.", topic: Constants.FCM_TOPIC_ALERT_FIRE, channelId: Constants.NOTIFICATION_ID_ALERTS);
       buttonLoadingController.setLoading(false);
       dialogs!.showDialogSuccess("Enviado", "Obrigado por nos ajudar no monitoramento de queimadas.", onDismiss: () async {
         await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const MainScreenPage()));

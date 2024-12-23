@@ -68,13 +68,12 @@ class TabHomePageState extends State<TabHomePage> with AutomaticKeepAliveClientM
       switch (items[index].text) {
         case "Atualizar Dados":
           updateLists(force: true);
+          //FirebaseMessagingSender sender = FirebaseMessagingSender();
+          //sender.sendNotification("This is a title", "This is a content", topic: Constants.FCM_TOPIC_ALERT_FIRE, channelId: Constants.NOTIFICATION_ID_ALERTS);
+          //sender.sendMessage(message, topic: Constants.FCM_TOPIC_ALERT_FIRE);
           break;
         case "Validação de queimadas":
           await Navigator.push(context, MaterialPageRoute(builder: (context) => const FiresAlertValidationPage()));
-          //FirebaseMessagingSender sender = FirebaseMessagingSender();
-          //sender.sendNotification("This is a title", "This is a content", topic: Constants.FCM_TOPIC_ALERT_FIRE);
-          //Map<String, dynamic> message = {'ticker': 'Alerta de Queimada', 'title': 'Alerta de Queimada', 'body': 'Um novo alerta de queimada foi realizado.'};
-          //sender.sendMessage(message, topic: Constants.FCM_TOPIC_ALERT_FIRE);
           break;
         case "Definir IP":
           await Navigator.push(context, MaterialPageRoute(builder: (context) => const IpDefinitionPage()));
@@ -84,6 +83,7 @@ class TabHomePageState extends State<TabHomePage> with AutomaticKeepAliveClientM
           break;
         case "Sobre o Projeto":
           await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const AboutPage()));
+          break;
         case "Lançar notificação":
           await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const CreateNotificationPage()));
           break;
@@ -373,16 +373,33 @@ class TabHomePageState extends State<TabHomePage> with AutomaticKeepAliveClientM
                   Text("Carregando dados...", style: TextStyle(color: Colors.white))
                 ])));
       } else {
-        return BaseWidgets().getCenteredError("Sem conexão!");
+        return BaseWidgets().getCenteredError("Sem conexão!", iconColor: AppColors.accent, textColor: Colors.white);
       }
     }
+
     if (listNews.isNotEmpty && listCities.isNotEmpty) {
       return Column(children: [_getTopContent(), const SizedBox(height: 16), _getBottomContent()]);
-    } else if (listNews.isNotEmpty) {
+    }
+
+    // INVESTIGAR LOGICAS ABAIXO E COMPRAR RED SWITCH PARA A MOTO
+    if (listCities.isEmpty && !appRepository.updatingWeather && listNews.isEmpty && !appRepository.updatingPrediction) {
+      return BaseWidgets().getCenteredError("Falha ao obter dados!", iconColor: AppColors.accent, textColor: Colors.white);
+    } else if (listCities.isEmpty && !appRepository.updatingWeather) {
+      return Column(children: [
+        _getTopContent(),
+        Column(children: [const SizedBox(height: 120), BaseWidgets().getCenteredError("Falha ao obter dados!", iconColor: AppColors.accent, textColor: Colors.white)])
+      ]);
+    } else {
+      return Column(children: [BaseWidgets().getCenteredError("Falha ao obter dados!", iconColor: AppColors.accent, textColor: Colors.white), _getBottomContent()]);
+    }
+
+    /*
+    if (listNews.isNotEmpty) {
       return Column(children: [_getTopContent(), const SizedBox(height: 16), Expanded(child: SizedBox(child: BaseWidgets().getCenteredloading("Carregando cidades...")))]);
     } else {
       return Column(children: [SizedBox(height: 220, child: BaseWidgets().getCenteredloading("Carregando noticias...")), const SizedBox(height: 16), _getBottomContent()]);
     }
+    */
   }
 
   String retrieveName(String completeName) {

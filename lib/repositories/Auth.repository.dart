@@ -11,6 +11,26 @@ class AuthRepository {
 
   AuthRepository();
 
+  Future<Response?> loginWithGoogleAccount(String email, String name, String accessToken) async {
+    String firstName = name.substring(0, name.indexOf(" "));
+    String lastName = name.substring(name.indexOf(" ") + 1);
+    try {
+      Response response = await api.dio.post('auth/google', data: {"email": email, "givenName": firstName, 'familyName': lastName, 'idToken': accessToken});
+      if (response.data == null) return null;
+
+      user.setEmail(email);
+      user.setType(User.retrieveType(response.data['role']));
+      user.setAccessToken(response.data["access_token"]);
+      user.setRefreshToken(response.data["refresh_token"]);
+      if (response.data.containsKey("user_type")) user.setUSerType(response.data["user_type"]);
+      await user.storeData();
+
+      return response;
+    } on DioException catch (e) {
+      return e.response;
+    }
+  }
+
   Future<Response?> login(String email, String password) async {
     try {
       Response response = await api.dio.post('auth/login', data: {"email": email, "password": password});

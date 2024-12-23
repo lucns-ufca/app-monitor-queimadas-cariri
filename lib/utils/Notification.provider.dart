@@ -4,7 +4,6 @@ class NotificationProvider {
   static NotificationProvider? _instance;
   final NotificationController _controller;
   NotificationProvider._(this._controller);
-  int notificationId = 1234;
 
   static Future<NotificationProvider> getInstance({void Function(NotificationResponse)? onNotificationClick}) async {
     bool initialized = _instance != null;
@@ -19,10 +18,6 @@ class NotificationProvider {
     String channelDescription,
   ) async {
     await _controller.createChannel(channelId, channelTitle, channelDescription);
-  }
-
-  void setNotificationId(int id) {
-    notificationId = id;
   }
 
   Future<bool> hasPermission() async {
@@ -44,12 +39,12 @@ class NotificationProvider {
     return null;
   }
 
-  void showNotification({required String ticker, required String title, required String content}) {
-    _controller.show(ticker, title, content, notificationId);
+  void showNotification({required String ticker, required String title, required String content, required int id}) {
+    _controller.show(ticker, title, content, id);
   }
 
-  void removeCurrent() {
-    _controller.cancel(notificationId);
+  void removeCurrent(int id) {
+    _controller.cancel(id);
   }
 
   void removeAll() {
@@ -89,9 +84,9 @@ class NotificationController {
     await flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.createNotificationChannel(channel);
   }
 
-  void show(String ticker, String title, String content, int id) {
+  void show(String ticker, String title, String content, int notificationId) {
     flutterLocalNotificationsPlugin.show(
-      id,
+      notificationId,
       title,
       content,
       NotificationDetails(

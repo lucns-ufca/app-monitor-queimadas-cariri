@@ -17,7 +17,7 @@ class ControllerApi {
 
   Future<Response> patch(String urlPath) async {
     try {
-      if (user.isValidated()) {
+      if (user.isAuthenticated()) {
         if (user.isExpirate()) await AuthRepository().refreshToken(user.getAccessToken()!, user.getRefreshToken()!);
         api.dio.options.headers['Authorization'] = 'Bearer ${user.getAccessToken()}';
       }
@@ -29,7 +29,7 @@ class ControllerApi {
 
   Future<Response> get(String urlPath, {Map<String, dynamic>? parameters}) async {
     try {
-      if (user.isValidated()) {
+      if (user.isAuthenticated()) {
         if (user.isExpirate()) await AuthRepository().refreshToken(user.getAccessToken()!, user.getRefreshToken()!);
         api.dio.options.headers['Authorization'] = 'Bearer ${user.getAccessToken()}';
       }
@@ -41,7 +41,7 @@ class ControllerApi {
 
   Future<Response> post(String urlPath, Object data) async {
     try {
-      if (user.isValidated()) {
+      if (user.isAuthenticated()) {
         if (user.isExpirate()) await AuthRepository().refreshToken(user.getAccessToken()!, user.getRefreshToken()!);
         api.dio.options.headers['Authorization'] = 'Bearer ${user.getAccessToken()}';
       }

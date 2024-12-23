@@ -2,7 +2,6 @@ import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.da
 import 'package:app_settings/app_settings.dart';
 import 'package:focus_detector/focus_detector.dart';
 import 'package:monitor_queimadas_cariri/models/User.model.dart';
-import 'package:monitor_queimadas_cariri/pages/content/admins/FiresAlertValidation.page.dart';
 import 'package:monitor_queimadas_cariri/pages/content/reports/FireReportPages.page.dart';
 import 'package:monitor_queimadas_cariri/pages/content/tabs/Home.tab.dart';
 import 'package:monitor_queimadas_cariri/pages/content/tabs/Map.tab.dart';
@@ -18,8 +17,7 @@ import 'package:get_it/get_it.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class MainScreenPage extends StatefulWidget {
-  final bool fromNotification;
-  const MainScreenPage({this.fromNotification = false, super.key});
+  const MainScreenPage({super.key});
 
   @override
   State<StatefulWidget> createState() => MainScreenPageState();
@@ -34,24 +32,20 @@ class MainScreenPageState extends State<MainScreenPage> {
 
   void asyncronousInitialize() async {
     NotificationProvider notificationProvider = await NotificationProvider.getInstance();
-    if (widget.fromNotification) {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => const FiresAlertValidationPage()));
-    } else {
-      bool granted = await notificationProvider.requestPermission();
-      if (!granted) {
-        Dialogs dialogs = Dialogs(context);
-        dialogs.showDialogInfo("Permissão negada!",
-            "O Monitor de queimadas Cariri precisa de permissão para criar notificações. Só assim será possível gerar notificações sobre novos alertas de queimadas. Caso queira dar essa permissão, basta acessar a área de permissões do app, clicando abaixo.",
-            positiveText: "Abrir Permissões",
-            onPositiveClick: () {
-              AppSettings.openAppSettings(type: AppSettingsType.notification);
-              dialogs.dismiss();
-            },
-            negativeText: "Cancelar",
-            onNegativeClick: () {
-              dialogs.dismiss();
-            });
-      }
+    bool granted = await notificationProvider.requestPermission();
+    if (!granted) {
+      Dialogs dialogs = Dialogs(context);
+      dialogs.showDialogInfo("Permissão negada!",
+          "O Monitor de queimadas Cariri precisa de permissão para criar notificações. Só assim será possível gerar notificações sobre novos alertas de queimadas. Caso queira dar essa permissão, basta acessar a área de permissões do app, clicando abaixo.",
+          positiveText: "Abrir Permissões",
+          onPositiveClick: () {
+            AppSettings.openAppSettings(type: AppSettingsType.notification);
+            dialogs.dismiss();
+          },
+          negativeText: "Cancelar",
+          onNegativeClick: () {
+            dialogs.dismiss();
+          });
     }
   }
 

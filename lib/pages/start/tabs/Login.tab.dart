@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:monitor_queimadas_cariri/api/Controller.api.dart';
-import 'package:monitor_queimadas_cariri/firebase/MessagingController.firebase.dart';
+import 'package:monitor_queimadas_cariri/firebase/MessagingReceiver.firebase.dart';
 import 'package:monitor_queimadas_cariri/models/User.model.dart';
 import 'package:monitor_queimadas_cariri/pages/content/MainScreen.page.dart';
 import 'package:monitor_queimadas_cariri/pages/dialogs/BasicDialogs.dart';

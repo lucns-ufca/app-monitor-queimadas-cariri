@@ -2,22 +2,33 @@ class Constants {
   static const double DEFAULT_ROUND_BORDER = 56;
   static const double DEFAULT_WIDGET_HEIGHT = 40;
 
-  static const String NOTIFICATION_CHANNEL_ID = "app_notifications";
-  static const String NOTIFICATION_CHANNEL_TITLE = "Alerta de Queimadas";
-  static const String NOTIFICATION_CHANNEL_DESCRIPTION = "Este canal é usado para criar notificações sobre alertas de queimadas reportados.";
+  static const int NOTIFICATION_ID_INTERNAL_ALERTS = 1000;
+  static const int NOTIFICATION_ID_INTERNAL_GENERAL = 1001;
+  static const String NOTIFICATION_ID_ALERTS = "alert_fire";
+  static const String NOTIFICATION_ID_GENERAL = "general";
+  static const String NOTIFICATION_TITLE_ALERTS = "Alerta de Queimadas";
+  static const String NOTIFICATION_TITLE_GENERAL = "Gerais";
+  static const String NOTIFICATION_DESCRIPTION_ALERTS = "Usado para criar notificações sobre alertas de queimadas reportados.";
+  static const String NOTIFICATION_DESCRIPTION_GENERAL = "Usado para criar notificações sobre novidades e informações.";
+
+  static const Map<String, dynamic> notificationsData = {
+    NOTIFICATION_ID_ALERTS: NotificationData(notificationId: NOTIFICATION_ID_INTERNAL_ALERTS, channelId: NOTIFICATION_ID_ALERTS, title: NOTIFICATION_TITLE_ALERTS, description: NOTIFICATION_DESCRIPTION_ALERTS),
+    NOTIFICATION_ID_GENERAL: NotificationData(notificationId: NOTIFICATION_ID_INTERNAL_GENERAL, channelId: NOTIFICATION_ID_GENERAL, title: NOTIFICATION_TITLE_GENERAL, description: NOTIFICATION_DESCRIPTION_GENERAL)
+  };
+
   static const String FCM_TOPIC_GENERAL_MESSAGES = 'monitor_queimadas_cariri-general_messages';
-  static const String FCM_TOPIC_ALERT_FIRE = 'monitor_queimadas_cariri-alert_fire';
-  static const String FCM_TOPIC_ALERT_FIRE_DEV = 'monitor_queimadas_cariri-alert_fire_dev';
+  static const String FCM_TOPIC_ALERT_FIRE = 'monitor_queimadas_cariri-alert_fire_dev';
   static const int PAGE_TYPE_VALIDATION = 1;
 
   static const List<String> WHITE_LIST_EMAILS = [
     'abc@mail.io',
     'lucns.dev@gmail.com',
+    'lucns2906@gmail.com',
     'lucas.nascimento@aluno.ufca.edu.br',
     'pedro.hugo@aluno.ufca.edu.br',
     'fabricio.freitas@ufca.edu.br',
-    /*
     'italo.fernandes@aluno.ufca.edu.br',
+    /*
     'livia.nunes@aluno.ufca.edu.br',
     'rafael.talarico@aluno.ufca.edu.br',
     'paulo.goncalo@ufca.edu.br',
@@ -86,4 +97,11 @@ class Tuple {
   final String? key, value;
 
   const Tuple({this.key, this.value});
+}
+
+class NotificationData {
+  final String? channelId, title, description;
+  final int? notificationId;
+
+  const NotificationData({this.notificationId, this.channelId, this.title, this.description});
 }
