@@ -26,7 +26,7 @@ class CardsCitiesState extends State<CardsCities> {
 
   @override
   void initState() {
-    appRepository.setOnUpdateConcluded(() {
+    appRepository.addUpdateListener((errorCode) {
       if (mounted) setState(() {});
     });
     for (String city in cityNames) {
@@ -43,12 +43,6 @@ class CardsCitiesState extends State<CardsCities> {
         dx = pageController.page ?? 0.0;
       });
     });
-  }
-
-  @override
-  void dispose() {
-    appRepository.setOnUpdateConcluded(null);
-    super.dispose();
   }
 
   @override

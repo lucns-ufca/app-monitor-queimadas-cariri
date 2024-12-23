@@ -14,8 +14,6 @@ import 'package:path_provider/path_provider.dart';
 
 class AppRepository {
   final ControllerApi api = ControllerApi(Api(baseUrl: 'https://monitorqueimadas.duckdns.org/'));
-  void Function()? onUpdateConcluded;
-  void Function(int)? onError;
 
   List<PredictionCityModel> predictionCities = [];
   List<WeatherCityModel> weatherCities = [];
@@ -23,6 +21,7 @@ class AppRepository {
   bool updatingPrediction = false;
   bool updatingWeather = false;
   bool updatingForecast = false;
+  List<Function> listeners = [];
 
   AppRepository();
 
@@ -30,12 +29,14 @@ class AppRepository {
   List<WeatherCityModel> get getWeatherCities => weatherCities;
   List<ForecastCityModel> get getForecastCities => forecastCities;
 
-  void setOnUpdateConcluded(void Function()? onUpdateConcluded) {
-    this.onUpdateConcluded = onUpdateConcluded;
+  void addUpdateListener(void Function(int?) onUpdate) {
+    listeners.add(onUpdate);
   }
 
-  void setOnError(void Function(int) onError) {
-    this.onError = onError;
+  void _onUpdate({int? errorCode}) {
+    for (Function f in listeners) {
+      f(errorCode);
+    }
   }
 
   Future<void> addToPredictionCities(String path) async {
@@ -80,7 +81,7 @@ class AppRepository {
     await addToPredictionCities("${directory.path}/data/prediction/AllCitiesPrediction.json");
     await addToWeatherCities("${directory.path}/data/weather/AllCitiesWeather.json");
     //await addToforecastCities("${directory.path}/data/weather/AllCitiesForecast.json");
-    if (onUpdateConcluded != null) onUpdateConcluded!();
+    _onUpdate();
   }
 
   bool allowUpdatePrediction() {
@@ -112,13 +113,13 @@ class AppRepository {
       String? data = await downloadData('predictions?page=1&limit=30&year=$year', "${directory.path}/data/prediction/AllCitiesPrediction.json");
       if (data == null) {
         updatingPrediction = false;
-        if (onError != null) onError!(api.getResponseCode());
+        _onUpdate(errorCode: api.getResponseCode());
         return;
       }
       List<dynamic> jsonArray = jsonDecode(data)['data'];
       if (jsonArray.isEmpty) {
         updatingPrediction = false;
-        if (onError != null) onError!(api.getResponseCode());
+        _onUpdate(errorCode: api.getResponseCode());
         return;
       }
       predictionCities.clear();
@@ -126,11 +127,11 @@ class AppRepository {
         predictionCities.add(PredictionCityModel.fromJson(json));
       }
       updatingPrediction = false;
-      if (!updatingForecast && !updatingWeather && onUpdateConcluded != null) onUpdateConcluded!();
+      if (!updatingForecast && !updatingWeather) _onUpdate();
     } catch (e, t) {
       debugPrintStack(stackTrace: t);
       updatingPrediction = false;
-      if (onError != null) onError!(api.getResponseCode());
+      _onUpdate(errorCode: api.getResponseCode());
     }
   }
 
@@ -141,13 +142,13 @@ class AppRepository {
       String? data = await downloadData('fire-weather-data/search/last', "${directory.path}/data/weather/AllCitiesWeather.json");
       if (data == null) {
         updatingWeather = false;
-        if (onError != null) onError!(api.getResponseCode());
+        _onUpdate(errorCode: api.getResponseCode());
         return;
       }
       List<dynamic> jsonArray = jsonDecode(data);
       if (jsonArray.isEmpty) {
         updatingWeather = false;
-        if (onError != null) onError!(api.getResponseCode());
+        _onUpdate(errorCode: api.getResponseCode());
         return;
       }
       weatherCities.clear();
@@ -159,11 +160,11 @@ class AppRepository {
         if (m.city == "Caririacu") m.city = "Caririaçu";
       }
       updatingWeather = false;
-      if (!updatingForecast && !updatingPrediction && onUpdateConcluded != null) onUpdateConcluded!();
+      if (!updatingForecast && !updatingPrediction) _onUpdate();
     } catch (e, t) {
       debugPrintStack(stackTrace: t);
       updatingWeather = false;
-      if (onError != null) onError!(api.getResponseCode());
+      _onUpdate(errorCode: api.getResponseCode());
     }
   }
 
@@ -175,7 +176,7 @@ class AppRepository {
 
       if (data == null) {
         updatingForecast = false;
-        if (onError != null) onError!(api.getResponseCode());
+        _onUpdate(errorCode: api.getResponseCode());
         return;
       }
       List<dynamic> jsonArray = jsonDecode(data);
@@ -184,11 +185,11 @@ class AppRepository {
         forecastCities.add(ForecastCityModel.fromJson(json));
       }
       updatingForecast = false;
-      if (!updatingWeather && !updatingPrediction && onUpdateConcluded != null) onUpdateConcluded!();
+      if (!updatingWeather && !updatingPrediction) _onUpdate();
     } catch (e, t) {
       debugPrintStack(stackTrace: t);
       updatingForecast = false;
-      if (onError != null) onError!(api.getResponseCode());
+      _onUpdate(errorCode: api.getResponseCode());
     }
   }
 

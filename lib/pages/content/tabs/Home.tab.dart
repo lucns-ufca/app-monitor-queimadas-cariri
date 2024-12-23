@@ -259,6 +259,15 @@ class TabHomePageState extends State<TabHomePage> with AutomaticKeepAliveClientM
 
   @override
   void initState() {
+    appRepository.addUpdateListener((errorCode) {
+      if (errorCode == null) {
+        // success
+        setState(() {
+          loadingTop = appRepository.updatingPrediction;
+          loadingBottom = appRepository.updatingWeather;
+        });
+      }
+    });
     imageProfile = user.getProfileImage();
     SchedulerBinding.instance.addPostFrameCallback((_) async {
       await Future.delayed(const Duration(milliseconds: 300));
@@ -376,30 +385,29 @@ class TabHomePageState extends State<TabHomePage> with AutomaticKeepAliveClientM
         return BaseWidgets().getCenteredError("Sem conexão!", iconColor: AppColors.accent, textColor: Colors.white);
       }
     }
-
-    if (listNews.isNotEmpty && listCities.isNotEmpty) {
-      return Column(children: [_getTopContent(), const SizedBox(height: 16), _getBottomContent()]);
-    }
-
-    // INVESTIGAR LOGICAS ABAIXO E COMPRAR RED SWITCH PARA A MOTO
-    if (listCities.isEmpty && !appRepository.updatingWeather && listNews.isEmpty && !appRepository.updatingPrediction) {
+    if (listNews.isEmpty && !loadingTop && listCities.isEmpty && !loadingBottom) {
       return BaseWidgets().getCenteredError("Falha ao obter dados!", iconColor: AppColors.accent, textColor: Colors.white);
-    } else if (listCities.isEmpty && !appRepository.updatingWeather) {
-      return Column(children: [
-        _getTopContent(),
-        Column(children: [const SizedBox(height: 120), BaseWidgets().getCenteredError("Falha ao obter dados!", iconColor: AppColors.accent, textColor: Colors.white)])
-      ]);
+    } else if (listNews.isNotEmpty && listCities.isNotEmpty) {
+      return Column(children: [_getTopContent(), const SizedBox(height: 16), _getBottomContent()]);
     } else {
-      return Column(children: [BaseWidgets().getCenteredError("Falha ao obter dados!", iconColor: AppColors.accent, textColor: Colors.white), _getBottomContent()]);
-    }
+      List<Widget> widgets = [];
+      if (listNews.isNotEmpty) {
+        widgets.add(_getTopContent());
+      } else if (loadingTop) {
+        widgets.add(SizedBox(height: 220, child: BaseWidgets().getCenteredloading("Carregando noticias...")));
+      } else {
+        widgets.add(SizedBox(height: 220, child: BaseWidgets().getCenteredError("Falha ao obter dados!", iconColor: AppColors.accent, textColor: Colors.white)));
+      }
 
-    /*
-    if (listNews.isNotEmpty) {
-      return Column(children: [_getTopContent(), const SizedBox(height: 16), Expanded(child: SizedBox(child: BaseWidgets().getCenteredloading("Carregando cidades...")))]);
-    } else {
-      return Column(children: [SizedBox(height: 220, child: BaseWidgets().getCenteredloading("Carregando noticias...")), const SizedBox(height: 16), _getBottomContent()]);
+      if (listCities.isNotEmpty) {
+        widgets.add(_getBottomContent());
+      } else if (loadingBottom) {
+        widgets.add(Column(children: [const SizedBox(height: 120), BaseWidgets().getCenteredloading("Carregando noticias...")]));
+      } else {
+        widgets.add(Column(children: [const SizedBox(height: 120), BaseWidgets().getCenteredError("Falha ao obter dados!", iconColor: AppColors.accent, textColor: Colors.white)]));
+      }
+      return Column(children: widgets);
     }
-    */
   }
 
   String retrieveName(String completeName) {
