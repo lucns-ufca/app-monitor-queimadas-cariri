@@ -1,6 +1,7 @@
 // Developed by @lucns
 
 import 'dart:ui';
+import 'package:dio/dio.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:monitor_queimadas_cariri/firebase/MessagingReceiver.firebase.dart';
@@ -105,17 +106,16 @@ class LoginFormState extends State<LoginForm> {
 
     try {
       GoogleSignInAuthentication? googleAuth = await googleUser.authentication;
-      user.setIdToken(googleAuth.idToken!);
       user.setAccessToken(googleAuth.accessToken!);
+      user.setIdToken(googleAuth.idToken!);
     } catch (e, t) {
       debugPrintStack(stackTrace: t);
       showLoginError();
       return;
     }
 
-    try {
-      await AuthRepository().loginWithGoogleAccount(user.getEmail()!, user.getName()!, user.getAccessToken()!);
-    } catch (e) {
+    Response? response = await AuthRepository().loginWithGoogleAccount(user.getEmail()!, user.getName()!, user.getIdToken()!);
+    if (response == null || response.statusCode != 200) {
       showLoginError();
       return;
     }

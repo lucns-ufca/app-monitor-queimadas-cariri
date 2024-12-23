@@ -108,4 +108,5 @@ flutter {
 
 dependencies {
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.3' // for flutter_local_notifications
+    apply plugin: 'com.google.gms.google-services' // for google login / getIdToken
 }

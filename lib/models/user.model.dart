@@ -51,6 +51,10 @@ class User {
     return _data.email;
   }
 
+  String? getIdToken() {
+    return _data.idToken;
+  }
+
   void setName(String name) {
     _data.name = name;
   }

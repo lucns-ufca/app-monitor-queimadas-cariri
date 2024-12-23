@@ -20,9 +20,8 @@ class AuthRepository {
 
       user.setEmail(email);
       user.setType(User.retrieveType(response.data['role']));
-      user.setAccessToken(response.data["access_token"]);
-      user.setRefreshToken(response.data["refresh_token"]);
-      if (response.data.containsKey("user_type")) user.setUSerType(response.data["user_type"]);
+      user.setAccessToken(response.data["accessToken"]);
+      user.setRefreshToken(response.data["refreshToken"]);
       await user.storeData();
 
       return response;
@@ -40,7 +39,6 @@ class AuthRepository {
       user.setType(User.retrieveType(response.data['role']));
       user.setAccessToken(response.data["access_token"]);
       user.setRefreshToken(response.data["refresh_token"]);
-      if (response.data.containsKey("user_type")) user.setUSerType(response.data["user_type"]);
       await user.storeData();
 
       return response;
