@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:focus_detector/focus_detector.dart';
 import 'package:get_it/get_it.dart';
 import 'package:monitor_queimadas_cariri/models/FireAlert.model.dart';
+import 'package:monitor_queimadas_cariri/models/User.model.dart';
 import 'package:monitor_queimadas_cariri/pages/content/admins/FireAlertDetails.page.dart';
 import 'package:monitor_queimadas_cariri/repositories/Alerts.repository.dart';
 import 'package:monitor_queimadas_cariri/utils/AppColors.dart';
@@ -20,6 +21,7 @@ class FiresAlertValidationPage extends StatefulWidget {
 class FiresAlertValidationPageState extends State<FiresAlertValidationPage> {
   final AlertsRepository alertsRepository = AlertsRepository();
   final SharedPreferences preferences = GetIt.I.get<SharedPreferences>();
+  final User user = GetIt.I.get<User>();
 
   void initializeParameters() async {
     NotificationProvider notificationProvider = await NotificationProvider.getInstance();
@@ -78,19 +80,19 @@ class FiresAlertValidationPageState extends State<FiresAlertValidationPage> {
                       ])),
                   Expanded(
                       child: DefaultTabController(
-                          length: 2,
+                          length: user.isAdminstrator() ? 2 : 1,
                           child: Column(children: [
                             TabBar(
                               dividerColor: AppColors.appAdminAccent.withOpacity(0.5),
                               labelColor: AppColors.appAdminAccent,
                               unselectedLabelColor: AppColors.white_5,
                               indicatorColor: AppColors.appAdminAccent,
-                              tabs: const [
-                                Tab(text: "Pendentes"),
-                                Tab(text: "Validados"),
+                              tabs: [
+                                if (user.isAdminstrator()) const Tab(text: "Pendentes"),
+                                const Tab(text: "Validados"),
                               ],
                             ),
-                            Expanded(child: TabBarView(children: [getContent(true), getContent(false)]))
+                            Expanded(child: TabBarView(children: [getContent(true), if (user.isAdminstrator()) getContent(false)]))
                           ])))
                 ],
               )

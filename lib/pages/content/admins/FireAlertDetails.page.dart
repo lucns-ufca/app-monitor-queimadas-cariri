@@ -3,7 +3,9 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get_it/get_it.dart';
 import 'package:monitor_queimadas_cariri/models/FireAlert.model.dart';
+import 'package:monitor_queimadas_cariri/models/User.model.dart';
 import 'package:monitor_queimadas_cariri/pages/content/admins/FiresAlertValidation.page.dart';
 import 'package:monitor_queimadas_cariri/pages/dialogs/BasicDialogs.dart';
 import 'package:monitor_queimadas_cariri/repositories/Alerts.repository.dart';
@@ -14,6 +16,7 @@ import 'package:monitor_queimadas_cariri/widgets/Button.dart';
 import 'package:monitor_queimadas_cariri/widgets/ButtonLoading.widget.dart';
 import 'package:monitor_queimadas_cariri/widgets/CustomText.dart';
 import 'package:monitor_queimadas_cariri/widgets/TextField.dart';
+import 'package:geocoding/geocoding.dart';
 
 class FireAlertDetailsPage extends StatefulWidget {
   final FireAlertModel fireAlert;
@@ -24,6 +27,7 @@ class FireAlertDetailsPage extends StatefulWidget {
 }
 
 class FireAlertDetailsPageState extends State<FireAlertDetailsPage> {
+  final User user = GetIt.I.get<User>();
   final AlertsRepository alertsRepository = AlertsRepository();
   final Connectivity connectivity = Connectivity();
   final ButtonLoadingController buttonLoadingController = ButtonLoadingController();
@@ -134,12 +138,29 @@ class FireAlertDetailsPageState extends State<FireAlertDetailsPage> {
                                     children: [
                                       SvgPicture.asset("assets/icons/marker_alert.svg", width: 24, height: 24, colorFilter: const ColorFilter.mode(AppColors.appAdminAccent, BlendMode.srcIn)),
                                       const SizedBox(width: 8),
-                                      MyText(
-                                          text: "${widget.fireAlert.latitude}, ${widget.fireAlert.longitude}",
-                                          style: const TextStyle(
-                                            fontSize: 16,
-                                            color: AppColors.appAdminAccent,
-                                          ))
+                                      FutureBuilder(
+                                          future: placemarkFromCoordinates(widget.fireAlert.latitude!, widget.fireAlert.longitude!),
+                                          builder: (context, snapshot) {
+                                            String value;
+                                            if (snapshot.hasError || snapshot.data == null) {
+                                              value = "Falha ao obter cidade";
+                                            } else if (snapshot.connectionState != ConnectionState.done) {
+                                              value = "Carregando...";
+                                            } else {
+                                              List<Placemark> places = snapshot.data!;
+                                              if (places.isEmpty) {
+                                                value = "Falha ao obter cidade";
+                                              } else {
+                                                value = places[0].subAdministrativeArea ?? "Falha ao obter cidade";
+                                              }
+                                            }
+                                            return MyText(
+                                                text: value,
+                                                style: const TextStyle(
+                                                  fontSize: 16,
+                                                  color: AppColors.appAdminAccent,
+                                                ));
+                                          })
                                     ],
                                   ),
                                   const SizedBox(height: 20),
@@ -156,7 +177,7 @@ class FireAlertDetailsPageState extends State<FireAlertDetailsPage> {
                                     onInput: (text) {},
                                   )
                                 ]),
-                                if (widget.fireAlert.status == "PENDING")
+                                if (user.isAdminstrator() && widget.fireAlert.status == "PENDING")
                                   Column(mainAxisSize: MainAxisSize.max, mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                                     const SizedBox(height: 24),
                                     Padding(

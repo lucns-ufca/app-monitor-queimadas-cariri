@@ -122,7 +122,7 @@ class TabHomePageState extends State<TabHomePage> with AutomaticKeepAliveClientM
         news.assetsIcon = "assets/icons/weather/rain.png";
         news.priority = 2;
         news.title = "Dias sem Chuva.";
-        news.description = "Atualmente ${highestDaysWithoutRain.city} está com o maior numero de dias sem chuva. Foram registrados ${highestDaysWithoutRain.daysWithoutRain} dias.";
+        news.description = "Atualmente ${highestDaysWithoutRain.city} está com o maior numero de dias sem chuva. Foram registrados ${highestDaysWithoutRain.daysWithoutRain} dia${highestDaysWithoutRain.daysWithoutRain != 1 ? "s" : ""}.";
         listNews.add(news);
       }
     }
@@ -214,7 +214,7 @@ class TabHomePageState extends State<TabHomePage> with AutomaticKeepAliveClientM
     await appRepository.updateLocal();
     updatePrediction();
     updateWeather();
-    updateProbabilities();
+    //updateProbabilities();
     listNews.shuffle();
 
     List<PredictionCityModel> predictionCities = appRepository.getPredictionCities;
@@ -279,9 +279,11 @@ class TabHomePageState extends State<TabHomePage> with AutomaticKeepAliveClientM
       List<ConnectivityResult> list = await connectivity.checkConnectivity();
       connected = list.any((item) => item != ConnectivityResult.none);
       connectivity.onConnectivityChanged.listen((list) {
-        setState(() {
-          connected = list.any((item) => item != ConnectivityResult.none);
-        });
+        if (mounted) {
+          setState(() {
+            connected = list.any((item) => item != ConnectivityResult.none);
+          });
+        }
       });
 
       updateLists();
@@ -472,6 +474,34 @@ class TabHomePageState extends State<TabHomePage> with AutomaticKeepAliveClientM
             getCardNumber("Previsto ${DateTime.now().year}", "$predictionTotal", "assets/icons/brown_search.png"),
             const SizedBox(width: 8),
             getCardNumber("Cidades", predictionCities.isEmpty ? "" : "${predictionCities.length}", "assets/icons/brown_pin.png")
+          ])),
+      Container(
+          padding: const EdgeInsets.only(top: 16, left: 24, right: 24),
+          height: 56,
+          child: Row(children: [
+            Expanded(
+                child: TextButton(
+                    style: ButtonStyle(
+                        shape: WidgetStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.circular(28))),
+                        backgroundColor: WidgetStateProperty.resolveWith((states) => AppColors.ticketColor),
+                        overlayColor: WidgetStateProperty.resolveWith((states) => AppColors.accent.withOpacity(0.5))),
+                    onPressed: () async {
+                      await Future.delayed(const Duration(milliseconds: 250));
+                      await Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const AboutPage()));
+                    },
+                    child: const Text("Sobre o Projeto", style: TextStyle(fontSize: 18, color: AppColors.descriptionDark)))),
+            const SizedBox(width: 16),
+            Expanded(
+                child: TextButton(
+                    style: ButtonStyle(
+                        shape: WidgetStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.circular(28))),
+                        backgroundColor: WidgetStateProperty.resolveWith((states) => AppColors.ticketColor),
+                        overlayColor: WidgetStateProperty.resolveWith((states) => AppColors.accent.withOpacity(0.5))),
+                    onPressed: () async {
+                      await Future.delayed(const Duration(milliseconds: 250));
+                      await Navigator.push(context, MaterialPageRoute(builder: (context) => const FiresAlertValidationPage()));
+                    },
+                    child: const Text("Últimas Alertas", style: TextStyle(fontSize: 18, color: AppColors.descriptionDark))))
           ])),
       const SizedBox(height: 16),
       Align(

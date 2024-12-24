@@ -21,7 +21,7 @@ class Constants {
   static const int PAGE_TYPE_VALIDATION = 1;
 
   static const List<String> WHITE_LIST_EMAILS = [
-    'abc@mail.io',
+    //'abc@mail.io',
     'lucns.dev@gmail.com',
     'lucns2906@gmail.com',
     'lucas.nascimento@aluno.ufca.edu.br',
