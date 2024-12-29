@@ -201,7 +201,7 @@ class CreateNotificationPageState extends State<CreateNotificationPage> {
                                                   await sendData();
                                                   return;
                                                 }
-                                                Notify.showToast("Espere um pouco.\nAguardando dados da localização...");
+                                                Notify.showToast("Há campos inválidos!");
                                               }))
                                     ]))))
                     ],
